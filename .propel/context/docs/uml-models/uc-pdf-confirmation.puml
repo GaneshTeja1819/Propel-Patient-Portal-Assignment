@@ -1,0 +1,18 @@
+@startuml uc-pdf-confirmation
+left to right direction
+actor "Hangfire\n(System)" as HF
+actor "Email/SMS\nGateway" as GW
+rectangle "PDF Confirmation" {
+  usecase "Generate & Email PDF\n(UC-025)" as UC025
+  usecase "Populate PDF Template" as PPT
+  usecase "Render PDF" as RPDF
+  usecase "Dispatch via Email\nGateway" as DEG
+  usecase "Log Delivery Status" as LDS
+}
+HF --> UC025
+UC025 ..> PPT : <<include>>
+UC025 ..> RPDF : <<include>>
+UC025 ..> DEG : <<include>>
+UC025 ..> LDS : <<include>>
+DEG --> GW
+@enduml

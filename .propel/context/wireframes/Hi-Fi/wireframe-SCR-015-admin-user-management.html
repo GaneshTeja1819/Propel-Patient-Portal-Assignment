@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-015 | Admin User Management | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-015 Admin User Management
+  | Element                          | Action | Target Screen    |
+  |----------------------------------|--------|------------------|
+  | All links self-contained (admin) |  —     | (same screen)    |
+  | Sign out                         | click  | wireframe-SCR-001-login.html |
+
+  Source UC: UC-017 (Manage User Accounts)
+  UXR: UXR-405 (RBAC — admin role), UXR-107 (audit log)
+  FL: FL-008 (self-contained)
+  UC-017 extension 3a: admin cannot deactivate themselves (inline error)
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;--c-err:#DC2626;--c-err-h:#B91C1C;--c-err-bg:#FEE2E2;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);--nav-h:64px;--max-w:1280px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}a:hover{text-decoration:underline}
+    .topnav{height:var(--nav-h);background:var(--cs);border-bottom:1px solid var(--cbord);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topnav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--s8);height:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--s4)}
+    .nav-logo{display:flex;align-items:center;gap:var(--s2);font-weight:700;color:var(--ct);font-size:var(--t-md)}
+    .nav-logo-mark{width:32px;height:32px;background:var(--c-err);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-weight:700;font-size:var(--t-base)}
+    .nav-link{padding:var(--s2) var(--s3);border-radius:var(--r-sm);font-size:var(--t-base);color:var(--ct-s);font-weight:500;text-decoration:none;transition:background .1s}
+    .nav-link:hover{background:var(--cs-s);color:var(--ct);text-decoration:none}
+    .nav-link.active{background:var(--cb-l);color:var(--cb);font-weight:600}
+    .role-badge{display:flex;align-items:center;gap:var(--s2);padding:var(--s1) var(--s3);background:var(--c-err-bg);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;color:var(--c-err)}
+    .main-content{max-width:var(--max-w);margin:0 auto;padding:var(--s8)}
+    .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s6);flex-wrap:wrap;gap:var(--s4)}
+    .page-title{font-size:var(--t-2xl);font-weight:600}
+    .card{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);box-shadow:var(--sh-sm)}
+    .card-header{padding:var(--s4) var(--s6);border-bottom:1px solid var(--cbord);display:flex;align-items:center;justify-content:space-between;gap:var(--s4);flex-wrap:wrap}
+    .card-title{font-size:var(--t-md);font-weight:600}
+    .search-wrap{display:flex;gap:var(--s3);align-items:center;flex-wrap:wrap}
+    .search-input{height:40px;padding:0 var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);width:240px;color:var(--ct)}
+    .search-input:focus{border-color:var(--cbord-f);outline:3px solid rgba(26,86,219,.2);outline-offset:0}
+    .filter-select{height:40px;padding:0 var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-sm);color:var(--ct)}
+    .user-table{width:100%;border-collapse:collapse}
+    .user-table th{text-align:left;font-size:var(--t-xs);font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ct-s);padding:var(--s3) var(--s4);border-bottom:2px solid var(--cbord);background:var(--cs-s);white-space:nowrap}
+    .user-table td{padding:var(--s3) var(--s4);border-bottom:1px solid var(--cbord);font-size:var(--t-sm);vertical-align:middle}
+    .user-table tr.expanded td{background:var(--cs-m)}
+    .user-table tr:hover td{background:var(--cs-m)}
+    .user-name{font-weight:600;color:var(--ct)}
+    .user-email{font-size:var(--t-xs);color:var(--ct-s)}
+    .expand-row td{padding:var(--s4) var(--s6);background:var(--cs-s)!important;border-bottom:2px solid var(--cbord)}
+    .expand-row.hidden{display:none}
+    .expand-inner{display:flex;align-items:center;gap:var(--s4);flex-wrap:wrap}
+    .badge{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s3);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;white-space:nowrap}
+    .badge-admin{background:#FEF3C7;color:#92400E}
+    .badge-staff{background:var(--c-ok-bg);color:var(--c-ok)}
+    .badge-patient{background:var(--cb-l);color:var(--cb)}
+    .badge-active{background:var(--c-ok-bg);color:var(--c-ok)}
+    .badge-inactive{background:var(--cs-s);color:var(--ct-d)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s3);height:34px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-sm);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s;text-decoration:none;white-space:nowrap}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h)}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l)}
+    .btn-danger-outline{background:transparent;color:var(--c-err);border-color:var(--c-err)}
+    .btn-danger-outline:hover{background:var(--c-err-bg)}
+    .btn-expand{background:none;border:none;font-family:var(--ff);font-size:var(--t-sm);color:var(--cb);cursor:pointer;font-weight:600;padding:var(--s1) var(--s2)}
+    /* Modals */
+    .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;z-index:1000;display:none}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--cs);border-radius:var(--r-lg);box-shadow:var(--sh-lg);max-width:460px;width:100%;padding:var(--s8);margin:var(--s4)}
+    .modal-title{font-size:var(--t-lg);font-weight:600;margin-bottom:var(--s2)}
+    .modal-body{font-size:var(--t-base);color:var(--ct-s);margin-bottom:var(--s4);line-height:1.6}
+    .modal-detail{background:var(--cs-s);border-radius:var(--r-md);padding:var(--s3);font-size:var(--t-sm);margin-bottom:var(--s6)}
+    .modal-actions{display:flex;gap:var(--s3);justify-content:flex-end}
+    .modal-btn-confirm-lg{height:44px;padding:0 var(--s6);font-size:var(--t-base);border-radius:var(--r-sm)}
+    .field{display:flex;flex-direction:column;gap:var(--s1);margin-bottom:var(--s4)}
+    .field label{font-size:var(--t-sm);font-weight:600;color:var(--ct-s);text-transform:uppercase;letter-spacing:.05em}
+    .field select{height:44px;padding:0 var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);color:var(--ct)}
+    .inline-error{background:var(--c-err-bg);border:1px solid var(--c-err);border-radius:var(--r-sm);padding:var(--s3) var(--s4);font-size:var(--t-sm);color:var(--c-err);display:none;margin-top:var(--s3)}
+    .inline-error.visible{display:block}
+    @media(max-width:768px){.main-content{padding:var(--s4)}.topnav-inner{padding:0 var(--s4)}.search-input{width:160px}.user-table{font-size:var(--t-xs)}}
+  </style>
+</head>
+<body>
+  <!-- Role Change Confirm Modal -->
+  <div id="role-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="role-modal-title">
+    <div class="modal">
+      <h2 id="role-modal-title" class="modal-title">Change user role</h2>
+      <p class="modal-body">You are changing the role for <strong id="role-modal-name"></strong>. This will immediately affect their portal access and permissions.</p>
+      <div class="modal-detail" id="role-modal-detail"></div>
+      <div class="field">
+        <label for="role-select">New role</label>
+        <select id="role-select">
+          <option value="Patient">Patient</option>
+          <option value="Staff">Staff</option>
+          <option value="Admin">Admin</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost modal-btn-confirm-lg" onclick="document.getElementById('role-modal').classList.remove('open')">Cancel</button>
+        <button class="btn btn-primary modal-btn-confirm-lg" onclick="confirmRoleChange()">Confirm change</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deactivate Confirm Modal -->
+  <div id="deactivate-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="deact-modal-title">
+    <div class="modal">
+      <h2 id="deact-modal-title" class="modal-title" style="color:var(--c-err)">Deactivate account?</h2>
+      <p class="modal-body">Deactivating <strong id="deact-modal-name"></strong> will immediately revoke their access. They will not be able to log in until reactivated.</p>
+      <div class="modal-detail" id="deact-modal-detail"></div>
+      <!-- UC-017 ext 3a: self-deactivation blocked -->
+      <div id="self-deact-error" class="inline-error" role="alert">You cannot deactivate your own account. Ask another administrator to perform this action.</div>
+      <div class="modal-actions" id="deact-modal-actions">
+        <button class="btn btn-ghost modal-btn-confirm-lg" onclick="document.getElementById('deactivate-modal').classList.remove('open')">Cancel</button>
+        <button class="btn btn-danger-outline modal-btn-confirm-lg" id="btn-deact-confirm" onclick="confirmDeactivate()">Deactivate</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="topnav" aria-label="Main navigation — Admin Portal">
+    <div class="topnav-inner">
+      <a href="wireframe-SCR-015-admin-user-management.html" class="nav-logo" aria-label="Admin Portal home">
+        <div class="nav-logo-mark" aria-hidden="true">A</div>
+        <span>Admin Portal</span>
+      </a>
+      <a href="wireframe-SCR-015-admin-user-management.html" class="nav-link active" aria-current="page">👥 Users</a>
+      <div style="display:flex;align-items:center;gap:var(--s3)">
+        <span class="role-badge" aria-label="Admin role">🔑 Admin</span>
+        <a href="wireframe-SCR-001-login.html" class="btn" style="height:34px;padding:0 var(--s3);border:1px solid var(--cbord);background:var(--cs);color:var(--ct-s);font-weight:500;font-size:var(--t-sm);border-radius:var(--r-sm)">Sign out</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content" role="main">
+    <div class="page-header">
+      <h1 class="page-title">User Management</h1>
+      <div class="search-wrap">
+        <input type="search" class="search-input" id="user-search" placeholder="Search by name or email…" aria-label="Search users" oninput="filterUsers(this.value)">
+        <select class="filter-select" id="role-filter" onchange="filterUsers()" aria-label="Filter by role">
+          <option value="">All roles</option>
+          <option value="Admin">Admin</option>
+          <option value="Staff">Staff</option>
+          <option value="Patient">Patient</option>
+        </select>
+        <select class="filter-select" id="status-filter" onchange="filterUsers()" aria-label="Filter by status">
+          <option value="">All status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Users <span style="font-size:var(--t-sm);color:var(--ct-s);font-weight:400" id="user-count">7 total</span></span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="user-table" aria-label="User accounts">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Last login</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="user-tbody">
+            <!-- usr-001 Admin (logged in user) -->
+            <tr data-role="Admin" data-status="Active" data-id="usr-001" data-self="true">
+              <td><div class="user-name">Admin User <span style="font-size:var(--t-xs);background:var(--cb-l);color:var(--cb);padding:1px var(--s2);border-radius:var(--r-full);font-weight:700">You</span></div><div class="user-email">admin@upacip.health</div></td>
+              <td><span class="badge badge-admin">Admin</span></td>
+              <td><span class="badge badge-active">● Active</span></td>
+              <td style="color:var(--ct-s)">Just now</td>
+              <td><button class="btn-expand" onclick="toggleExpand('exp-usr001',this)">Actions ▾</button></td>
+            </tr>
+            <tr id="exp-usr001" class="expand-row hidden"><td colspan="5"><div class="expand-inner"><button class="btn btn-ghost" onclick="openRoleModal('Admin User','Admin', 'usr-001')">Change role</button><button class="btn btn-danger-outline" onclick="openDeactivateModal('Admin User','Active','usr-001',true)">Deactivate</button></div></td></tr>
+            <!-- usr-002 Staff -->
+            <tr data-role="Staff" data-status="Active">
+              <td><div class="user-name">Nurse Practitioner R.</div><div class="user-email">np.johnson@upacip.health</div></td>
+              <td><span class="badge badge-staff">Staff</span></td>
+              <td><span class="badge badge-active">● Active</span></td>
+              <td style="color:var(--ct-s)">Today 9:14 AM</td>
+              <td><button class="btn-expand" onclick="toggleExpand('exp-usr002',this)">Actions ▾</button></td>
+            </tr>
+            <tr id="exp-usr002" class="expand-row hidden"><td colspan="5"><div class="expand-inner"><button class="btn btn-ghost" onclick="openRoleModal('Nurse Practitioner R.','Staff','usr-002')">Change role</button><button class="btn btn-danger-outline" onclick="openDeactivateModal('Nurse Practitioner R.','Active','usr-002',false)">Deactivate</button></div></td></tr>
+            <!-- usr-003 Patient Sarah Johnson -->
+            <tr data-role="Patient" data-status="Active">
+              <td><div class="user-name">Sarah J. Johnson</div><div class="user-email">sarah.johnson@email.com</div></td>
+              <td><span class="badge badge-patient">Patient</span></td>
+              <td><span class="badge badge-active">● Active</span></td>
+              <td style="color:var(--ct-s)">Today 8:02 AM</td>
+              <td><button class="btn-expand" onclick="toggleExpand('exp-usr003',this)">Actions ▾</button></td>
+            </tr>
+            <tr id="exp-usr003" class="expand-row hidden"><td colspan="5"><div class="expand-inner"><button class="btn btn-ghost" onclick="openRoleModal('Sarah J. Johnson','Patient','usr-003')">Change role</button><button class="btn btn-danger-outline" onclick="openDeactivateModal('Sarah J. Johnson','Active','usr-003',false)">Deactivate</button></div></td></tr>
+            <!-- usr-004 Patient Michael Chen -->
+            <tr data-role="Patient" data-status="Active">
+              <td><div class="user-name">Michael Chen</div><div class="user-email">michael.chen@email.com</div></td>
+              <td><span class="badge badge-patient">Patient</span></td>
+              <td><span class="badge badge-active">● Active</span></td>
+              <td style="color:var(--ct-s)">Yesterday</td>
+              <td><button class="btn-expand" onclick="toggleExpand('exp-usr004',this)">Actions ▾</button></td>
+            </tr>
+            <tr id="exp-usr004" class="expand-row hidden"><td colspan="5"><div class="expand-inner"><button class="btn btn-ghost" onclick="openRoleModal('Michael Chen','Patient','usr-004')">Change role</button><button class="btn btn-danger-outline" onclick="openDeactivateModal('Michael Chen','Active','usr-004',false)">Deactivate</button></div></td></tr>
+            <!-- usr-005 Patient -->
+            <tr data-role="Patient" data-status="Active">
+              <td><div class="user-name">Emily Carter</div><div class="user-email">emily.carter@email.com</div></td>
+              <td><span class="badge badge-patient">Patient</span></td>
+              <td><span class="badge badge-active">● Active</span></td>
+              <td style="color:var(--ct-s)">May 18, 2026</td>
+              <td><button class="btn-expand" onclick="toggleExpand('exp-usr005',this)">Actions ▾</button></td>
+            </tr>
+            <tr id="exp-usr005" class="expand-row hidden"><td colspan="5"><div class="expand-inner"><button class="btn btn-ghost" onclick="openRoleModal('Emily Carter','Patient','usr-005')">Change role</button><button class="btn btn-danger-outline" onclick="openDeactivateModal('Emily Carter','Active','usr-005',false)">Deactivate</button></div></td></tr>
+            <!-- usr-006 Staff -->
+            <tr data-role="Staff" data-status="Active">
+              <td><div class="user-name">Dr. M. Okafor</div><div class="user-email">m.okafor@upacip.health</div></td>
+              <td><span class="badge badge-staff">Staff</span></td>
+              <td><span class="badge badge-active">● Active</span></td>
+              <td style="color:var(--ct-s)">Today 7:30 AM</td>
+              <td><button class="btn-expand" onclick="toggleExpand('exp-usr006',this)">Actions ▾</button></td>
+            </tr>
+            <tr id="exp-usr006" class="expand-row hidden"><td colspan="5"><div class="expand-inner"><button class="btn btn-ghost" onclick="openRoleModal('Dr. M. Okafor','Staff','usr-006')">Change role</button><button class="btn btn-danger-outline" onclick="openDeactivateModal('Dr. M. Okafor','Active','usr-006',false)">Deactivate</button></div></td></tr>
+            <!-- usr-007 Inactive Patient -->
+            <tr data-role="Patient" data-status="Inactive" style="opacity:.7">
+              <td><div class="user-name">Former Patient</div><div class="user-email">former@email.com</div></td>
+              <td><span class="badge badge-patient">Patient</span></td>
+              <td><span class="badge badge-inactive">○ Inactive</span></td>
+              <td style="color:var(--ct-d)">Jan 5, 2026</td>
+              <td><button class="btn-expand" onclick="toggleExpand('exp-usr007',this)">Actions ▾</button></td>
+            </tr>
+            <tr id="exp-usr007" class="expand-row hidden"><td colspan="5"><div class="expand-inner"><button class="btn btn-ghost" onclick="reactivate('usr-007')">Reactivate</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let roleModalId = null;
+    let deactModalId = null;
+
+    function toggleExpand(rowId, btn) {
+      const row = document.getElementById(rowId);
+      const isHidden = row.classList.contains('hidden');
+      // Close all
+      document.querySelectorAll('.expand-row').forEach(r => r.classList.add('hidden'));
+      document.querySelectorAll('.btn-expand').forEach(b => { b.textContent = b.textContent.replace('▴','▾'); });
+      if (isHidden) {
+        row.classList.remove('hidden');
+        btn.textContent = btn.textContent.replace('▾','▴');
+      }
+    }
+
+    function openRoleModal(name, currentRole, id) {
+      roleModalId = id;
+      document.getElementById('role-modal-name').textContent = name;
+      document.getElementById('role-modal-detail').textContent = `Current role: ${currentRole} · ID: ${id}`;
+      document.getElementById('role-select').value = currentRole;
+      document.getElementById('role-modal').classList.add('open');
+    }
+
+    function confirmRoleChange() {
+      document.getElementById('role-modal').classList.remove('open');
+    }
+
+    function openDeactivateModal(name, status, id, isSelf) {
+      deactModalId = id;
+      document.getElementById('deact-modal-name').textContent = name;
+      document.getElementById('deact-modal-detail').textContent = `Status: ${status} · ID: ${id}`;
+      const errEl = document.getElementById('self-deact-error');
+      const actionsEl = document.getElementById('deact-modal-actions');
+      // UC-017 ext 3a: block self-deactivation
+      if (isSelf) {
+        errEl.classList.add('visible');
+        document.getElementById('btn-deact-confirm').disabled = true;
+      } else {
+        errEl.classList.remove('visible');
+        document.getElementById('btn-deact-confirm').disabled = false;
+      }
+      document.getElementById('deactivate-modal').classList.add('open');
+    }
+
+    function confirmDeactivate() {
+      document.getElementById('deactivate-modal').classList.remove('open');
+    }
+
+    function reactivate(id) {
+      alert('Account reactivated (demo).');
+    }
+
+    function filterUsers(val) {
+      const search = (document.getElementById('user-search').value || '').toLowerCase();
+      const role = document.getElementById('role-filter').value;
+      const status = document.getElementById('status-filter').value;
+      let count = 0;
+      document.querySelectorAll('#user-tbody tr:not(.expand-row)').forEach(row => {
+        const nameText = row.querySelector('.user-name').textContent.toLowerCase();
+        const emailText = row.querySelector('.user-email').textContent.toLowerCase();
+        const rowRole = row.dataset.role || '';
+        const rowStatus = row.dataset.status || '';
+        const matchSearch = !search || nameText.includes(search) || emailText.includes(search);
+        const matchRole = !role || rowRole === role;
+        const matchStatus = !status || rowStatus === status;
+        const visible = matchSearch && matchRole && matchStatus;
+        row.style.display = visible ? '' : 'none';
+        // Hide associated expand row
+        const expId = row.querySelector('.btn-expand')?.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+        if (expId) document.getElementById(expId).classList.add('hidden');
+        if (visible) count++;
+      });
+      document.getElementById('user-count').textContent = count + ' total';
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.getElementById('role-modal').classList.remove('open');
+        document.getElementById('deactivate-modal').classList.remove('open');
+      }
+    });
+  </script>
+</body>
+</html>

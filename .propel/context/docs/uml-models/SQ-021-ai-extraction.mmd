@@ -1,0 +1,30 @@
+sequenceDiagram
+    participant HF as Hangfire (ExtractionJob)
+    participant DOC as DocumentService
+    participant BLOB as Supabase Storage
+    participant PDFPIG as PdfPig
+    participant GEMINI as Gemini API
+    participant DB as PostgreSQL
+    participant PROFILE as Profile360Service
+    participant AUDIT as AuditService
+
+    Note over HF,AUDIT: UC-021 — AI Clinical Data Extraction (summary — see AI-seq-uc-021 for full AI detail)
+
+    HF->>DOC: Execute ExtractionJob(documentId)
+    DOC->>BLOB: GET encrypted PDF
+    BLOB-->>DOC: pdfBytes
+    DOC->>PDFPIG: ExtractText(pdfBytes)
+    PDFPIG-->>DOC: rawText
+    DOC->>GEMINI: function_calling {extract vitals, medications, diagnoses from rawText}
+    alt Extraction succeeds
+        GEMINI-->>DOC: {vitals, medications, diagnoses, modelVersion}
+        DOC->>DB: INSERT ExtractedClinicalData (encrypted)
+        DOC->>DB: UPDATE ClinicalDocument SET extractionStatus = Completed
+        DOC->>PROFILE: TriggerProfileUpdate(patientId)
+        PROFILE->>DB: UPSERT PatientProfile360 + INSERT DataConflict records
+        DOC->>AUDIT: Log(actor: system, action: EXTRACTION_COMPLETED, target: documentId)
+    else Extraction fails after 3 retries
+        DOC->>DB: UPDATE ClinicalDocument SET extractionStatus = Failed
+        DOC->>AUDIT: Log(actor: system, action: EXTRACTION_FAILED, target: documentId)
+        Note over DOC: Staff can trigger manual retry
+    end

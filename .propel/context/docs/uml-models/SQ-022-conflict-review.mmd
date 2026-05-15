@@ -1,0 +1,39 @@
+sequenceDiagram
+    participant SYS as Profile360Service (System)
+    participant S as Staff (Browser)
+    participant API as ProfileController
+    participant DB as PostgreSQL
+    participant AUDIT as AuditService
+
+    Note over SYS,AUDIT: UC-022 — Detect and Review Data Conflicts
+
+    Note over SYS: Triggered after PatientProfile360 update (part of UC-021 pipeline)
+
+    SYS->>DB: SELECT ExtractedClinicalData WHERE patientId ORDER BY extractedAt
+    DB-->>SYS: extractedData[]
+    SYS->>SYS: RunConflictDetection(extractedData) — compare medications, diagnoses across documents
+    alt No conflicts detected
+        SYS->>DB: UPDATE PatientProfile360 SET conflictCount = 0
+        Note over SYS: No DataConflict records inserted
+    else Conflicts detected
+        SYS->>DB: INSERT DataConflict[] {conflictType, severity, conflictedFields, status: Open}
+        DB-->>SYS: conflictIds[]
+        SYS->>DB: UPDATE PatientProfile360 SET conflictCount = N
+    end
+
+    Note over S: Staff views 360 patient profile (UC-020) — sees conflict alert
+
+    S->>API: GET /api/v1/patients/{patientId}/conflicts
+    API->>DB: SELECT DataConflict WHERE patientId = ? AND status IN (Open, ReviewedUnresolved)
+    DB-->>API: conflicts[]
+    API-->>S: render conflict list with severity, values, source document references
+
+    S->>API: PUT /api/v1/patients/{patientId}/conflicts/{conflictId}/resolve {resolution: "Resolved" or "ReviewedUnresolved", authoritativeValue?}
+    API->>DB: UPDATE DataConflict SET status = resolution, resolvedByStaffId, resolvedAt
+    DB-->>API: ok
+    API->>AUDIT: Log(actor: staffId, action: CONFLICT_RESOLVED, target: DataConflict, metadata: {resolution, authoritativeValue})
+    API-->>S: 200 conflict updated
+
+    alt Staff marks as ReviewedUnresolved
+        Note over API: Both conflicting values retained; persistent conflict indicator remains in profile
+    end

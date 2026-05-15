@@ -1,0 +1,12 @@
+@startuml uc-switch-intake
+left to right direction
+actor "Patient" as P
+rectangle "Switch Intake Method" {
+  usecase "Switch Intake\n(UC-011)" as UC011
+  usecase "Map Fields to Target Method" as MAP
+  usecase "Initialise Target Form/Chat" as INIT
+}
+P --> UC011
+UC011 ..> MAP : <<include>>
+UC011 ..> INIT : <<include>>
+@enduml

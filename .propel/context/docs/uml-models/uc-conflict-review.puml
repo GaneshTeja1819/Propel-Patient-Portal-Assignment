@@ -1,0 +1,17 @@
+@startuml uc-conflict-review
+left to right direction
+actor "Staff" as S
+actor "System" as SYS
+rectangle "Data Conflict Detection & Review" {
+  usecase "Detect & Review Conflicts\n(UC-022)" as UC022
+  usecase "Flag Conflict in Profile" as FCP
+  usecase "Staff Reviews Conflict" as SRC
+  usecase "Resolve / Mark Reviewed" as RMR
+  usecase "Write Audit Log" as AL
+}
+SYS --> UC022
+UC022 ..> FCP : <<include>>
+S --> SRC
+SRC --> RMR
+RMR ..> AL : <<include>>
+@enduml

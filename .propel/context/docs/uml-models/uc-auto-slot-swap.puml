@@ -1,0 +1,22 @@
+@startuml uc-auto-slot-swap
+left to right direction
+actor "Hangfire\n(System)" as HF
+actor "Patient\n(notified)" as P
+rectangle "Preferred Slot Auto-Swap" {
+  usecase "Detect Slot Release" as DSR
+  usecase "Evaluate Waitlist" as EWL
+  usecase "Atomic Slot Swap\n(UC-008)" as UC008
+  usecase "Release Original Slot" as ROS
+  usecase "Remove Waitlist Entry" as RWE
+  usecase "Send Swap Notification" as SSN
+  usecase "Write Audit Log" as AL
+}
+HF --> UC008
+UC008 ..> DSR : <<include>>
+UC008 ..> EWL : <<include>>
+UC008 ..> ROS : <<include>>
+UC008 ..> RWE : <<include>>
+UC008 ..> SSN : <<include>>
+UC008 ..> AL : <<include>>
+SSN --> P : Email notification
+@enduml

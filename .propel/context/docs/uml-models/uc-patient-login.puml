@@ -1,0 +1,16 @@
+@startuml uc-patient-login
+left to right direction
+actor "Patient / Staff / Admin" as U
+rectangle "Authentication" {
+  usecase "Login (UC-002)" as UC002
+  usecase "Verify Credentials" as VC
+  usecase "Issue Session Token" as IST
+  usecase "Write Audit Log" as AL
+  usecase "Account Lockout\n(Exception)" as LOCK
+}
+U --> UC002
+UC002 ..> VC : <<include>>
+UC002 ..> IST : <<include>>
+UC002 ..> AL : <<include>>
+UC002 ..> LOCK : <<extend>>
+@enduml

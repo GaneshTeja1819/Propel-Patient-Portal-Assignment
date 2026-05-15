@@ -1,0 +1,16 @@
+@startuml uc-same-day-queue
+left to right direction
+actor "Staff" as S
+rectangle "Same-Day Queue" {
+  usecase "Manage Queue\n(UC-015)" as UC015
+  usecase "View Today's\nAppointments" as VTA
+  usecase "Reorder Queue\nEntries" as RQE
+  usecase "Remove Patient\nfrom Queue" as RPQ
+  usecase "Write Audit Log" as AL
+}
+S --> UC015
+UC015 ..> VTA : <<include>>
+UC015 ..> RQE : <<extend>>
+UC015 ..> RPQ : <<extend>>
+UC015 ..> AL : <<include>>
+@enduml

@@ -1,0 +1,40 @@
+sequenceDiagram
+    participant P as Patient (Browser)
+    participant API as DocumentController
+    participant DOC as DocumentService
+    participant ENC as AES-256-GCM Encryption
+    participant BLOB as Supabase Storage
+    participant DB as PostgreSQL (ClinicalDocument)
+    participant HF as Hangfire
+    participant AUDIT as AuditService
+
+    Note over P,AUDIT: UC-019 — Upload Clinical Document
+
+    P->>API: POST /api/v1/documents/upload {file: PDF, documentType: "Historical" or "PostVisit"}
+    API->>DOC: UploadDocument(patientId, file, documentType)
+    DOC->>DOC: ValidateFile(file)
+    alt File is not a valid PDF
+        DOC-->>API: InvalidFileType
+        API-->>P: 422 "Only PDF files are accepted"
+    else File exceeds maximum size limit
+        DOC-->>API: FileTooLarge
+        API-->>P: 413 "File exceeds maximum size limit"
+    else File is valid
+        DOC->>ENC: EncryptStoragePath(patientId + filename)
+        ENC-->>DOC: encryptedPath
+        DOC->>BLOB: PUT encryptedPath {encrypted PDF bytes}
+        BLOB-->>DOC: storageConfirmed
+        DOC->>DB: INSERT ClinicalDocument {patientId, documentType, storagePath_encrypted, extractionStatus: Pending}
+        DB-->>DOC: documentId
+        DOC->>HF: Enqueue ExtractionJob(documentId)
+        HF-->>DOC: jobId
+        DOC->>AUDIT: Log(actor: patientId, action: DOCUMENT_UPLOADED, target: ClinicalDocument)
+        DOC-->>API: 201 {documentId, extractionStatus: Pending}
+        API-->>P: 201 document uploaded — extraction queued
+    end
+
+    opt AI extraction job fails (after 3 attempts)
+        HF-->>DOC: ExtractionJobFailed
+        DOC->>DB: UPDATE ClinicalDocument SET extractionStatus = Failed
+        Note over DOC: Document retained — Staff can retry extraction manually
+    end

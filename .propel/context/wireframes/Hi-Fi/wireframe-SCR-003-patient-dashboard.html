@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-003 | Patient Dashboard | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-003 Patient Dashboard
+  | Element                 | Action | Target Screen                                     |
+  |-------------------------|--------|---------------------------------------------------|
+  | #btn-book-appt          | click  | wireframe-SCR-004-appointment-booking.html        |
+  | .appt-manage-btn        | click  | wireframe-SCR-005-appointment-detail.html         |
+  | .intake-btn             | click  | wireframe-SCR-007-ai-intake.html                  |
+  | #nav-profile            | click  | wireframe-SCR-009-patient-profile.html            |
+  | #nav-documents          | click  | wireframe-SCR-010-document-upload.html            |
+  | #nav-calendar           | click  | wireframe-SCR-016-calendar-oauth.html             |
+  | #nav-logout             | click  | wireframe-SCR-001-login.html                      |
+
+  Source UCs: UC-004, UC-005, UC-006, UC-025
+  UXR: UXR-101, UXR-103, UXR-201, UXR-202, UXR-301, UXR-503, UXR-504
+  FL: FL-002 (entry), FL-003 (entry)
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;--c-err:#DC2626;--c-err-bg:#FEE2E2;--c-ai:#7C3AED;--c-ai-bg:#EDE9FE;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--s12:48px;--s16:64px;--r-xs:2px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);--nav-h:64px;--max-w:1280px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}a:hover{text-decoration:underline}
+
+    /* ─── TOP NAV ────────────────────────────────── */
+    .topnav{height:var(--nav-h);background:var(--cs);border-bottom:1px solid var(--cbord);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topnav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--s8);height:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--s6)}
+    .nav-logo{display:flex;align-items:center;gap:var(--s2);font-weight:700;color:var(--ct);font-size:var(--t-md)}
+    .nav-logo-mark{width:32px;height:32px;background:var(--cb);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-weight:700;font-size:var(--t-base)}
+    .nav-links{display:flex;align-items:center;gap:var(--s1)}
+    .nav-link{display:flex;align-items:center;gap:var(--s1);padding:var(--s2) var(--s3);border-radius:var(--r-sm);font-size:var(--t-base);color:var(--ct-s);font-weight:500;transition:background .1s;text-decoration:none}
+    .nav-link:hover{background:var(--cs-s);color:var(--ct);text-decoration:none}
+    .nav-link.active{background:var(--cb-l);color:var(--cb);font-weight:600}
+    .nav-right{display:flex;align-items:center;gap:var(--s3)}
+    .notif-btn{position:relative;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:none;border:1px solid var(--cbord);border-radius:var(--r-sm);cursor:pointer;font-size:var(--t-md);color:var(--ct-s)}
+    .notif-badge{position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--c-err);border-radius:50%;border:2px solid var(--cs)}
+    .user-menu-btn{display:flex;align-items:center;gap:var(--s2);padding:var(--s1) var(--s2);border:1px solid var(--cbord);border-radius:var(--r-sm);background:none;cursor:pointer;font-family:var(--ff);font-size:var(--t-base);color:var(--ct)}
+    .user-avatar{width:30px;height:30px;border-radius:var(--r-full);background:var(--cb);color:var(--ct-on);display:flex;align-items:center;justify-content:center;font-size:var(--t-sm);font-weight:700}
+    .user-menu-btn:hover{background:var(--cs-s)}
+    .user-dropdown{position:absolute;right:var(--s8);top:calc(var(--nav-h) + 4px);background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);box-shadow:var(--sh-lg);min-width:200px;z-index:200;padding:var(--s2) 0;display:none}
+    .user-dropdown.open{display:block}
+    .user-dropdown-header{padding:var(--s3) var(--s4);border-bottom:1px solid var(--cbord);margin-bottom:var(--s2)}
+    .user-dropdown-name{font-weight:600;color:var(--ct);font-size:var(--t-base)}
+    .user-dropdown-email{font-size:var(--t-sm);color:var(--ct-s)}
+    .dropdown-item{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) var(--s4);color:var(--ct);font-size:var(--t-base);cursor:pointer;text-decoration:none;transition:background .1s}
+    .dropdown-item:hover{background:var(--cs-s);text-decoration:none}
+    .dropdown-item.danger{color:var(--c-err)}
+
+    /* ─── MAIN LAYOUT ────────────────────────────── */
+    .main-content{max-width:var(--max-w);margin:0 auto;padding:var(--s8);display:flex;flex-direction:column;gap:var(--s8)}
+    .page-header{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s4)}
+    .page-title{font-size:var(--t-2xl);font-weight:600;color:var(--ct)}
+    .page-subtitle{font-size:var(--t-base);color:var(--ct-s);margin-top:var(--s1)}
+
+    /* ─── BUTTONS ────────────────────────────────── */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s4);height:40px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s;text-decoration:none;white-space:nowrap}
+    .btn-sm{height:34px;padding:0 var(--s3);font-size:var(--t-sm)}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h);text-decoration:none}
+    .btn-secondary{background:var(--cs);color:var(--ct);border-color:var(--cbord)}
+    .btn-secondary:hover{background:var(--cs-s);text-decoration:none}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l);text-decoration:none}
+
+    /* ─── BADGES ─────────────────────────────────── */
+    .badge{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s2);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:600;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+    .badge-success{background:var(--c-ok-bg);color:var(--c-ok)}
+    .badge-warning{background:var(--c-warn-bg);color:var(--c-warn)}
+    .badge-info{background:var(--cb-l);color:var(--cb)}
+    .badge-default{background:var(--cs-s);color:var(--ct-s)}
+    .badge-ai{background:var(--c-ai-bg);color:var(--c-ai)}
+
+    /* ─── ALERT STRIP ────────────────────────────── */
+    .alert-strip{padding:var(--s3) var(--s4);border-radius:var(--r-md);display:flex;align-items:flex-start;gap:var(--s3);font-size:var(--t-base)}
+    .alert-strip.warning{background:var(--c-warn-bg);border:1px solid var(--c-warn);color:var(--ct)}
+    .alert-strip.info{background:var(--cb-l);border:1px solid #BFDBFE;color:var(--ct)}
+    .alert-strip .alert-icon{font-size:var(--t-md);flex-shrink:0;line-height:1.4}
+    .alert-strip .alert-actions{margin-top:var(--s2);display:flex;gap:var(--s2)}
+
+    /* ─── CARDS ──────────────────────────────────── */
+    .card{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);box-shadow:var(--sh-sm)}
+    .card-header{padding:var(--s4) var(--s6);border-bottom:1px solid var(--cbord);display:flex;align-items:center;justify-content:space-between}
+    .card-title{font-size:var(--t-md);font-weight:600;color:var(--ct)}
+    .card-body{padding:var(--s6)}
+    .card-empty{padding:var(--s12) var(--s6);text-align:center;color:var(--ct-s)}
+    .card-empty-icon{font-size:32px;margin-bottom:var(--s3);opacity:.4}
+    .card-empty-text{font-size:var(--t-base);margin-bottom:var(--s4)}
+
+    /* ─── APPOINTMENT CARDS ───────────────────────── */
+    .appt-list{display:flex;flex-direction:column;gap:var(--s3)}
+    .appt-card{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s4) var(--s6);display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s4);box-shadow:var(--sh-sm)}
+    .appt-card:hover{border-color:#BFDBFE;box-shadow:var(--sh-md);cursor:default}
+    .appt-date-block{min-width:64px;text-align:center;background:var(--cb-l);border-radius:var(--r-md);padding:var(--s2);flex-shrink:0}
+    .appt-date-month{font-size:var(--t-xs);font-weight:600;text-transform:uppercase;color:var(--cb);letter-spacing:.05em}
+    .appt-date-day{font-size:var(--t-2xl);font-weight:700;color:var(--cb);line-height:1}
+    .appt-details{flex:1;min-width:0}
+    .appt-title{font-size:var(--t-md);font-weight:600;color:var(--ct);margin-bottom:var(--s1)}
+    .appt-meta{font-size:var(--t-sm);color:var(--ct-s);display:flex;flex-wrap:wrap;gap:var(--s3)}
+    .appt-meta-item{display:flex;align-items:center;gap:var(--s1)}
+    .appt-actions{display:flex;flex-direction:column;gap:var(--s2);align-items:flex-end;flex-shrink:0}
+    .intake-banner{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) var(--s3);background:var(--c-warn-bg);border:1px solid var(--c-warn);border-radius:var(--r-sm);margin-top:var(--s3);font-size:var(--t-sm);color:var(--ct)}
+
+    /* ─── QUICK ACTIONS ───────────────────────────── */
+    .quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4)}
+    .quick-action{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s6) var(--s4);text-align:center;cursor:pointer;transition:box-shadow .15s,border-color .15s;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:var(--s2)}
+    .quick-action:hover{border-color:#BFDBFE;box-shadow:var(--sh-md);text-decoration:none}
+    .quick-action-icon{font-size:28px;margin-bottom:var(--s1)}
+    .quick-action-label{font-size:var(--t-base);font-weight:600;color:var(--ct)}
+    .quick-action-sub{font-size:var(--t-sm);color:var(--ct-s)}
+
+    /* ─── NOTIFICATIONS ───────────────────────────── */
+    .notif-list{display:flex;flex-direction:column}
+    .notif-item{display:flex;align-items:flex-start;gap:var(--s3);padding:var(--s3) var(--s4);border-bottom:1px solid var(--cbord)}
+    .notif-item:last-child{border-bottom:none}
+    .notif-dot{width:8px;height:8px;border-radius:50%;background:var(--cb);flex-shrink:0;margin-top:6px}
+    .notif-dot.read{background:var(--cbord)}
+    .notif-text{font-size:var(--t-base);color:var(--ct);flex:1}
+    .notif-time{font-size:var(--t-sm);color:var(--ct-d);white-space:nowrap}
+
+    /* ─── SESSION TIMEOUT MODAL ───────────────────── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;z-index:1000;display:none}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--cs);border-radius:var(--r-lg);box-shadow:var(--sh-lg);max-width:480px;width:100%;padding:var(--s8);margin:var(--s4)}
+    .modal-title{font-size:var(--t-lg);font-weight:600;margin-bottom:var(--s2)}
+    .modal-body{font-size:var(--t-base);color:var(--ct-s);margin-bottom:var(--s6);line-height:1.6}
+    .modal-countdown{font-size:var(--t-2xl);font-weight:700;color:var(--c-err);margin:var(--s4) 0;text-align:center}
+    .modal-actions{display:flex;gap:var(--s3);justify-content:flex-end}
+
+    /* ─── GRID LAYOUT ─────────────────────────────── */
+    .dashboard-grid{display:grid;grid-template-columns:1fr 360px;gap:var(--s8);align-items:flex-start}
+    .dashboard-main{display:flex;flex-direction:column;gap:var(--s6)}
+    .dashboard-side{display:flex;flex-direction:column;gap:var(--s6)}
+
+    /* ─── RESPONSIVE ──────────────────────────────── */
+    @media(max-width:1024px){.dashboard-grid{grid-template-columns:1fr}.dashboard-side{display:none}}
+    @media(max-width:768px){.nav-links{display:none}.main-content{padding:var(--s4)}.quick-actions{grid-template-columns:repeat(2,1fr)}.appt-card{flex-direction:column}.appt-actions{flex-direction:row;align-items:flex-start}}
+    @media(max-width:640px){.quick-actions{grid-template-columns:1fr 1fr}.topnav-inner{padding:0 var(--s4)}}
+  </style>
+</head>
+<body>
+  <!-- ─── SESSION TIMEOUT MODAL (UXR-503, UXR-205) ─ -->
+  <div id="session-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="session-modal-title">
+    <div class="modal">
+      <h2 id="session-modal-title" class="modal-title">⚠ Session Expiring Soon</h2>
+      <p class="modal-body">You have been inactive for a while. Your session will expire in:</p>
+      <div class="modal-countdown" aria-live="assertive" aria-atomic="true" id="countdown-display">1:58</div>
+      <p class="modal-body" style="margin-bottom:var(--s4);font-size:var(--t-sm)">Any unsaved data may be lost. Would you like to stay signed in?</p>
+      <div class="modal-actions">
+        <a href="wireframe-SCR-001-login.html" class="btn btn-ghost">Log out now</a>
+        <button class="btn btn-primary" id="btn-stay" onclick="document.getElementById('session-modal').classList.remove('open')">Stay signed in</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── TOP NAV ───────────────────────────────── -->
+  <nav class="topnav" aria-label="Main navigation">
+    <div class="topnav-inner">
+      <a href="wireframe-SCR-003-patient-dashboard.html" class="nav-logo" aria-label="Patient Portal home">
+        <div class="nav-logo-mark" aria-hidden="true">P</div>
+        <span>Patient Portal</span>
+      </a>
+      <div class="nav-links" role="list">
+        <a href="wireframe-SCR-003-patient-dashboard.html" class="nav-link active" role="listitem" id="nav-dashboard" aria-current="page">🏠 Dashboard</a>
+        <a href="wireframe-SCR-004-appointment-booking.html" class="nav-link" role="listitem" id="nav-book">📅 Book</a>
+        <a href="wireframe-SCR-009-patient-profile.html" class="nav-link" role="listitem" id="nav-profile">👤 My Profile</a>
+        <a href="wireframe-SCR-010-document-upload.html" class="nav-link" role="listitem" id="nav-documents">📄 Documents</a>
+        <a href="wireframe-SCR-016-calendar-oauth.html" class="nav-link" role="listitem" id="nav-calendar">🗓 Calendar</a>
+      </div>
+      <div class="nav-right">
+        <button class="notif-btn" id="notif-btn" aria-label="Notifications — 2 unread" aria-haspopup="true">
+          🔔
+          <span class="notif-badge" aria-hidden="true"></span>
+        </button>
+        <button class="user-menu-btn" id="user-menu-btn" aria-label="User menu — Sarah Johnson" aria-haspopup="true" aria-expanded="false">
+          <div class="user-avatar" aria-hidden="true">SJ</div>
+          <span>Sarah J.</span>
+          <span aria-hidden="true">▾</span>
+        </button>
+        <div class="user-dropdown" id="user-dropdown" role="menu" aria-label="User menu">
+          <div class="user-dropdown-header">
+            <div class="user-dropdown-name">Sarah Johnson</div>
+            <div class="user-dropdown-email">sarah.johnson@email.com</div>
+          </div>
+          <a href="wireframe-SCR-009-patient-profile.html" class="dropdown-item" role="menuitem">👤 My Profile</a>
+          <a href="wireframe-SCR-016-calendar-oauth.html" class="dropdown-item" role="menuitem">🗓 Calendar Sync</a>
+          <hr style="border:none;border-top:1px solid var(--cbord);margin:var(--s2) 0">
+          <a href="wireframe-SCR-001-login.html" class="dropdown-item danger" role="menuitem" id="nav-logout">Sign out</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ─── MAIN ──────────────────────────────────── -->
+  <main class="main-content" role="main">
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Good morning, Sarah 👋</h1>
+        <p class="page-subtitle">Wednesday, May 14, 2026 · You have 2 upcoming appointments</p>
+      </div>
+      <a href="wireframe-SCR-004-appointment-booking.html" class="btn btn-primary" id="btn-book-appt">+ Book appointment</a>
+    </div>
+
+    <!-- Intake reminder alert (UXR-104 — guided onboarding) -->
+    <div class="alert-strip warning" role="alert" aria-label="Intake incomplete for upcoming appointment">
+      <span class="alert-icon" aria-hidden="true">📋</span>
+      <div>
+        <strong>Intake incomplete</strong> — your Annual Physical on May 20 requires intake information before your visit.
+        <div class="alert-actions">
+          <a href="wireframe-SCR-007-ai-intake.html" class="btn btn-sm btn-primary">Complete intake (AI)</a>
+          <a href="wireframe-SCR-008-manual-intake.html" class="btn btn-sm btn-secondary">Use manual form</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard grid -->
+    <div class="dashboard-grid">
+      <!-- Left: Main content -->
+      <div class="dashboard-main">
+        <!-- Upcoming appointments -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Upcoming appointments</h2>
+            <a href="wireframe-SCR-004-appointment-booking.html" class="btn btn-sm btn-ghost">+ Book new</a>
+          </div>
+          <div class="card-body">
+            <div class="appt-list">
+              <!-- appt-001: Annual Physical, May 20 (intake incomplete) -->
+              <div class="appt-card" aria-label="Annual Physical with Dr. M. Okafor on May 20">
+                <div class="appt-date-block" aria-hidden="true">
+                  <div class="appt-date-month">May</div>
+                  <div class="appt-date-day">20</div>
+                </div>
+                <div class="appt-details">
+                  <div class="appt-title">Annual Physical</div>
+                  <div class="appt-meta">
+                    <span class="appt-meta-item">⏰ 10:00 AM · 30 min</span>
+                    <span class="appt-meta-item">👩‍⚕️ Dr. M. Okafor</span>
+                    <span class="appt-meta-item"><span class="badge badge-success">✓ BlueCross BlueShield</span></span>
+                  </div>
+                  <div class="intake-banner" role="alert">
+                    ⚠ Intake required before this appointment.
+                    <a href="wireframe-SCR-007-ai-intake.html" class="intake-btn" style="margin-left:var(--s2);font-weight:600;color:var(--c-warn)">Complete now →</a>
+                  </div>
+                </div>
+                <div class="appt-actions">
+                  <span class="badge badge-info">Booked</span>
+                  <a href="wireframe-SCR-005-appointment-detail.html" class="btn btn-sm btn-secondary appt-manage-btn">Manage</a>
+                </div>
+              </div>
+
+              <!-- appt-002: Follow-up, June 10 (intake complete) -->
+              <div class="appt-card" aria-label="Follow-up with Dr. M. Okafor on June 10">
+                <div class="appt-date-block" aria-hidden="true">
+                  <div class="appt-date-month">Jun</div>
+                  <div class="appt-date-day">10</div>
+                </div>
+                <div class="appt-details">
+                  <div class="appt-title">Follow-up Consultation</div>
+                  <div class="appt-meta">
+                    <span class="appt-meta-item">⏰ 2:00 PM · 30 min</span>
+                    <span class="appt-meta-item">👩‍⚕️ Dr. M. Okafor</span>
+                    <span class="appt-meta-item"><span class="badge badge-success">✓ BlueCross BlueShield</span></span>
+                  </div>
+                  <div style="margin-top:var(--s2)"><span class="badge badge-success">✓ Intake complete</span></div>
+                </div>
+                <div class="appt-actions">
+                  <span class="badge badge-info">Booked</span>
+                  <a href="wireframe-SCR-005-appointment-detail.html" class="btn btn-sm btn-secondary appt-manage-btn">Manage</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Past appointments -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Recent visits</h2>
+          </div>
+          <div class="card-body">
+            <div class="appt-list">
+              <div class="appt-card" aria-label="Completed: Dermatology Consult on April 15">
+                <div class="appt-date-block" style="background:var(--cs-s);" aria-hidden="true">
+                  <div class="appt-date-month" style="color:var(--ct-s)">Apr</div>
+                  <div class="appt-date-day" style="color:var(--ct-s)">15</div>
+                </div>
+                <div class="appt-details">
+                  <div class="appt-title">Dermatology Consult</div>
+                  <div class="appt-meta">
+                    <span class="appt-meta-item">⏰ 10:30 AM</span>
+                    <span class="appt-meta-item">👩‍⚕️ Dr. S. Patel</span>
+                  </div>
+                </div>
+                <div class="appt-actions">
+                  <span class="badge badge-default">Completed</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick actions grid -->
+        <div>
+          <h2 class="card-title" style="margin-bottom:var(--s4)">Quick actions</h2>
+          <div class="quick-actions">
+            <a href="wireframe-SCR-004-appointment-booking.html" class="quick-action">
+              <div class="quick-action-icon">📅</div>
+              <div class="quick-action-label">Book appointment</div>
+              <div class="quick-action-sub">Find available slots</div>
+            </a>
+            <a href="wireframe-SCR-007-ai-intake.html" class="quick-action">
+              <div class="quick-action-icon">📋</div>
+              <div class="quick-action-label">Complete intake</div>
+              <div class="quick-action-sub">AI-assisted form</div>
+            </a>
+            <a href="wireframe-SCR-010-document-upload.html" class="quick-action">
+              <div class="quick-action-icon">📄</div>
+              <div class="quick-action-label">Upload document</div>
+              <div class="quick-action-sub">PDF clinical records</div>
+            </a>
+            <a href="wireframe-SCR-009-patient-profile.html" class="quick-action">
+              <div class="quick-action-icon">👤</div>
+              <div class="quick-action-label">My health profile</div>
+              <div class="quick-action-sub">360° clinical view</div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Sidebar -->
+      <div class="dashboard-side" aria-label="Dashboard sidebar">
+        <!-- Notifications -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Notifications</h2>
+            <span class="badge badge-info">2 new</span>
+          </div>
+          <div class="notif-list" role="list" aria-label="Notifications">
+            <div class="notif-item" role="listitem" aria-label="Unread: Reminder for tomorrow">
+              <div class="notif-dot" aria-hidden="true"></div>
+              <div>
+                <div class="notif-text">Reminder: Your appointment with Dr. M. Okafor is <strong>tomorrow at 10:00 AM</strong>.</div>
+                <div class="notif-time">May 19 · 8:00 AM</div>
+              </div>
+            </div>
+            <div class="notif-item" role="listitem" aria-label="Unread: Waitlist position">
+              <div class="notif-dot" aria-hidden="true"></div>
+              <div>
+                <div class="notif-text">You are <strong>#2 on the waitlist</strong> for the 11:00 AM slot on May 20.</div>
+                <div class="notif-time">May 14 · 10:33 AM</div>
+              </div>
+            </div>
+            <div class="notif-item" role="listitem" aria-label="Read: Booking confirmed">
+              <div class="notif-dot read" aria-hidden="true"></div>
+              <div>
+                <div class="notif-text" style="color:var(--ct-s)">Booking confirmed: Annual Physical on May 20. Confirmation emailed.</div>
+                <div class="notif-time">May 14 · 10:32 AM</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calendar sync status -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Calendar sync</h2>
+            <span class="badge badge-success">● Connected</span>
+          </div>
+          <div class="card-body" style="font-size:var(--t-sm);color:var(--ct-s)">
+            <p>🔗 Google Calendar connected</p>
+            <p style="margin-top:var(--s1)">Last sync: May 14, 10:32 AM</p>
+            <a href="wireframe-SCR-016-calendar-oauth.html" style="display:inline-block;margin-top:var(--s3);font-size:var(--t-sm)">Manage calendar settings →</a>
+          </div>
+        </div>
+
+        <!-- Waitlist -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Preferred slot waitlist</h2>
+          </div>
+          <div class="card-body">
+            <div style="font-size:var(--t-sm)">
+              <div style="font-weight:600;color:var(--ct)">Dr. M. Okafor · 11:00 AM, May 20</div>
+              <div style="color:var(--ct-s);margin-top:var(--s1)">Queue position: <strong>#2</strong></div>
+              <div style="color:var(--ct-s);margin-top:var(--s1)">You'll be notified by email and SMS when this slot opens.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ─── SESSION TIMEOUT DEMO BUTTON ───────────── -->
+  <button onclick="document.getElementById('session-modal').classList.add('open')" style="position:fixed;bottom:var(--s6);right:var(--s6);font-size:var(--t-sm);padding:var(--s2) var(--s3);background:var(--c-warn-bg);border:1px solid var(--c-warn);border-radius:var(--r-sm);cursor:pointer;font-family:var(--ff);color:var(--ct)" aria-label="Demo: Show session timeout modal">Demo: Session timeout</button>
+
+  <script>
+    // User menu dropdown toggle
+    const userMenuBtn = document.getElementById('user-menu-btn');
+    const userDropdown = document.getElementById('user-dropdown');
+    userMenuBtn.addEventListener('click', () => {
+      const isOpen = userDropdown.classList.toggle('open');
+      userMenuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    document.addEventListener('click', (e) => {
+      if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+        userDropdown.classList.remove('open');
+        userMenuBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Session countdown simulation
+    let countdownVal = 118;
+    function updateCountdown() {
+      const m = Math.floor(countdownVal / 60);
+      const s = countdownVal % 60;
+      document.getElementById('countdown-display').textContent = `${m}:${String(s).padStart(2,'0')}`;
+      if (countdownVal > 0) countdownVal--;
+    }
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>

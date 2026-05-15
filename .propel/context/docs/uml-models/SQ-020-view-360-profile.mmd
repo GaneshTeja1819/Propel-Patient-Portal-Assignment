@@ -1,0 +1,34 @@
+sequenceDiagram
+    participant U as Staff or Patient (Browser)
+    participant API as ProfileController
+    participant PROFILE as Profile360Service
+    participant DB as PostgreSQL
+    participant ENC as AES-256-GCM Decryption
+    participant AUDIT as AuditService
+
+    Note over U,AUDIT: UC-020 — View 360 Patient Profile
+
+    U->>API: GET /api/v1/patients/{patientId}/profile
+    API->>PROFILE: GetProfile360(requestorId, requestorRole, patientId)
+    PROFILE->>DB: SELECT PatientProfile360 WHERE patientId = ?
+    alt No profile available (no documents processed)
+        DB-->>PROFILE: null
+        PROFILE-->>API: 200 {available: false, message: "Upload clinical documents to generate your profile"}
+        API-->>U: empty profile view with upload guidance
+    else Profile available
+        DB-->>PROFILE: profile360 {unifiedVitals_enc, unifiedMedications_enc, unifiedHistory_enc, conflictCount}
+        PROFILE->>ENC: Decrypt(profile360 PHI fields)
+        ENC-->>PROFILE: decryptedProfile
+        PROFILE->>DB: SELECT DataConflict WHERE patientId = ? AND status IN (Open, ReviewedUnresolved)
+        DB-->>PROFILE: conflicts[]
+        PROFILE-->>API: 200 {vitals, medications, history, conflicts[]}
+        API-->>U: render 360 patient profile
+
+        alt Patient views own profile (read-only)
+            Note over U: no editing controls rendered; patient cannot modify extracted data
+        else Staff views profile with conflicts
+            U->>API: navigate to conflict section — UC-022 flow
+        end
+    end
+
+    PROFILE->>AUDIT: Log(actor: requestorId, action: PROFILE_VIEWED, target: PatientProfile360)

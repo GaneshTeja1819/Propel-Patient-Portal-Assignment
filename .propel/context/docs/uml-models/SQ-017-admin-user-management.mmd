@@ -1,0 +1,42 @@
+sequenceDiagram
+    participant A as Admin (Browser)
+    participant API as AdminController
+    participant ADMIN as AdminService
+    participant DB as PostgreSQL (User)
+    participant REDIS as Upstash Redis (Session)
+    participant AUDIT as AuditService
+
+    Note over A,AUDIT: UC-017 — Admin Manage Users and Roles
+
+    A->>API: GET /api/v1/admin/users?search=...
+    API->>DB: SELECT User WHERE email LIKE ? OR name LIKE ?
+    DB-->>API: users[]
+    API-->>A: 200 {users}
+
+    A->>API: PUT /api/v1/admin/users/{userId} {action: "deactivate" or "changeRole" or "update", payload}
+    API->>ADMIN: ProcessUserAction(adminId, userId, action, payload)
+
+    alt Action: deactivate own account
+        ADMIN-->>API: SelfDeactivationBlocked
+        API-->>A: 422 "You cannot deactivate your own account"
+    else Action: role change from Admin to lower role
+        ADMIN-->>API: AdminDowngradeWarning
+        API-->>A: 200 {warning: "This will remove admin access — confirm?"}
+        A->>API: POST /api/v1/admin/users/{userId}/confirm-role-change
+    end
+
+    ADMIN->>DB: UPDATE User SET {status or role or profileFields} WHERE id = userId
+    DB-->>ADMIN: ok
+    alt Role or status changed — invalidate active sessions
+        ADMIN->>REDIS: DEL session:{userId}
+        alt Session invalidation fails
+            REDIS-->>ADMIN: error
+            ADMIN->>AUDIT: Log(actor: adminId, action: SESSION_INVALIDATION_FAILED, target: userId)
+            Note over ADMIN: user change still applied
+        else Invalidation succeeds
+            REDIS-->>ADMIN: ok
+        end
+    end
+    ADMIN->>AUDIT: Log(actor: adminId, action: USER_MODIFIED, target: User, metadata: {action, oldRole, newRole})
+    ADMIN-->>API: 200 ok
+    API-->>A: 200 user updated

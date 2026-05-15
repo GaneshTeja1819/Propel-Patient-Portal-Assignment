@@ -1,0 +1,40 @@
+sequenceDiagram
+    participant HF as Hangfire (ReminderJob)
+    participant REMIND as ReminderService
+    participant DB as PostgreSQL
+    participant NOTIFY as NotificationService
+    participant EMAIL as Email Gateway
+    participant SMS as SMS Gateway
+    participant AUDIT as AuditService
+
+    Note over HF,AUDIT: UC-012 — Send Appointment Reminder / Notification
+
+    HF->>REMIND: Execute ReminderJob(appointmentId, channel: "Both", interval: "24h")
+    REMIND->>DB: SELECT Appointment JOIN User WHERE id = appointmentId AND status = Booked
+    DB-->>REMIND: appointment {dateTime, patientEmail, patientPhone}
+    REMIND->>NOTIFY: DispatchReminder(appointment, channels: [Email, SMS])
+
+    NOTIFY->>EMAIL: Send email reminder {to: patientEmail, subject: "Appointment reminder", body}
+    alt Email delivery succeeds
+        EMAIL-->>NOTIFY: delivered
+        NOTIFY->>DB: INSERT Notification {channel: Email, status: Sent, sentAt}
+    else Email delivery fails
+        EMAIL-->>NOTIFY: error
+        NOTIFY->>DB: INSERT Notification {channel: Email, status: Failed, retryCount: 1}
+        NOTIFY->>HF: Schedule retry (exponential backoff, max 3 attempts)
+        alt All retries exhausted
+            NOTIFY->>AUDIT: Log(actor: system, action: REMINDER_EMAIL_FAILED, target: Appointment)
+        end
+    end
+
+    NOTIFY->>SMS: Send SMS reminder {to: patientPhone, message}
+    alt SMS delivery succeeds
+        SMS-->>NOTIFY: delivered
+        NOTIFY->>DB: INSERT Notification {channel: SMS, status: Sent, sentAt}
+    else SMS delivery fails
+        SMS-->>NOTIFY: error
+        NOTIFY->>DB: INSERT Notification {channel: SMS, status: Failed, retryCount: 1}
+        NOTIFY->>HF: Schedule retry
+    end
+
+    REMIND->>AUDIT: Log(actor: system, action: REMINDER_DISPATCHED, target: Appointment)

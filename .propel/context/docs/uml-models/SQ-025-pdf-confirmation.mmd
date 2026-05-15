@@ -1,0 +1,45 @@
+sequenceDiagram
+    participant HF as Hangfire (PDFConfirmationJob)
+    participant PDF as PDFService (QuestPDF)
+    participant DB as PostgreSQL
+    participant NOTIFY as NotificationService
+    participant EMAIL as Email Gateway
+    participant AUDIT as AuditService
+
+    Note over HF,AUDIT: UC-025 — Generate and Email PDF Confirmation
+
+    Note over HF: Triggered immediately after appointment booking or reschedule (UC-004, UC-006)
+
+    HF->>PDF: Execute PDFConfirmationJob(appointmentId)
+    PDF->>DB: SELECT Appointment JOIN AppointmentSlot JOIN User WHERE id = appointmentId
+    DB-->>PDF: appointment {dateTime, providerName, location, patientEmail, appointmentId}
+
+    PDF->>PDF: PopulatePDFTemplate(appointment)
+    PDF->>PDF: RenderPDF()
+    alt PDF rendering fails
+        PDF-->>HF: RenderError
+        HF->>HF: Retry once (attempt 2)
+        alt Second render attempt also fails
+            PDF->>AUDIT: Log(actor: system, action: PDF_GENERATION_FAILED, target: appointmentId)
+            Note over PDF: appointment remains valid — only PDF failed
+        else Render succeeds on retry
+            PDF-->>HF: pdfBytes
+        end
+    else PDF renders successfully
+        PDF-->>HF: pdfBytes
+    end
+
+    HF->>NOTIFY: DispatchPDFEmail(patientEmail, pdfBytes, appointmentDetails)
+    NOTIFY->>EMAIL: Send email {to: patientEmail, subject: "Appointment Confirmation", attachment: pdfBytes}
+    alt Email delivery succeeds
+        EMAIL-->>NOTIFY: delivered
+        NOTIFY->>DB: INSERT Notification {channel: Email, status: Sent, notificationType: PDF_CONFIRMATION}
+        NOTIFY->>AUDIT: Log(actor: system, action: PDF_CONFIRMATION_SENT, target: Appointment)
+    else Email delivery fails
+        EMAIL-->>NOTIFY: error
+        NOTIFY->>DB: INSERT Notification {channel: Email, status: Failed, retryCount: 1}
+        NOTIFY->>HF: Schedule email retry (max 3 attempts, exponential backoff)
+        alt All retries exhausted
+            NOTIFY->>AUDIT: Log(actor: system, action: PDF_CONFIRMATION_EMAIL_FAILED, target: Appointment)
+        end
+    end

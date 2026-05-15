@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-010 | Document Upload | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-010 Document Upload
+  | Element                    | Action | Target Screen                                |
+  |----------------------------|--------|----------------------------------------------|
+  | #btn-view-profile          | click  | wireframe-SCR-009-patient-profile.html       |
+  | #nav-profile               | click  | wireframe-SCR-009-patient-profile.html       |
+  | #nav-back                  | click  | wireframe-SCR-003-patient-dashboard.html     |
+  | #btn-retry-doc4 (Retry)    | click  | (re-upload trigger, same page)               |
+
+  Source UC: UC-019 (Upload Clinical Document)
+  UXR: UXR-402 (PHI lock icons), UXR-603 (failed extraction retry CTA)
+  FL: FL-009 (upload → profile flow)
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;--c-err:#DC2626;--c-err-h:#B91C1C;--c-err-bg:#FEE2E2;--c-ai:#7C3AED;--c-ai-bg:#EDE9FE;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);--nav-h:64px;--max-w:1280px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}a:hover{text-decoration:underline}
+    .topnav{height:var(--nav-h);background:var(--cs);border-bottom:1px solid var(--cbord);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topnav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--s8);height:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--s4)}
+    .nav-logo{display:flex;align-items:center;gap:var(--s2);font-weight:700;color:var(--ct);font-size:var(--t-md)}
+    .nav-logo-mark{width:32px;height:32px;background:var(--cb);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-weight:700;font-size:var(--t-base)}
+    .nav-links{display:flex;align-items:center;gap:var(--s1)}
+    .nav-link{padding:var(--s2) var(--s3);border-radius:var(--r-sm);font-size:var(--t-base);color:var(--ct-s);font-weight:500;text-decoration:none;transition:background .1s}
+    .nav-link:hover{background:var(--cs-s);color:var(--ct);text-decoration:none}
+    .nav-link.active{background:var(--cb-l);color:var(--cb);font-weight:600}
+    .user-avatar{width:32px;height:32px;border-radius:var(--r-full);background:var(--cb);color:var(--ct-on);display:flex;align-items:center;justify-content:center;font-size:var(--t-sm);font-weight:700}
+    .main-content{max-width:var(--max-w);margin:0 auto;padding:var(--s8)}
+    .breadcrumb{display:flex;align-items:center;gap:var(--s2);font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s6)}
+    .breadcrumb a{color:var(--ct-s)}
+    .breadcrumb a:hover{color:var(--cb)}
+    .breadcrumb-sep{color:var(--ct-d)}
+    .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s6);flex-wrap:wrap;gap:var(--s4)}
+    .page-title{font-size:var(--t-2xl);font-weight:600;color:var(--ct)}
+    .page-subtitle{font-size:var(--t-sm);color:var(--ct-s);margin-top:var(--s1)}
+    .upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s8);align-items:flex-start}
+    .card{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);box-shadow:var(--sh-sm)}
+    .card-header{padding:var(--s4) var(--s6);border-bottom:1px solid var(--cbord);display:flex;align-items:center;gap:var(--s3)}
+    .card-title{font-size:var(--t-md);font-weight:600;color:var(--ct)}
+    .card-body{padding:var(--s6)}
+    /* Drop zone */
+    .drop-zone{border:2px dashed var(--cbord);border-radius:var(--r-lg);padding:var(--s12) var(--s8);text-align:center;cursor:pointer;transition:border-color .15s,background .15s;position:relative}
+    .drop-zone:hover,.drop-zone.dragover{border-color:var(--cb);background:var(--cb-l)}
+    .drop-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .drop-icon{font-size:40px;margin-bottom:var(--s3)}
+    .drop-title{font-size:var(--t-md);font-weight:600;margin-bottom:var(--s1)}
+    .drop-subtitle{font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s4)}
+    .drop-accept{font-size:var(--t-xs);color:var(--ct-d)}
+    .phi-note{font-size:var(--t-xs);color:var(--cb);display:flex;align-items:center;gap:var(--s1);background:var(--cb-l);padding:var(--s2) var(--s3);border-radius:var(--r-sm);margin-top:var(--s4)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s4);height:44px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s;text-decoration:none;white-space:nowrap}
+    .btn-sm{height:34px;padding:0 var(--s3);font-size:var(--t-sm)}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h);text-decoration:none}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l);text-decoration:none}
+    .btn-warn{background:var(--c-warn-bg);color:var(--c-warn);border-color:var(--c-warn)}
+    .btn-warn:hover{background:#FDE68A;text-decoration:none}
+    .field{display:flex;flex-direction:column;gap:var(--s1);margin-bottom:var(--s4)}
+    .field label{font-size:var(--t-sm);font-weight:600;color:var(--ct-s);text-transform:uppercase;letter-spacing:.05em}
+    .field select{height:44px;padding:0 var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs)}
+    .field select:focus{border-color:var(--cbord-f);outline:3px solid rgba(26,86,219,.2);outline-offset:0}
+    /* Document list (DataTable) */
+    .doc-table{width:100%;border-collapse:collapse}
+    .doc-table th{text-align:left;font-size:var(--t-xs);font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ct-s);padding:var(--s2) var(--s3);border-bottom:2px solid var(--cbord);background:var(--cs-s)}
+    .doc-table td{padding:var(--s3);border-bottom:1px solid var(--cbord);font-size:var(--t-sm);vertical-align:middle}
+    .doc-table tr:last-child td{border-bottom:none}
+    .badge{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s2);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;white-space:nowrap}
+    .badge-success{background:var(--c-ok-bg);color:var(--c-ok)}
+    .badge-error{background:var(--c-err-bg);color:var(--c-err)}
+    .badge-processing{background:var(--c-warn-bg);color:var(--c-warn)}
+    /* Upload progress */
+    .upload-item{padding:var(--s3);border:1px solid var(--cbord);border-radius:var(--r-sm);margin-top:var(--s4)}
+    .upload-item-row{display:flex;align-items:center;gap:var(--s3)}
+    .upload-icon{font-size:var(--t-lg);flex-shrink:0}
+    .upload-name{font-weight:600;font-size:var(--t-sm);flex:1;word-break:break-word}
+    .upload-progress{height:4px;background:var(--cbord);border-radius:var(--r-full);overflow:hidden;margin-top:var(--s2)}
+    .upload-progress-fill{height:100%;background:var(--cb);border-radius:var(--r-full);transition:width .3s;width:0}
+    @media(max-width:1024px){.upload-grid{grid-template-columns:1fr}}
+    @media(max-width:640px){.main-content{padding:var(--s4)}.topnav-inner{padding:0 var(--s4)}.nav-links{display:none}}
+  </style>
+</head>
+<body>
+  <nav class="topnav" aria-label="Main navigation">
+    <div class="topnav-inner">
+      <a href="wireframe-SCR-003-patient-dashboard.html" class="nav-logo" aria-label="Patient Portal home" id="nav-back">
+        <div class="nav-logo-mark" aria-hidden="true">P</div>
+        <span>Patient Portal</span>
+      </a>
+      <div class="nav-links">
+        <a href="wireframe-SCR-003-patient-dashboard.html" class="nav-link">🏠 Dashboard</a>
+        <a href="wireframe-SCR-004-appointment-booking.html" class="nav-link">📅 Book</a>
+        <a href="wireframe-SCR-009-patient-profile.html" class="nav-link" id="nav-profile">👤 My Profile</a>
+        <a href="wireframe-SCR-010-document-upload.html" class="nav-link active" aria-current="page">📄 Documents</a>
+      </div>
+      <div class="user-avatar" aria-label="Sarah Johnson" style="cursor:default">SJ</div>
+    </div>
+  </nav>
+
+  <main class="main-content" role="main">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="wireframe-SCR-003-patient-dashboard.html">Dashboard</a>
+      <span class="breadcrumb-sep" aria-hidden="true">/</span>
+      <span style="color:var(--ct);font-weight:600" aria-current="page">Documents</span>
+    </nav>
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Clinical Documents</h1>
+        <p class="page-subtitle">Upload PDFs of your medical records, lab results, or post-visit summaries. AI will extract clinical data automatically.</p>
+      </div>
+      <a href="wireframe-SCR-009-patient-profile.html" class="btn btn-ghost" id="btn-view-profile">View 360° Profile ›</a>
+    </div>
+
+    <div class="upload-grid">
+      <!-- Upload zone -->
+      <div>
+        <div class="card" style="margin-bottom:var(--s6)">
+          <div class="card-header"><span aria-hidden="true">📤</span><h2 class="card-title">Upload document</h2></div>
+          <div class="card-body">
+            <div class="field">
+              <label for="doc-type">Document type</label>
+              <select id="doc-type" aria-label="Document type">
+                <option value="historical">Historical record</option>
+                <option value="post-visit">Post-visit summary</option>
+                <option value="lab">Lab results</option>
+                <option value="imaging">Imaging report</option>
+                <option value="insurance">Insurance / EOB</option>
+              </select>
+            </div>
+            <!-- Drop zone -->
+            <div class="drop-zone" id="drop-zone" role="button" tabindex="0" aria-label="Drop zone: drag and drop a PDF or click to browse" onkeydown="if(event.key==='Enter'||event.key===' ')document.getElementById('file-input').click()">
+              <input type="file" id="file-input" accept=".pdf" multiple aria-label="Select PDF files to upload" onchange="handleFiles(this.files)">
+              <div class="drop-icon" aria-hidden="true">📄</div>
+              <div class="drop-title">Drop PDFs here or click to browse</div>
+              <div class="drop-subtitle">Supported format: PDF only</div>
+              <div class="drop-accept">Max file size: 25 MB per file</div>
+            </div>
+            <div class="phi-note" role="note" aria-label="PHI protection notice">
+              <span aria-hidden="true">🔒</span> Uploaded documents are encrypted at rest and only accessible to your care team.
+            </div>
+            <!-- Upload items (demo) -->
+            <div id="upload-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Document list (DataTable) -->
+      <div>
+        <div class="card">
+          <div class="card-header"><span aria-hidden="true">📁</span><h2 class="card-title">Your documents</h2><span style="font-size:var(--t-sm);color:var(--ct-s);margin-left:auto">4 files</span></div>
+          <div class="card-body" style="padding:0;overflow-x:auto">
+            <table class="doc-table" aria-label="Uploaded clinical documents">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- doc-001: Extracted -->
+                <tr>
+                  <td>
+                    <strong>2024 Annual Physical Summary</strong><br>
+                    <span style="color:var(--ct-d);font-size:var(--t-xs)">Jan 2024 · 1.2 MB</span>
+                  </td>
+                  <td>Historical</td>
+                  <td><span class="badge badge-success">✓ Extracted</span></td>
+                  <td><a href="wireframe-SCR-009-patient-profile.html" class="btn btn-sm btn-ghost" aria-label="View extracted data from 2024 Annual Physical Summary">View</a></td>
+                </tr>
+                <!-- doc-002: Processing -->
+                <tr>
+                  <td>
+                    <strong>Mar 2026 Lab Results</strong><br>
+                    <span style="color:var(--ct-d);font-size:var(--t-xs)">Mar 2026 · 840 KB</span>
+                  </td>
+                  <td>Lab results</td>
+                  <td><span class="badge badge-processing">⏳ Extracting…</span></td>
+                  <td><span style="font-size:var(--t-xs);color:var(--ct-d)">~30 sec</span></td>
+                </tr>
+                <!-- doc-003: Complete -->
+                <tr>
+                  <td>
+                    <strong>Apr 15 Dermatology Summary</strong><br>
+                    <span style="color:var(--ct-d);font-size:var(--t-xs)">Apr 2026 · 760 KB</span>
+                  </td>
+                  <td>Post-visit</td>
+                  <td><span class="badge badge-success">✓ Extracted</span></td>
+                  <td><a href="wireframe-SCR-009-patient-profile.html" class="btn btn-sm btn-ghost" aria-label="View extracted data from Dermatology summary">View</a></td>
+                </tr>
+                <!-- doc-004: Failed (UXR-603) -->
+                <tr style="background:var(--c-err-bg)">
+                  <td>
+                    <strong>Insurance EOB — Mar 2026</strong><br>
+                    <span style="color:var(--ct-d);font-size:var(--t-xs)">Mar 2026 · 320 KB</span>
+                  </td>
+                  <td>Insurance</td>
+                  <td><span class="badge badge-error">✗ Failed</span></td>
+                  <!-- UXR-603: Retry extraction CTA -->
+                  <td>
+                    <button class="btn btn-sm btn-warn" id="btn-retry-doc4" onclick="retryExtraction(this)" aria-label="Retry AI extraction for Insurance EOB — Mar 2026">↺ Retry extraction</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Drag-and-drop visual state
+    const dz = document.getElementById('drop-zone');
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+    dz.addEventListener('drop', e => {
+      e.preventDefault();
+      dz.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+
+    function handleFiles(files) {
+      const list = document.getElementById('upload-list');
+      Array.from(files).forEach(file => {
+        if (!file.name.toLowerCase().endsWith('.pdf')) {
+          alert('Only PDF files are accepted.');
+          return;
+        }
+        const item = document.createElement('div');
+        item.className = 'upload-item';
+        item.innerHTML = `
+          <div class="upload-item-row">
+            <span class="upload-icon" aria-hidden="true">📄</span>
+            <span class="upload-name">${file.name}</span>
+            <span id="upload-status-${file.name}" style="font-size:var(--t-xs);color:var(--ct-s)">Uploading…</span>
+          </div>
+          <div class="upload-progress"><div class="upload-progress-fill" id="upload-fill-${file.name}"></div></div>
+        `;
+        list.appendChild(item);
+        // Simulate upload progress
+        let pct = 0;
+        const fill = item.querySelector('.upload-progress-fill');
+        const statusEl = item.querySelector(`[id^="upload-status"]`);
+        const interval = setInterval(() => {
+          pct = Math.min(pct + Math.random() * 18 + 4, 100);
+          fill.style.width = pct + '%';
+          if (pct >= 100) {
+            clearInterval(interval);
+            statusEl.textContent = '✓ Uploaded';
+            statusEl.style.color = 'var(--c-ok)';
+            fill.style.background = 'var(--c-ok)';
+          }
+        }, 150);
+      });
+    }
+
+    // UXR-603: Retry extraction
+    function retryExtraction(btn) {
+      btn.disabled = true;
+      btn.textContent = '⏳ Retrying…';
+      setTimeout(() => {
+        btn.closest('tr').style.background = '';
+        btn.closest('tr').querySelector('.badge').className = 'badge badge-processing';
+        btn.closest('tr').querySelector('.badge').textContent = '⏳ Extracting…';
+        btn.closest('td').innerHTML = '<span style="font-size:var(--t-xs);color:var(--ct-d)">~30 sec</span>';
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

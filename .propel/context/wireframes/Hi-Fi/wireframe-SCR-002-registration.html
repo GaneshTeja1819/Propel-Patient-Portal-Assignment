@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-002 | Registration | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-002 Registration
+  | Element              | Action | Target Screen                            |
+  |----------------------|--------|------------------------------------------|
+  | #btn-register        | click  | wireframe-SCR-001-login.html (success)   |
+  | #link-login          | click  | wireframe-SCR-001-login.html             |
+
+  Source UC: UC-001 (Patient Self-Registration)
+  UXR: UXR-201, UXR-202, UXR-203, UXR-204, UXR-301
+  FL: FL-001 (step 2)
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-err:#DC2626;--c-err-bg:#FEE2E2;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--s12:48px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased;min-height:100vh}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb)}a:hover{text-decoration:underline}
+    .auth-page{display:flex;align-items:flex-start;justify-content:center;min-height:100vh;padding:var(--s8) var(--s4);background:linear-gradient(135deg,#f0f5ff 0%,var(--cs-m) 60%)}
+    .auth-card{width:100%;max-width:480px;background:var(--cs);border-radius:var(--r-lg);box-shadow:var(--sh-lg);padding:var(--s8);border:1px solid var(--cbord)}
+    .auth-logo{display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s8)}
+    .auth-logo-mark{width:36px;height:36px;background:var(--cb);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-size:var(--t-md);font-weight:700}
+    .auth-logo-text{font-size:var(--t-md);font-weight:600;color:var(--ct)}
+    .auth-logo-sub{font-size:var(--t-sm);color:var(--ct-s);margin-top:2px}
+    h1.auth-heading{font-size:var(--t-xl);font-weight:600;margin-bottom:var(--s1)}
+    .auth-subheading{font-size:var(--t-base);color:var(--ct-s);margin-bottom:var(--s6)}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
+    .field{display:flex;flex-direction:column;gap:var(--s1);margin-bottom:var(--s4)}
+    .field label{font-size:var(--t-sm);font-weight:600;color:var(--ct-s);text-transform:uppercase;letter-spacing:.05em}
+    .field label .req{color:var(--c-err);margin-left:2px}
+    .field input,.field select{width:100%;height:44px;padding:0 var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs);transition:border-color .15s}
+    .field input:focus,.field select:focus{border-color:var(--cbord-f);outline:3px solid rgba(26,86,219,.2);outline-offset:0}
+    .field input.has-error,.field select.has-error{border-color:var(--c-err)}
+    .err-msg{font-size:var(--t-sm);color:var(--c-err);display:none;align-items:center;gap:var(--s1);margin-top:var(--s1)}
+    .err-msg.visible{display:flex}
+    .err-msg::before{content:"⚠";font-size:var(--t-sm);flex-shrink:0}
+    .pw-strength{height:4px;border-radius:var(--r-full);margin-top:var(--s1);background:var(--cbord);overflow:hidden}
+    .pw-strength-bar{height:100%;width:0;border-radius:var(--r-full);transition:width .3s,background .3s}
+    .pw-hint{font-size:var(--t-sm);color:var(--ct-d);margin-top:var(--s1)}
+    .password-wrapper{position:relative}
+    .password-wrapper input{padding-right:44px}
+    .pw-toggle{position:absolute;right:0;top:0;height:44px;width:44px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;color:var(--ct-s)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s4);height:44px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s;text-decoration:none;white-space:nowrap}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h)}
+    .btn-primary:disabled{background:var(--ct-d);border-color:var(--ct-d);cursor:not-allowed}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l)}
+    .btn-w100{width:100%}
+    .btn .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .alert{padding:var(--s3) var(--s4);border-radius:var(--r-sm);font-size:var(--t-base);display:flex;gap:var(--s2);margin-bottom:var(--s4)}
+    .alert.hidden{display:none}
+    .alert-success{background:var(--c-ok-bg);border:1px solid var(--c-ok);color:var(--ct)}
+    .terms-note{font-size:var(--t-sm);color:var(--ct-s);text-align:center;margin-top:var(--s4);line-height:1.6}
+    .divider{display:flex;align-items:center;gap:var(--s3);margin:var(--s6) 0;color:var(--ct-s);font-size:var(--t-sm)}
+    .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--cbord)}
+    .auth-footer{margin-top:var(--s6);text-align:center;font-size:var(--t-sm);color:var(--ct-s)}
+    @media(max-width:640px){.auth-card{padding:var(--s6)}.field-row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="auth-page" role="main">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-mark" aria-hidden="true">P</div>
+        <div>
+          <div class="auth-logo-text">Propel Patient Portal</div>
+          <div class="auth-logo-sub">Unified Patient Access & Clinical Intelligence</div>
+        </div>
+      </div>
+
+      <h1 class="auth-heading">Create your account</h1>
+      <p class="auth-subheading">Register to book appointments and manage your health.</p>
+
+      <!-- Success state (post-submit redirect) -->
+      <div id="alert-success" class="alert alert-success hidden" role="status" aria-live="polite">
+        <span aria-hidden="true">✓</span>
+        <span>Account created successfully. Redirecting to login…</span>
+      </div>
+
+      <form id="reg-form" novalidate>
+        <!-- Name row -->
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName">First name <span class="req" aria-label="required">*</span></label>
+            <input type="text" id="firstName" name="firstName" autocomplete="given-name" placeholder="Sarah" value="" aria-required="true" aria-describedby="firstName-err">
+            <span id="firstName-err" class="err-msg" role="alert">First name is required.</span>
+          </div>
+          <div class="field">
+            <label for="lastName">Last name <span class="req" aria-label="required">*</span></label>
+            <input type="text" id="lastName" name="lastName" autocomplete="family-name" placeholder="Johnson" value="" aria-required="true" aria-describedby="lastName-err">
+            <span id="lastName-err" class="err-msg" role="alert">Last name is required.</span>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+          <label for="regEmail">Email address <span class="req" aria-label="required">*</span></label>
+          <input type="email" id="regEmail" name="email" autocomplete="email" placeholder="e.g. sarah.johnson@email.com" aria-required="true" aria-describedby="regEmail-err">
+          <span id="regEmail-err" class="err-msg" role="alert">Please enter a valid email address.</span>
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="field">
+          <label for="dob">Date of birth <span class="req" aria-label="required">*</span></label>
+          <input type="date" id="dob" name="dateOfBirth" autocomplete="bday" aria-required="true" aria-describedby="dob-err" max="2008-05-14">
+          <span id="dob-err" class="err-msg" role="alert">Date of birth is required.</span>
+        </div>
+
+        <!-- Phone -->
+        <div class="field">
+          <label for="phone">Phone number</label>
+          <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="(555) 214-8832" aria-describedby="phone-hint">
+          <span id="phone-hint" class="hint" style="font-size:var(--t-sm);color:var(--ct-d)">Optional — used for appointment reminders</span>
+        </div>
+
+        <!-- Password -->
+        <div class="field">
+          <label for="regPassword">Password <span class="req" aria-label="required">*</span></label>
+          <div class="password-wrapper">
+            <input type="password" id="regPassword" name="password" autocomplete="new-password" placeholder="Create a strong password" aria-required="true" aria-describedby="regPassword-hint regPassword-err">
+            <button type="button" class="pw-toggle" id="pw-toggle" aria-label="Show password" aria-pressed="false">👁</button>
+          </div>
+          <div class="pw-strength" aria-hidden="true"><div class="pw-strength-bar" id="pw-bar"></div></div>
+          <span id="regPassword-hint" class="pw-hint">Minimum 8 characters, at least one uppercase letter and one number.</span>
+          <span id="regPassword-err" class="err-msg" role="alert">Password does not meet requirements.</span>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="field" style="margin-bottom:var(--s6)">
+          <label for="confirmPassword">Confirm password <span class="req" aria-label="required">*</span></label>
+          <div class="password-wrapper">
+            <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" placeholder="Re-enter your password" aria-required="true" aria-describedby="confirmPassword-err">
+            <button type="button" class="pw-toggle" id="pw-toggle2" aria-label="Show confirm password" aria-pressed="false">👁</button>
+          </div>
+          <span id="confirmPassword-err" class="err-msg" role="alert">Passwords do not match.</span>
+        </div>
+
+        <button type="submit" id="btn-register" class="btn btn-primary btn-w100">
+          <span id="btn-reg-label">Create account</span>
+          <span id="btn-reg-spinner" class="spinner" aria-hidden="true" style="display:none"></span>
+        </button>
+
+        <p class="terms-note">By creating an account, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. Your health data is protected under HIPAA.</p>
+      </form>
+
+      <div class="divider">already have an account?</div>
+      <a href="wireframe-SCR-001-login.html" id="link-login" class="btn btn-ghost btn-w100">Sign in instead</a>
+    </div>
+  </main>
+
+  <script>
+    // Password visibility toggles
+    const pwToggle = document.getElementById('pw-toggle');
+    const pwInput = document.getElementById('regPassword');
+    pwToggle.addEventListener('click', () => {
+      const show = pwInput.type === 'password';
+      pwInput.type = show ? 'text' : 'password';
+      pwToggle.setAttribute('aria-pressed', show ? 'true' : 'false');
+      pwToggle.textContent = show ? '🙈' : '👁';
+    });
+    const pwToggle2 = document.getElementById('pw-toggle2');
+    const pwInput2 = document.getElementById('confirmPassword');
+    pwToggle2.addEventListener('click', () => {
+      const show = pwInput2.type === 'password';
+      pwInput2.type = show ? 'text' : 'password';
+      pwToggle2.setAttribute('aria-pressed', show ? 'true' : 'false');
+      pwToggle2.textContent = show ? '🙈' : '👁';
+    });
+
+    // Password strength meter
+    pwInput.addEventListener('input', () => {
+      const v = pwInput.value;
+      const bar = document.getElementById('pw-bar');
+      let strength = 0;
+      if (v.length >= 8) strength++;
+      if (/[A-Z]/.test(v)) strength++;
+      if (/[0-9]/.test(v)) strength++;
+      if (/[^A-Za-z0-9]/.test(v)) strength++;
+      const colors = ['','#DC2626','#D97706','#16A34A','#16A34A'];
+      bar.style.width = (strength * 25) + '%';
+      bar.style.background = colors[strength] || '';
+    });
+
+    // Form submission (UC-001 success path → redirect to SCR-001 Login)
+    document.getElementById('reg-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      let valid = true;
+      const fields = [
+        {id: 'firstName', err: 'firstName-err', check: v => v.trim() !== ''},
+        {id: 'lastName', err: 'lastName-err', check: v => v.trim() !== ''},
+        {id: 'regEmail', err: 'regEmail-err', check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)},
+        {id: 'dob', err: 'dob-err', check: v => v !== ''},
+        {id: 'regPassword', err: 'regPassword-err', check: v => v.length >= 8},
+        {id: 'confirmPassword', err: 'confirmPassword-err', check: v => v === document.getElementById('regPassword').value}
+      ];
+      fields.forEach(({id, err, check}) => {
+        const input = document.getElementById(id);
+        const errEl = document.getElementById(err);
+        const ok = check(input.value);
+        input.classList.toggle('has-error', !ok);
+        errEl.classList.toggle('visible', !ok);
+        if (!ok) valid = false;
+      });
+      if (!valid) return;
+      // Show loading state
+      const btn = document.getElementById('btn-register');
+      btn.disabled = true;
+      document.getElementById('btn-reg-label').textContent = 'Creating account…';
+      document.getElementById('btn-reg-spinner').style.display = 'inline-block';
+      // Show success, redirect to login
+      setTimeout(() => {
+        document.getElementById('alert-success').classList.remove('hidden');
+        setTimeout(() => { window.location.href = 'wireframe-SCR-001-login.html'; }, 1200);
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

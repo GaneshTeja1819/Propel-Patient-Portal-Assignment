@@ -1,0 +1,43 @@
+sequenceDiagram
+    participant HF as Hangfire Job Engine
+    participant CODE_SVC as MedicalCodingService
+    participant DB as PostgreSQL
+    participant PROFILE as Profile360Service
+    participant AI as Google AI SDK
+    participant GEMINI as Gemini API (gemini-1.5-pro)
+    participant ENC as AES-256-GCM Encryption
+    participant AUDIT as AuditService
+    participant STAFF_UI as Staff Coding UI
+
+    Note over HF,STAFF_UI: AI-023 — UC-023 AI Medical Code Suggestion (Tool Calling / Structured Output)
+
+    HF->>CODE_SVC: Execute CodeSuggestionJob(encounterId)
+    CODE_SVC->>PROFILE: GetExtractedClinicalData(patientId)
+    PROFILE->>DB: SELECT ExtractedClinicalData + PatientProfile360 WHERE patientId
+    DB-->>PROFILE: clinicalContext (decrypted in memory)
+    PROFILE-->>CODE_SVC: clinicalContext
+
+    CODE_SVC->>AI: BuildCodingPrompt(clinicalContext, CodingSchema)
+    AI->>GEMINI: function_calling {tools: [SuggestICD10Codes, SuggestCPTCodes], context: clinicalContext}
+
+    alt Gemini returns code suggestions
+        GEMINI-->>AI: JSON {icd10: [{code, description, confidence}], cpt: [{code, description, confidence}], modelVersion}
+        AI-->>CODE_SVC: suggestions
+        CODE_SVC->>DB: INSERT MedicalCodeSuggestion[] {encounterId, codeType, suggestedCode, confidenceScore, status: Pending, modelVersion, promptHash}
+        DB-->>CODE_SVC: suggestionIds[]
+        CODE_SVC->>AUDIT: Log(actor: system, action: CODE_SUGGESTION_GENERATED, target: encounterId, metadata: {modelVersion, promptHash, count})
+        CODE_SVC-->>STAFF_UI: suggestions ready (notify via polling / push)
+        Note over STAFF_UI: Staff proceeds to UC-024 for human verification
+    else Gemini returns zero suggestions
+        GEMINI-->>AI: empty suggestions array
+        AI-->>CODE_SVC: emptySuggestions
+        CODE_SVC->>DB: UPDATE Appointment SET codingStatus = ManualRequired
+        CODE_SVC->>AUDIT: Log(actor: system, action: CODE_SUGGESTION_EMPTY, target: encounterId)
+        CODE_SVC-->>STAFF_UI: no suggestions — manual coding required
+    else Gemini API fails (retry logic — AIR-007)
+        GEMINI-->>AI: error / timeout
+        AI-->>CODE_SVC: apiError
+        CODE_SVC->>HF: Reschedule job (exponential backoff, max 3 attempts)
+        Note over HF: After 3 failures: notify Staff to code manually
+        CODE_SVC->>AUDIT: Log(actor: system, action: CODE_SUGGESTION_FAILED, target: encounterId, metadata: {attempt, error})
+    end

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-012 | Staff Walk-in Booking | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-012 Staff Walk-in Booking
+  | Element              | Action | Target Screen                                  |
+  |----------------------|--------|------------------------------------------------|
+  | #btn-confirm-walkin  | click  | wireframe-SCR-011-staff-queue.html             |
+  | #btn-no-slot         | click  | wireframe-SCR-011-staff-queue.html (queue only)|
+  | #nav-queue           | click  | wireframe-SCR-011-staff-queue.html             |
+
+  Source UC: UC-014 (Staff Walk-in Booking)
+  UXR: UXR-405 (RBAC — staff role), UXR-301, UXR-201–205 (form validation)
+  FL: FL-007 (queue → walk-in → queue)
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;--c-err:#DC2626;--c-err-bg:#FEE2E2;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);--nav-h:64px;--max-w:1280px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}a:hover{text-decoration:underline}
+    .topnav{height:var(--nav-h);background:var(--cs);border-bottom:1px solid var(--cbord);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topnav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--s8);height:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--s4)}
+    .nav-logo{display:flex;align-items:center;gap:var(--s2);font-weight:700;color:var(--ct);font-size:var(--t-md)}
+    .nav-logo-mark{width:32px;height:32px;background:var(--c-ok);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-weight:700;font-size:var(--t-base)}
+    .nav-links{display:flex;align-items:center;gap:var(--s1)}
+    .nav-link{padding:var(--s2) var(--s3);border-radius:var(--r-sm);font-size:var(--t-base);color:var(--ct-s);font-weight:500;text-decoration:none;transition:background .1s}
+    .nav-link:hover{background:var(--cs-s);color:var(--ct);text-decoration:none}
+    .nav-link.active{background:var(--cb-l);color:var(--cb);font-weight:600}
+    .role-badge{display:flex;align-items:center;gap:var(--s2);padding:var(--s1) var(--s3);background:var(--c-ok-bg);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;color:var(--c-ok)}
+    .main-content{max-width:760px;margin:0 auto;padding:var(--s8)}
+    .breadcrumb{display:flex;align-items:center;gap:var(--s2);font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s6)}
+    .breadcrumb a{color:var(--ct-s)}
+    .breadcrumb a:hover{color:var(--cb)}
+    .breadcrumb-sep{color:var(--ct-d)}
+    .page-title{font-size:var(--t-2xl);font-weight:600;color:var(--ct);margin-bottom:var(--s1)}
+    .page-subtitle{font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s8)}
+    .card{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);box-shadow:var(--sh-sm);margin-bottom:var(--s6)}
+    .card-header{padding:var(--s4) var(--s6);border-bottom:1px solid var(--cbord);display:flex;align-items:center;justify-content:space-between;gap:var(--s4)}
+    .card-title{font-size:var(--t-md);font-weight:600;color:var(--ct)}
+    .card-body{padding:var(--s6)}
+    .field{display:flex;flex-direction:column;gap:var(--s1);margin-bottom:var(--s4)}
+    .field:last-child{margin-bottom:0}
+    .field label{font-size:var(--t-sm);font-weight:600;color:var(--ct-s);text-transform:uppercase;letter-spacing:.05em}
+    .field label .req{color:var(--c-err);margin-left:2px}
+    .field input,.field select{width:100%;height:44px;padding:0 var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs);transition:border-color .15s}
+    .field input:focus,.field select:focus{border-color:var(--cbord-f);outline:3px solid rgba(26,86,219,.2);outline-offset:0}
+    .field input.valid{border-color:var(--c-ok);background:var(--c-ok-bg)}
+    .field input.invalid,.field-error.visible{border-color:var(--c-err)}
+    .field-error{font-size:var(--t-xs);color:var(--c-err);margin-top:var(--s1);display:none}
+    .field-error.visible{display:block}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
+    /* Toggle: existing / new patient */
+    .patient-toggle{display:flex;border:1.5px solid var(--cbord);border-radius:var(--r-sm);overflow:hidden;margin-bottom:var(--s6)}
+    .ptoggle-btn{flex:1;height:44px;border:none;font-family:var(--ff);font-size:var(--t-base);font-weight:600;cursor:pointer;background:var(--cs);color:var(--ct-s);transition:background .15s}
+    .ptoggle-btn.active{background:var(--cb-l);color:var(--cb)}
+    /* Mini slot grid */
+    .mini-slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2);margin-bottom:var(--s4)}
+    .mini-slot{padding:var(--s2) var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);cursor:pointer;font-size:var(--t-sm);text-align:center;font-weight:600;transition:background .15s;background:var(--cs);min-height:44px;display:flex;align-items:center;justify-content:center;font-family:var(--ff)}
+    .mini-slot.available:hover{background:var(--cb-l);border-color:var(--cb)}
+    .mini-slot.selected{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .mini-slot.taken{background:var(--cs-s);color:var(--ct-d);cursor:not-allowed}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s6);height:44px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s;text-decoration:none;white-space:nowrap}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h);text-decoration:none}
+    .btn-primary:disabled{background:var(--ct-d);border-color:var(--ct-d);cursor:not-allowed}
+    .btn-secondary{background:var(--cs);color:var(--ct);border-color:var(--cbord)}
+    .btn-secondary:hover{background:var(--cs-s);text-decoration:none}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l);text-decoration:none}
+    .btn-warn{background:var(--c-warn-bg);color:var(--c-warn);border-color:var(--c-warn)}
+    .btn-w100{width:100%}
+    .no-slot-option{background:var(--c-warn-bg);border:1px solid var(--c-warn);border-radius:var(--r-md);padding:var(--s4);margin-top:var(--s4)}
+    .no-slot-title{font-weight:600;color:var(--c-warn);margin-bottom:var(--s2)}
+    .form-footer{display:flex;gap:var(--s3);margin-top:var(--s6)}
+    @media(max-width:640px){.field-row{grid-template-columns:1fr}.mini-slot-grid{grid-template-columns:repeat(2,1fr)}.main-content{padding:var(--s4)}.topnav-inner{padding:0 var(--s4)}.form-footer{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <nav class="topnav" aria-label="Main navigation — Staff Portal">
+    <div class="topnav-inner">
+      <a href="wireframe-SCR-011-staff-queue.html" class="nav-logo" aria-label="Staff Portal — back to queue">
+        <div class="nav-logo-mark" aria-hidden="true">S</div>
+        <span>Staff Portal</span>
+      </a>
+      <div class="nav-links">
+        <a href="wireframe-SCR-011-staff-queue.html" class="nav-link" id="nav-queue">📋 Queue</a>
+        <a href="wireframe-SCR-012-walkin-booking.html" class="nav-link active" aria-current="page">➕ New Walk-in</a>
+      </div>
+      <div style="display:flex;align-items:center;gap:var(--s3)">
+        <span class="role-badge" aria-label="Staff role">👩‍⚕ Staff</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content" role="main">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="wireframe-SCR-011-staff-queue.html">Queue</a>
+      <span class="breadcrumb-sep" aria-hidden="true">/</span>
+      <span style="color:var(--ct);font-weight:600" aria-current="page">New Walk-in</span>
+    </nav>
+    <h1 class="page-title">Add Walk-in Patient</h1>
+    <p class="page-subtitle">Register a walk-in patient for today's queue. You can assign a slot or add them to the queue without one.</p>
+
+    <!-- Patient type toggle -->
+    <div class="patient-toggle" role="group" aria-label="Patient type">
+      <button class="ptoggle-btn active" id="toggle-existing" onclick="switchPatient('existing')" aria-pressed="true">Existing patient</button>
+      <button class="ptoggle-btn" id="toggle-new" onclick="switchPatient('new')" aria-pressed="false">New patient</button>
+    </div>
+
+    <!-- Existing patient search -->
+    <div id="panel-existing">
+      <div class="card">
+        <div class="card-header"><h2 class="card-title">Search patient</h2></div>
+        <div class="card-body">
+          <div class="field">
+            <label for="patient-search">Name or date of birth <span class="req">*</span></label>
+            <input type="text" id="patient-search" placeholder="e.g. Michael Chen or 07/08/1978" aria-required="true" oninput="searchPatient(this.value)">
+          </div>
+          <div id="search-results" style="display:none;border:1px solid var(--cbord);border-radius:var(--r-sm);overflow:hidden;margin-top:-var(--s3)">
+            <button class="search-result-row" onclick="selectPatient('Michael Chen','Jul 8, 1978','M')" style="display:flex;width:100%;padding:var(--s3) var(--s4);border:none;background:var(--cs);font-family:var(--ff);cursor:pointer;text-align:left;border-bottom:1px solid var(--cbord)">
+              <span style="flex:1"><strong>Michael Chen</strong><br><span style="font-size:var(--t-xs);color:var(--ct-s)">DOB: Jul 8, 1978 · M · (555) 831-4920 · ID: usr-002</span></span>
+              <span style="color:var(--cb);font-size:var(--t-sm);align-self:center">Select ›</span>
+            </button>
+          </div>
+          <div id="selected-patient" style="display:none;background:var(--c-ok-bg);border:1px solid var(--c-ok);border-radius:var(--r-sm);padding:var(--s3) var(--s4);margin-top:var(--s3);font-size:var(--t-sm)">
+            <strong id="selected-name"></strong> &mdash; <span id="selected-meta"></span> <button onclick="clearPatient()" style="background:none;border:none;color:var(--c-err);cursor:pointer;font-size:var(--t-sm);margin-left:var(--s2)">✕ Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- New patient form -->
+    <div id="panel-new" style="display:none">
+      <div class="card">
+        <div class="card-header"><h2 class="card-title">New patient details</h2></div>
+        <div class="card-body">
+          <div class="field-row">
+            <div class="field">
+              <label for="new-first">First name <span class="req">*</span></label>
+              <input type="text" id="new-first" aria-required="true" placeholder="First name">
+            </div>
+            <div class="field">
+              <label for="new-last">Last name <span class="req">*</span></label>
+              <input type="text" id="new-last" aria-required="true" placeholder="Last name">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="new-dob">Date of birth <span class="req">*</span></label>
+              <input type="date" id="new-dob" aria-required="true">
+            </div>
+            <div class="field">
+              <label for="new-sex">Sex assigned at birth</label>
+              <select id="new-sex">
+                <option value="">— select —</option>
+                <option>Female</option><option>Male</option><option>Intersex</option><option>Prefer not to say</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="new-phone">Phone</label>
+            <input type="tel" id="new-phone" placeholder="(555) 000-0000" autocomplete="off">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appointment details -->
+    <div class="card">
+      <div class="card-header"><h2 class="card-title">Appointment details</h2></div>
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field">
+            <label for="walkin-type">Type <span class="req">*</span></label>
+            <select id="walkin-type" aria-required="true">
+              <option value="new">New Patient Visit</option>
+              <option value="followup">Follow-up</option>
+              <option value="urgent">Urgent Care</option>
+              <option value="consult">Consultation</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="walkin-provider">Provider</label>
+            <select id="walkin-provider">
+              <option value="okafor" selected>Dr. M. Okafor</option>
+              <option value="patel">Dr. S. Patel</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Assign slot — May 20, 2026 <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--ct-d);font-size:var(--t-sm)">(optional)</span></label>
+          <div class="mini-slot-grid" role="group" aria-label="Available slots">
+            <button class="mini-slot available" onclick="selectSlot(this,'1:30 PM')">1:30 PM</button>
+            <button class="mini-slot available" onclick="selectSlot(this,'2:30 PM')">2:30 PM</button>
+            <button class="mini-slot taken" disabled aria-disabled="true">9:00 AM</button>
+            <button class="mini-slot taken" disabled aria-disabled="true">10:00 AM</button>
+          </div>
+          <p style="font-size:var(--t-sm);color:var(--ct-s)" id="slot-note" aria-live="polite">No slot selected — you can add the patient to the queue without a slot.</p>
+        </div>
+        <!-- No-slot option (fallback when no slots available) -->
+        <div class="no-slot-option" role="region" aria-label="No slot option">
+          <div class="no-slot-title">⚠ No slot required</div>
+          <p style="font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s3)">You can register this patient in the queue without assigning a specific time slot. They will appear in today's queue as a walk-in.</p>
+          <a href="wireframe-SCR-011-staff-queue.html" class="btn btn-warn" id="btn-no-slot" style="height:40px;padding:0 var(--s4)">Add to queue without slot</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-footer">
+      <a href="wireframe-SCR-011-staff-queue.html" class="btn btn-ghost" style="flex:1">Cancel</a>
+      <button class="btn btn-primary" id="btn-confirm-walkin" style="flex:2" onclick="confirmWalkin()" disabled>Confirm walk-in</button>
+    </div>
+  </main>
+
+  <script>
+    function switchPatient(type) {
+      document.getElementById('panel-existing').style.display = type === 'existing' ? '' : 'none';
+      document.getElementById('panel-new').style.display = type === 'new' ? '' : 'none';
+      document.getElementById('toggle-existing').classList.toggle('active', type === 'existing');
+      document.getElementById('toggle-new').classList.toggle('active', type === 'new');
+      document.getElementById('toggle-existing').setAttribute('aria-pressed', String(type === 'existing'));
+      document.getElementById('toggle-new').setAttribute('aria-pressed', String(type === 'new'));
+      if (type === 'new') document.getElementById('btn-confirm-walkin').disabled = false;
+    }
+
+    let searchTimeout;
+    function searchPatient(val) {
+      clearTimeout(searchTimeout);
+      const results = document.getElementById('search-results');
+      if (val.length < 2) { results.style.display = 'none'; return; }
+      searchTimeout = setTimeout(() => { results.style.display = ''; }, 300);
+    }
+
+    function selectPatient(name, dob, sex) {
+      document.getElementById('search-results').style.display = 'none';
+      const sel = document.getElementById('selected-patient');
+      sel.style.display = '';
+      document.getElementById('selected-name').textContent = name;
+      document.getElementById('selected-meta').textContent = `DOB: ${dob} · ${sex}`;
+      document.getElementById('btn-confirm-walkin').disabled = false;
+    }
+
+    function clearPatient() {
+      document.getElementById('selected-patient').style.display = 'none';
+      document.getElementById('patient-search').value = '';
+      document.getElementById('btn-confirm-walkin').disabled = true;
+    }
+
+    function selectSlot(btn, time) {
+      document.querySelectorAll('.mini-slot.selected').forEach(b => b.classList.replace('selected','available'));
+      btn.classList.replace('available','selected');
+      document.getElementById('slot-note').textContent = `Slot selected: ${time}`;
+    }
+
+    function confirmWalkin() {
+      const btn = document.getElementById('btn-confirm-walkin');
+      btn.disabled = true;
+      btn.textContent = 'Registering…';
+      setTimeout(() => { window.location.href = 'wireframe-SCR-011-staff-queue.html'; }, 800);
+    }
+  </script>
+</body>
+</html>

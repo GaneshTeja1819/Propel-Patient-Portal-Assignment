@@ -1,0 +1,25 @@
+sequenceDiagram
+    participant P as Patient (Browser)
+    participant API as IntakeController
+    participant INTAKE as IntakeService
+    participant DB as PostgreSQL (IntakeSession)
+
+    Note over P,DB: UC-011 — Switch Intake Method
+
+    Note over P: Patient is in an active intake session (AI or Manual)
+
+    P->>API: POST /api/v1/intake/switch {sessionId, targetMethod: "Manual" or "AI"}
+    API->>INTAKE: SwitchIntakeMethod(sessionId, targetMethod)
+    INTAKE->>DB: SELECT IntakeSession WHERE id = sessionId (get captured fields so far)
+    DB-->>INTAKE: capturedFields {fieldName: value}[]
+    INTAKE->>INTAKE: MapFieldsToTargetMethod(capturedFields, targetMethod)
+    alt All fields map cleanly
+        INTAKE-->>API: 200 {prefilledFields: {mappedField: value}[]}
+        API-->>P: render target form/chat with pre-populated fields
+    else Some fields have no equivalent in target
+        INTAKE-->>API: 200 {prefilledFields: [...], unmappedFields: [fieldName][]}
+        API-->>P: render target with pre-populated fields; unmapped fields shown as blank manual entry
+    end
+
+    P->>API: continue intake in target method
+    Note over P,INTAKE: All previously captured data is preserved — no data loss

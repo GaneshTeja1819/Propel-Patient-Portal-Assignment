@@ -1,0 +1,39 @@
+sequenceDiagram
+    participant P as Patient (Browser)
+    participant API as AuthController
+    participant AUTH as AuthService
+    participant ENC as Password Hasher
+    participant DB as PostgreSQL (User)
+    participant AUDIT as AuditService
+
+    Note over P,AUDIT: UC-001 — Patient Self-Registration
+
+    P->>API: POST /api/v1/auth/register {email, password, profileFields}
+    API->>AUTH: Register(email, password, profileFields)
+    AUTH->>DB: SELECT User WHERE email = ?
+    alt Email already exists
+        DB-->>AUTH: existing user record
+        AUTH-->>API: EmailAlreadyExists (do not disclose)
+        API-->>P: 409 "Registration failed" (no field-level disclosure)
+    else Email is unique
+        DB-->>AUTH: null
+        AUTH->>AUTH: ValidatePasswordComplexity(password)
+        alt Password fails complexity rules
+            AUTH-->>API: WeakPassword
+            API-->>P: 400 {errors: ["Password must meet complexity requirements"]}
+        else Password meets rules
+            AUTH->>ENC: HashPassword(password)
+            ENC-->>AUTH: passwordHash
+            AUTH->>DB: INSERT User {email, passwordHash, role: Patient, status: Active}
+            alt DB write fails
+                DB-->>AUTH: error
+                AUTH-->>API: DatabaseError
+                API-->>P: 500 "Registration failed — please try again"
+            else DB write succeeds
+                DB-->>AUTH: userId
+                AUTH->>AUDIT: Log(actor: userId, action: USER_REGISTERED, target: User)
+                AUTH-->>API: 201 {userId}
+                API-->>P: 201 — redirect to login with success message
+            end
+        end
+    end

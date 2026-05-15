@@ -1,0 +1,101 @@
+@startuml deployment-architecture
+skinparam componentStyle rectangle
+skinparam rectangle {
+  BackgroundColor #EEF4FF
+  BorderColor #336699
+}
+skinparam cloud {
+  BackgroundColor #FFF8E1
+  BorderColor #CC8800
+}
+skinparam database {
+  BackgroundColor #E8F5E9
+  BorderColor #388E3C
+}
+skinparam node {
+  BackgroundColor #FCE4EC
+  BorderColor #C62828
+}
+
+title Deployment Architecture – Unified Patient Access & Clinical Intelligence Platform
+
+node "Client Browser" as BROWSER {
+  component "React 18 SPA\n(JavaScript bundle)" as SPA
+}
+
+cloud "InfinityFree\n(Static Hosting)" as INFINITYFREE {
+  component "Static File Server\n(HTML/JS/CSS)" as STATIC
+}
+
+node "MonsterASP\n(Windows / IIS)" as MONSTERAPSP {
+  component ".NET 8 Web API\n(ASP.NET Core)" as DOTNET
+  component "Hangfire Server\n(Background Jobs)" as HANGFIRE
+  component "IIS Application Pool" as IIS
+  DOTNET --> IIS
+  HANGFIRE --> IIS
+}
+
+cloud "Supabase\n(Managed PostgreSQL)" as SUPABASE {
+  database "PostgreSQL 15\n+ pgvector extension" as PG
+  database "Supabase Storage\n(PDF documents)" as STORAGE
+}
+
+cloud "Upstash\n(Managed Redis)" as UPSTASH {
+  database "Redis Cache\n(Slot availability & session store)" as REDIS
+}
+
+cloud "Google Cloud\n(AI Platform)" as GOOGLE_AI {
+  component "Gemini API\n(gemini-1.5-pro)" as GEMINI
+}
+
+cloud "Google APIs" as GCAL_CLOUD {
+  component "Google Calendar API" as GCAL_API
+}
+
+cloud "Microsoft Cloud" as MS_CLOUD {
+  component "Microsoft Graph API\n(Outlook Calendar)" as GRAPH_API
+}
+
+cloud "Email / SMS\nProviders" as NOTIFY_CLOUD {
+  component "SMTP Email Gateway" as SMTP
+  component "SMS Gateway" as SMS
+}
+
+cloud "GitHub\n(CI/CD & Secrets)" as GITHUB {
+  component "GitHub Actions\n(Build & Deploy)" as GHA
+  component "GitHub Secrets\n(Credentials & API Keys)" as SECRETS
+}
+
+BROWSER --> STATIC : HTTPS (TLS 1.3)\nfetch HTML/JS/CSS
+BROWSER --> DOTNET : HTTPS (TLS 1.3)\n/api/v1/ REST calls
+STATIC --> BROWSER : serve SPA assets
+
+DOTNET --> PG : TLS / SSL\nParameterised SQL
+DOTNET --> STORAGE : HTTPS\n(encrypted PHI files)
+DOTNET --> REDIS : TLS\n(slot cache reads)
+HANGFIRE --> PG : job queue / state\n(PostgreSQL storage)
+HANGFIRE --> GEMINI : HTTPS\nfunction calling
+HANGFIRE --> SMTP : SMTP/TLS\nemail dispatch
+HANGFIRE --> SMS : HTTPS\nSMS dispatch
+HANGFIRE --> GCAL_API : HTTPS / OAuth 2.0
+HANGFIRE --> GRAPH_API : HTTPS / OAuth 2.0
+HANGFIRE --> STORAGE : read PDF for extraction
+
+GHA --> MONSTERAPSP : deploy .NET artifact\n(FTP / WebDeploy)
+GHA --> INFINITYFREE : deploy React build\n(FTP)
+SECRETS --> GHA : inject at runtime
+
+note right of DOTNET
+  RBAC Middleware
+  JWT HttpOnly/Secure Cookies
+  AES-256-GCM PHI Encryption
+  15-min Session Timeout
+  Immutable Audit Log
+end note
+
+note right of PG
+  Append-only audit schema
+  Optimistic concurrency (rowVersion)
+  Encrypted PHI columns
+end note
+@enduml

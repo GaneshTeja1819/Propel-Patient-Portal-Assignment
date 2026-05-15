@@ -1,0 +1,16 @@
+@startuml uc-view-360-profile
+left to right direction
+actor "Staff" as S
+actor "Patient\n(read-only)" as P
+rectangle "360° Patient Profile" {
+  usecase "View 360° Profile\n(UC-020)" as UC020
+  usecase "Retrieve Unified Summary" as RUS
+  usecase "Render Vitals /\nHistory / Medications" as RENDER
+  usecase "Display Conflict\nHighlights (UC-022)" as UC022
+}
+S --> UC020
+P --> UC020
+UC020 ..> RUS : <<include>>
+UC020 ..> RENDER : <<include>>
+UC020 ..> UC022 : <<extend>>
+@enduml

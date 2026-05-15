@@ -1,0 +1,21 @@
+@startuml uc-ai-intake
+left to right direction
+actor "Patient" as P
+actor "Gemini AI Engine" as AI
+rectangle "AI Conversational Intake" {
+  usecase "AI Intake\n(UC-009)" as UC009
+  usecase "Prompt Patient\n(AI)" as PROMPT
+  usecase "Parse & Map Response" as PARSE
+  usecase "Patient Review & Confirm" as REVIEW
+  usecase "Persist Intake Record" as PERSIST
+  usecase "Write Audit Log" as AL
+}
+P --> UC009
+UC009 --> AI : invoke
+AI --> PROMPT
+PROMPT --> P : conversational question
+P --> PARSE : response
+UC009 ..> REVIEW : <<include>>
+UC009 ..> PERSIST : <<include>>
+UC009 ..> AL : <<include>>
+@enduml

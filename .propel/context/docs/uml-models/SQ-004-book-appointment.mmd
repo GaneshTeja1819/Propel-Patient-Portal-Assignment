@@ -1,0 +1,50 @@
+sequenceDiagram
+    participant P as Patient (Browser)
+    participant API as AppointmentController
+    participant BOOK as BookingService
+    participant REDIS as Upstash Redis (Slot Cache)
+    participant DB as PostgreSQL
+    participant INS as InsuranceService
+    participant RISK as NoShowRiskCalculator
+    participant HF as Hangfire
+    participant AUDIT as AuditService
+
+    Note over P,AUDIT: UC-004 — Book an Appointment
+
+    P->>API: GET /api/v1/slots/available
+    API->>REDIS: GET slot:available (TTL <= 5s)
+    alt Cache hit
+        REDIS-->>API: availableSlots[]
+    else Cache miss
+        API->>DB: SELECT AppointmentSlot WHERE isBooked = false
+        DB-->>API: availableSlots[]
+        API->>REDIS: SET slot:available {slots} EX 5
+    end
+    API-->>P: 200 {availableSlots}
+
+    P->>API: POST /api/v1/appointments {slotId, insuranceName, insuranceId, preferredSlotId?}
+    API->>BOOK: CreateAppointment(patientId, slotId, insuranceData, preferredSlotId?)
+    BOOK->>DB: SELECT AppointmentSlot WHERE id = slotId FOR UPDATE (optimistic lock check rowVersion)
+    alt Slot now unavailable (race condition)
+        DB-->>BOOK: isBooked = true or rowVersion mismatch
+        BOOK-->>API: SlotConflict
+        API-->>P: 409 "Slot no longer available — please select another"
+    else Slot available
+        DB-->>BOOK: slot {rowVersion}
+        BOOK->>INS: SoftValidate(insuranceName, insuranceId)
+        INS-->>BOOK: validationResult (Validated / Not Recognised)
+        BOOK->>RISK: CalculateNoShowRisk(patientId, slotDateTime)
+        RISK-->>BOOK: riskScore
+        BOOK->>DB: INSERT Appointment {patientId, slotId, status: Booked, noShowRiskScore, insuranceValidationResult, rowVersion: 1}
+        BOOK->>DB: UPDATE AppointmentSlot SET isBooked = true WHERE id = slotId AND rowVersion = {expected}
+        DB-->>BOOK: ok
+        BOOK->>REDIS: INVALIDATE slot:available
+        opt preferredSlotId provided
+            BOOK->>DB: INSERT WaitlistEntry {patientId, appointmentId, preferredSlotId}
+        end
+        BOOK->>HF: Enqueue PDFConfirmationJob(appointmentId)
+        BOOK->>HF: Enqueue ReminderJob(appointmentId, intervals)
+        BOOK->>AUDIT: Log(actor: patientId, action: APPOINTMENT_BOOKED, target: Appointment)
+        BOOK-->>API: 201 {appointmentId, validationResult}
+        API-->>P: 201 booking confirmed — PDF confirmation will be emailed
+    end

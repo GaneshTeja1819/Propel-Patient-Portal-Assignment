@@ -1,0 +1,12 @@
+@startuml uc-register-preferred-slot
+left to right direction
+actor "Patient" as P
+rectangle "Preferred Slot Registration" {
+  usecase "Register Preferred Slot\n(UC-007)" as UC007
+  usecase "Create Waitlist Entry" as CWE
+  usecase "Confirm Registration" as CR
+}
+P --> UC007
+UC007 ..> CWE : <<include>>
+UC007 ..> CR : <<include>>
+@enduml

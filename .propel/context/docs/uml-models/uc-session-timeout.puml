@@ -1,0 +1,16 @@
+@startuml uc-session-timeout
+left to right direction
+actor "System" as SYS
+actor "User" as U
+rectangle "Session Management" {
+  usecase "Detect Inactivity\n(UC-003)" as UC003
+  usecase "Invalidate Session Token" as INV
+  usecase "Write Audit Log" as AL
+  usecase "Redirect to Login" as RDR
+}
+SYS --> UC003
+UC003 ..> INV : <<include>>
+UC003 ..> AL : <<include>>
+UC003 ..> RDR : <<include>>
+U --> RDR : Receives redirect
+@enduml

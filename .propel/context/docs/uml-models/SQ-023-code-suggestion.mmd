@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant HF as Hangfire (CodeSuggestionJob)
+    participant CODE as MedicalCodingService
+    participant DB as PostgreSQL
+    participant GEMINI as Gemini API
+    participant AUDIT as AuditService
+    participant S as Staff (Browser)
+
+    Note over HF,S: UC-023 — AI Medical Code Suggestion (summary — see AI-seq-uc-023 for full AI detail)
+
+    HF->>CODE: Execute CodeSuggestionJob(encounterId)
+    CODE->>DB: SELECT ExtractedClinicalData + PatientProfile360 WHERE patientId
+    DB-->>CODE: clinicalContext
+    CODE->>GEMINI: function_calling {suggest ICD-10 and CPT codes for context}
+    alt Suggestions returned
+        GEMINI-->>CODE: [{icd10 codes}, {cpt codes}, confidenceScores, modelVersion]
+        CODE->>DB: INSERT MedicalCodeSuggestion[] {status: Pending, modelVersion, promptHash}
+        CODE->>AUDIT: Log(actor: system, action: CODE_SUGGESTIONS_GENERATED, target: encounterId)
+        CODE-->>S: suggestions ready for verification (UC-024)
+    else No suggestions
+        GEMINI-->>CODE: empty
+        CODE->>DB: UPDATE Appointment SET codingStatus = ManualRequired
+        CODE-->>S: manual coding required
+    else API failure (max 3 retries)
+        CODE->>AUDIT: Log(actor: system, action: CODE_SUGGESTION_FAILED, target: encounterId)
+        CODE-->>S: AI unavailable — code manually
+    end

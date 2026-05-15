@@ -1,0 +1,43 @@
+sequenceDiagram
+    participant P as Patient (Browser)
+    participant API as IntakeController
+    participant INTAKE as IntakeService
+    participant GEMINI as Gemini API
+    participant DB as PostgreSQL (IntakeRecord)
+    participant AUDIT as AuditService
+
+    Note over P,AUDIT: UC-009 — AI Conversational Intake (summary flow — see AI-seq-uc-009 for full AI detail)
+
+    P->>API: POST /api/v1/intake/start {appointmentId, method: "AI"}
+    API->>INTAKE: StartAIIntake(appointmentId, patientId)
+    INTAKE->>GEMINI: function_calling: first intake question
+    GEMINI-->>INTAKE: question text
+    INTAKE-->>API: 200 {sessionId, question}
+    API-->>P: display first question
+
+    loop Intake turns (repeat until all fields collected)
+        P->>API: POST /api/v1/intake/respond {sessionId, answer}
+        INTAKE->>GEMINI: function_calling: next question + map answer
+        alt Field parsed successfully
+            GEMINI-->>INTAKE: {field: value, nextQuestion}
+            INTAKE-->>API: 200 {fieldMapped: true, nextQuestion}
+            API-->>P: next question
+        else Field cannot be parsed — fallback
+            GEMINI-->>INTAKE: null extraction
+            INTAKE-->>API: 200 {fieldMapped: false, manualInput: true}
+            API-->>P: manual text input field
+        end
+    end
+
+    P->>API: POST /api/v1/intake/confirm {sessionId}
+    API->>INTAKE: PersistIntakeRecord(sessionId)
+    INTAKE->>DB: INSERT IntakeRecord {method: AI, fields: encryptedJSON}
+    DB-->>INTAKE: ok
+    INTAKE->>AUDIT: Log(actor: patientId, action: INTAKE_COMPLETED, target: IntakeRecord)
+    INTAKE-->>API: 201 {intakeRecordId}
+    API-->>P: intake complete
+
+    opt Switch to manual intake
+        P->>API: POST /api/v1/intake/switch {sessionId, method: "Manual"}
+        API-->>P: manual form pre-populated with captured AI fields
+    end

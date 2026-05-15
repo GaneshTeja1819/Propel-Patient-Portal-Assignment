@@ -1,0 +1,52 @@
+sequenceDiagram
+    participant HF as Hangfire (SlotSwapEvaluationJob)
+    participant SWAP as SlotSwapService
+    participant DB as PostgreSQL
+    participant REDIS as Upstash Redis
+    participant NOTIFY as NotificationService
+    participant EMAIL as Email Gateway
+    participant AUDIT as AuditService
+
+    Note over HF,AUDIT: UC-008 — Automatic Preferred Slot Swap
+
+    Note over HF: Triggered after slot released by UC-005 (cancel) or UC-006 (reschedule)
+
+    HF->>SWAP: Execute SlotSwapEvaluationJob(releasedSlotId)
+    SWAP->>DB: SELECT WaitlistEntry WHERE preferredSlotId = releasedSlotId ORDER BY registeredAt ASC
+    alt No waitlist entries for this slot
+        DB-->>SWAP: empty[]
+        SWAP-->>HF: job complete — no action
+    else Waitlist entries exist
+        DB-->>SWAP: waitlistEntries[{patientId, appointmentId, entryId}]
+        SWAP->>SWAP: Select first entry (earliest registeredAt)
+        SWAP->>DB: SELECT Appointment WHERE id = entry.appointmentId FOR UPDATE (rowVersion)
+        SWAP->>DB: SELECT AppointmentSlot WHERE id = releasedSlotId FOR UPDATE (rowVersion)
+        SWAP->>DB: BEGIN TRANSACTION
+        SWAP->>DB: UPDATE AppointmentSlot SET isBooked = false WHERE id = currentSlotId AND rowVersion = {expected}
+        SWAP->>DB: UPDATE AppointmentSlot SET isBooked = true WHERE id = releasedSlotId AND rowVersion = {expected}
+        SWAP->>DB: UPDATE Appointment SET slotId = releasedSlotId, status = Rescheduled (via swap)
+        SWAP->>DB: DELETE WaitlistEntry WHERE id = entry.entryId
+        alt Transaction fails (concurrent modification)
+            DB-->>SWAP: rowVersion conflict
+            SWAP->>DB: ROLLBACK
+            SWAP->>HF: Retry once (attempt 2)
+            alt Second attempt also fails
+                SWAP->>AUDIT: Log(actor: system, action: SWAP_FAILED, target: WaitlistEntry, metadata: {attempt: 2})
+                Note over SWAP: Skip entry — no further action
+            end
+        else Transaction succeeds
+            DB-->>SWAP: ok
+            SWAP->>DB: COMMIT
+            SWAP->>REDIS: INVALIDATE slot:available
+            SWAP->>NOTIFY: SendSwapConfirmation(patientId, newSlotId)
+            NOTIFY->>EMAIL: dispatch "Your appointment has been moved to [new time]"
+            alt Email delivery fails
+                EMAIL-->>NOTIFY: error
+                NOTIFY->>AUDIT: Log(actor: system, action: SWAP_NOTIFICATION_FAILED, target: patientId)
+                Note over NOTIFY: swap remains in effect — only notification failed
+            else Email delivered
+                EMAIL-->>NOTIFY: delivered
+            end
+            SWAP->>AUDIT: Log(actor: system, action: SLOT_SWAP_EXECUTED, target: Appointment, metadata: {fromSlot, toSlot})
+        end
+    end

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-004 | Appointment Booking | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-004 Appointment Booking
+  | Element                 | Action   | Target Screen                                       |
+  |-------------------------|----------|-----------------------------------------------------|
+  | .slot-cell.available    | click    | (self — optimistic highlight, UXR-501)              |
+  | #btn-confirm-booking    | click    | wireframe-SCR-003-patient-dashboard.html (success)  |
+  | #btn-confirm-booking    | click    | wireframe-SCR-006-preferred-slot-confirm.html (if waitlist) |
+  | #nav-back               | click    | wireframe-SCR-003-patient-dashboard.html            |
+  | #nav-profile            | click    | wireframe-SCR-009-patient-profile.html              |
+
+  Source UCs: UC-004 (Book Appointment), UC-007 (Preferred Slot), UC-018 (Insurance), UC-025 (PDF Confirmation)
+  UXR: UXR-101, UXR-102, UXR-301, UXR-302, UXR-402, UXR-501, UXR-601, UXR-602, UXR-504
+  FL: FL-002 (complete flow)
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;--c-err:#DC2626;--c-err-bg:#FEE2E2;--c-ai:#7C3AED;--c-ai-bg:#EDE9FE;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--s12:48px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);--nav-h:64px;--max-w:1280px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}a:hover{text-decoration:underline}
+    .topnav{height:var(--nav-h);background:var(--cs);border-bottom:1px solid var(--cbord);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topnav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--s8);height:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--s6)}
+    .nav-logo{display:flex;align-items:center;gap:var(--s2);font-weight:700;color:var(--ct);font-size:var(--t-md)}
+    .nav-logo-mark{width:32px;height:32px;background:var(--cb);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-weight:700;font-size:var(--t-base)}
+    .nav-links{display:flex;align-items:center;gap:var(--s1)}
+    .nav-link{display:flex;align-items:center;gap:var(--s1);padding:var(--s2) var(--s3);border-radius:var(--r-sm);font-size:var(--t-base);color:var(--ct-s);font-weight:500;transition:background .1s;text-decoration:none}
+    .nav-link:hover{background:var(--cs-s);color:var(--ct);text-decoration:none}
+    .nav-link.active{background:var(--cb-l);color:var(--cb);font-weight:600}
+    .nav-right{display:flex;align-items:center;gap:var(--s3)}
+    .user-avatar{width:32px;height:32px;border-radius:var(--r-full);background:var(--cb);color:var(--ct-on);display:flex;align-items:center;justify-content:center;font-size:var(--t-sm);font-weight:700}
+    .breadcrumb{display:flex;align-items:center;gap:var(--s2);font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s6)}
+    .breadcrumb a{color:var(--ct-s)}
+    .breadcrumb a:hover{color:var(--cb)}
+    .breadcrumb-sep{color:var(--ct-d)}
+    .breadcrumb .current{color:var(--ct);font-weight:600}
+    .main-content{max-width:var(--max-w);margin:0 auto;padding:var(--s8)}
+    .booking-grid{display:grid;grid-template-columns:1fr 360px;gap:var(--s8);align-items:flex-start}
+    .page-title{font-size:var(--t-2xl);font-weight:600;color:var(--ct);margin-bottom:var(--s1)}
+    .page-subtitle{font-size:var(--t-base);color:var(--ct-s);margin-bottom:var(--s8)}
+    .card{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);box-shadow:var(--sh-sm)}
+    .card-header{padding:var(--s4) var(--s6);border-bottom:1px solid var(--cbord);display:flex;align-items:center;justify-content:space-between;gap:var(--s4)}
+    .card-title{font-size:var(--t-md);font-weight:600;color:var(--ct)}
+    .card-body{padding:var(--s6)}
+    .section-label{font-size:var(--t-sm);font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ct-s);margin-bottom:var(--s3)}
+    .field{display:flex;flex-direction:column;gap:var(--s1);margin-bottom:var(--s4)}
+    .field label{font-size:var(--t-sm);font-weight:600;color:var(--ct-s);text-transform:uppercase;letter-spacing:.05em}
+    .field label .req{color:var(--c-err);margin-left:2px}
+    .field input,.field select{width:100%;height:44px;padding:0 var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs);transition:border-color .15s}
+    .field input:focus,.field select:focus{border-color:var(--cbord-f);outline:3px solid rgba(26,86,219,.2);outline-offset:0}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
+    /* PHI field styles (UXR-402) */
+    .phi-field input{background:var(--cb-l);border-color:#BFDBFE}
+    .phi-label-icon{margin-right:var(--s1);font-size:var(--t-sm)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s4);height:44px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s,border-color .15s;text-decoration:none;white-space:nowrap}
+    .btn-sm{height:34px;padding:0 var(--s3);font-size:var(--t-sm)}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h);text-decoration:none}
+    .btn-primary:disabled{background:var(--ct-d);border-color:var(--ct-d);cursor:not-allowed}
+    .btn-secondary{background:var(--cs);color:var(--ct);border-color:var(--cbord)}
+    .btn-secondary:hover{background:var(--cs-s);text-decoration:none}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l);text-decoration:none}
+    .btn-w100{width:100%}
+    .btn .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .badge{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s2);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+    .badge-success{background:var(--c-ok-bg);color:var(--c-ok)}
+    .badge-warning{background:var(--c-warn-bg);color:var(--c-warn)}
+    .badge-default{background:var(--cs-s);color:var(--ct-s)}
+    /* Slot grid (UXR-102, UXR-302, UXR-501) */
+    .slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2);margin-bottom:var(--s4)}
+    .slot-cell{display:flex;flex-direction:column;align-items:center;padding:var(--s2) var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-md);cursor:pointer;transition:background .15s,border-color .15s,transform .1s;font-size:var(--t-sm);font-weight:600;text-align:center;min-height:64px;justify-content:center;gap:var(--s1)}
+    .slot-cell.available{background:var(--cs);color:var(--ct);border-color:var(--cbord)}
+    .slot-cell.available:hover{background:var(--cb-l);border-color:var(--cb)}
+    .slot-cell.available:focus{border-color:var(--cbord-f);outline:3px solid rgba(26,86,219,.2)}
+    .slot-cell.selected{background:var(--cb);color:var(--ct-on);border-color:var(--cb);transform:scale(1.02)}
+    .slot-cell.taken{background:var(--cs-s);color:var(--ct-d);cursor:not-allowed;border-color:var(--cbord)}
+    .slot-cell.blocked{background:var(--cs-s);color:var(--ct-d);cursor:not-allowed;border-color:var(--cbord);opacity:.6}
+    .slot-cell.preferred-candidate{background:var(--c-ai-bg);color:var(--c-ai);border-color:var(--c-ai);border-style:dashed}
+    .slot-time{font-size:var(--t-base);font-weight:600}
+    .slot-status-text{font-size:var(--t-xs);font-weight:400;opacity:.8}
+    .slot-legend{display:flex;gap:var(--s4);flex-wrap:wrap;font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s4)}
+    .slot-legend-item{display:flex;align-items:center;gap:var(--s2)}
+    .legend-dot{width:14px;height:14px;border-radius:var(--r-xs);border:1.5px solid var(--cbord)}
+    .legend-dot.available{background:var(--cs)}
+    .legend-dot.taken{background:var(--cs-s)}
+    .legend-dot.selected{background:var(--cb)}
+    .legend-dot.preferred{background:var(--c-ai-bg);border-color:var(--c-ai);border-style:dashed}
+    /* Insurance validation badge (UXR-602) */
+    .insurance-status{display:flex;align-items:center;gap:var(--s2);margin-top:var(--s2);padding:var(--s2) var(--s3);border-radius:var(--r-sm);font-size:var(--t-sm)}
+    .insurance-status.valid{background:var(--c-ok-bg);border:1px solid var(--c-ok);color:var(--c-ok)}
+    .insurance-status.unrecognised{background:var(--c-warn-bg);border:1px solid var(--c-warn);color:var(--c-warn)}
+    .insurance-status.pending{background:var(--cs-s);border:1px solid var(--cbord);color:var(--ct-s)}
+    .insurance-status.hidden{display:none}
+    /* Booking summary card */
+    .summary-card{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s6);box-shadow:var(--sh-sm)}
+    .summary-title{font-size:var(--t-md);font-weight:600;margin-bottom:var(--s4)}
+    .summary-row{display:flex;justify-content:space-between;gap:var(--s4);padding:var(--s2) 0;border-bottom:1px solid var(--cbord);font-size:var(--t-base)}
+    .summary-row:last-of-type{border-bottom:none}
+    .summary-label{color:var(--ct-s)}
+    .summary-value{font-weight:600;text-align:right}
+    .summary-empty{color:var(--ct-d);font-style:italic}
+    /* Toast (UXR-601, UXR-602) */
+    .toast{position:fixed;top:calc(var(--nav-h) + var(--s4));right:var(--s8);z-index:200;max-width:360px;padding:var(--s3) var(--s4);border-radius:var(--r-md);box-shadow:var(--sh-lg);display:flex;align-items:flex-start;gap:var(--s3);font-size:var(--t-base);transition:opacity .3s,transform .3s}
+    .toast.error{background:var(--c-err-bg);border:1px solid var(--c-err);border-left:4px solid var(--c-err)}
+    .toast.hidden{display:none}
+    .toast-close{background:none;border:none;cursor:pointer;font-size:var(--t-md);color:var(--ct-s);padding:0;margin-left:auto;flex-shrink:0;line-height:1}
+    /* Confirmation generation indicator (UXR-504) */
+    .confirm-progress{display:flex;align-items:center;gap:var(--s2);padding:var(--s3) var(--s4);background:var(--cb-l);border:1px solid #BFDBFE;border-radius:var(--r-sm);font-size:var(--t-sm);display:none}
+    .confirm-progress.visible{display:flex}
+    .conf-spinner{width:14px;height:14px;border:2px solid rgba(26,86,219,.3);border-top-color:var(--cb);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+    @media(max-width:1024px){.booking-grid{grid-template-columns:1fr}}
+    @media(max-width:640px){.slot-grid{grid-template-columns:repeat(2,1fr)}.field-row{grid-template-columns:1fr}.main-content{padding:var(--s4)}.topnav-inner{padding:0 var(--s4)}.nav-links{display:none}}
+    @media(max-width:375px){.slot-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- Slot conflict toast (UXR-601) -->
+  <div id="conflict-toast" class="toast error hidden" role="alert" aria-live="assertive">
+    <span aria-hidden="true" style="font-size:var(--t-md);flex-shrink:0">⚠</span>
+    <div>
+      <strong>Slot no longer available</strong><br>
+      <span style="color:var(--ct-s);font-size:var(--t-sm)">The 11:00 AM slot was just taken. Please select another slot.</span>
+    </div>
+    <button class="toast-close" aria-label="Dismiss notification" onclick="this.parentElement.classList.add('hidden')">✕</button>
+  </div>
+
+  <!-- Top nav -->
+  <nav class="topnav" aria-label="Main navigation">
+    <div class="topnav-inner">
+      <a href="wireframe-SCR-003-patient-dashboard.html" class="nav-logo" aria-label="Patient Portal home">
+        <div class="nav-logo-mark" aria-hidden="true">P</div>
+        <span>Patient Portal</span>
+      </a>
+      <div class="nav-links">
+        <a href="wireframe-SCR-003-patient-dashboard.html" class="nav-link" id="nav-back">🏠 Dashboard</a>
+        <a href="wireframe-SCR-004-appointment-booking.html" class="nav-link active" aria-current="page">📅 Book</a>
+        <a href="wireframe-SCR-009-patient-profile.html" class="nav-link" id="nav-profile">👤 My Profile</a>
+        <a href="wireframe-SCR-010-document-upload.html" class="nav-link">📄 Documents</a>
+        <a href="wireframe-SCR-016-calendar-oauth.html" class="nav-link">🗓 Calendar</a>
+      </div>
+      <div class="nav-right">
+        <div class="user-avatar" aria-hidden="true">SJ</div>
+        <a href="wireframe-SCR-001-login.html" class="btn btn-sm btn-ghost" style="height:34px">Sign out</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content" role="main">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="wireframe-SCR-003-patient-dashboard.html">Dashboard</a>
+      <span class="breadcrumb-sep" aria-hidden="true">/</span>
+      <span class="current" aria-current="page">Book Appointment</span>
+    </nav>
+    <h1 class="page-title">Book an appointment</h1>
+    <p class="page-subtitle">Select a date, provider, and available slot. Intake will be requested before your visit.</p>
+
+    <div class="booking-grid">
+      <!-- LEFT: Booking form -->
+      <div>
+        <!-- Step 1: Provider & Date -->
+        <div class="card" style="margin-bottom:var(--s6)">
+          <div class="card-header"><h2 class="card-title">1 · Provider &amp; date</h2></div>
+          <div class="card-body">
+            <div class="field-row">
+              <div class="field">
+                <label for="provider">Provider <span class="req">*</span></label>
+                <select id="provider" aria-required="true">
+                  <option value="okafor" selected>Dr. M. Okafor — General Practice</option>
+                  <option value="patel">Dr. S. Patel — Dermatology</option>
+                  <option value="kim">Dr. J. Kim — Cardiology</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="appt-type">Appointment type <span class="req">*</span></label>
+                <select id="appt-type" aria-required="true">
+                  <option value="physical" selected>Annual Physical</option>
+                  <option value="followup">Follow-up</option>
+                  <option value="consult">Consultation</option>
+                  <option value="new">New Patient Visit</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="appt-date">Preferred date <span class="req">*</span></label>
+              <input type="date" id="appt-date" value="2026-05-20" min="2026-05-14" aria-required="true">
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Slot selection -->
+        <div class="card" style="margin-bottom:var(--s6)">
+          <div class="card-header">
+            <h2 class="card-title">2 · Select a slot</h2>
+            <span style="font-size:var(--t-sm);color:var(--ct-s)" id="slot-refresh-time">Updated just now</span>
+          </div>
+          <div class="card-body">
+            <div class="slot-legend" aria-label="Slot availability legend">
+              <div class="slot-legend-item"><div class="legend-dot available" aria-hidden="true"></div>Available</div>
+              <div class="slot-legend-item"><div class="legend-dot taken" aria-hidden="true"></div>Taken</div>
+              <div class="slot-legend-item"><div class="legend-dot selected" aria-hidden="true"></div>Selected</div>
+              <div class="slot-legend-item"><div class="legend-dot preferred" aria-hidden="true"></div>Preferred (waitlist)</div>
+            </div>
+            <!-- Slot grid (UXR-102, UXR-302) -->
+            <div class="slot-grid" role="group" aria-label="Available appointment slots for May 20, 2026" id="slot-grid">
+              <button class="slot-cell available" data-slot="slot-001" data-time="9:00 AM" aria-label="9:00 AM — available" tabindex="0"><span class="slot-time">9:00 AM</span><span class="slot-status-text">Available</span></button>
+              <button class="slot-cell taken" data-slot="slot-002" disabled aria-label="9:30 AM — taken" aria-disabled="true"><span class="slot-time">9:30 AM</span><span class="slot-status-text">Taken</span></button>
+              <button class="slot-cell available" data-slot="slot-003" data-time="10:00 AM" aria-label="10:00 AM — available" tabindex="0"><span class="slot-time">10:00 AM</span><span class="slot-status-text">Available</span></button>
+              <button class="slot-cell available" data-slot="slot-004" data-time="10:30 AM" aria-label="10:30 AM — available" tabindex="0"><span class="slot-time">10:30 AM</span><span class="slot-status-text">Available</span></button>
+              <button class="slot-cell preferred-candidate" data-slot="slot-005" data-time="11:00 AM" aria-label="11:00 AM — add to waitlist for preferred slot" tabindex="0"><span class="slot-time">11:00 AM</span><span class="slot-status-text">Waitlist →</span></button>
+              <button class="slot-cell available" data-slot="slot-006" data-time="11:30 AM" aria-label="11:30 AM — available" tabindex="0"><span class="slot-time">11:30 AM</span><span class="slot-status-text">Available</span></button>
+              <button class="slot-cell available" data-slot="slot-007" data-time="1:00 PM" aria-label="1:00 PM — available" tabindex="0"><span class="slot-time">1:00 PM</span><span class="slot-status-text">Available</span></button>
+              <button class="slot-cell available" data-slot="slot-008" data-time="1:30 PM" aria-label="1:30 PM — available" tabindex="0"><span class="slot-time">1:30 PM</span><span class="slot-status-text">Available</span></button>
+              <button class="slot-cell taken" data-slot="slot-009" disabled aria-label="2:00 PM — taken" aria-disabled="true"><span class="slot-time">2:00 PM</span><span class="slot-status-text">Taken</span></button>
+              <button class="slot-cell available" data-slot="slot-010" data-time="2:30 PM" aria-label="2:30 PM — available" tabindex="0"><span class="slot-time">2:30 PM</span><span class="slot-status-text">Available</span></button>
+              <button class="slot-cell available" data-slot="slot-011" data-time="3:00 PM" aria-label="3:00 PM — available" tabindex="0"><span class="slot-time">3:00 PM</span><span class="slot-status-text">Available</span></button>
+              <button class="slot-cell blocked" data-slot="slot-012" disabled aria-label="3:30 PM — blocked" aria-disabled="true"><span class="slot-time">3:30 PM</span><span class="slot-status-text">Blocked</span></button>
+            </div>
+            <p style="font-size:var(--t-sm);color:var(--ct-s)" id="slot-selected-msg" aria-live="polite"></p>
+            <p style="font-size:var(--t-sm);color:var(--c-ai);display:none" id="waitlist-note">💡 The 11:00 AM slot is taken. Registering your preferred slot will add you to the waitlist.</p>
+          </div>
+        </div>
+
+        <!-- Step 3: Insurance (UXR-402 PHI, UXR-602 non-blocking) -->
+        <div class="card" style="margin-bottom:var(--s6)">
+          <div class="card-header"><h2 class="card-title">3 · Insurance information</h2></div>
+          <div class="card-body">
+            <div class="field phi-field">
+              <label for="ins-provider"><span class="phi-label-icon" aria-label="Contains protected health information">🔒</span>Insurance provider <span class="req">*</span></label>
+              <input type="text" id="ins-provider" value="BlueCross BlueShield" autocomplete="off" aria-required="true" aria-describedby="ins-status" placeholder="e.g. BlueCross BlueShield">
+            </div>
+            <div class="field phi-field">
+              <label for="ins-member"><span class="phi-label-icon" aria-label="Contains protected health information">🔒</span>Member ID <span class="req">*</span></label>
+              <input type="text" id="ins-member" value="BCB-44721-A" autocomplete="off" aria-required="true" placeholder="e.g. BCB-44721-A">
+            </div>
+            <!-- Insurance soft-validation result (UXR-602) -->
+            <div id="ins-status" class="insurance-status valid" role="status" aria-live="polite">
+              <span aria-hidden="true">✓</span>
+              <span>BlueCross BlueShield — validated. Booking will proceed.</span>
+            </div>
+            <button type="button" class="btn btn-sm btn-ghost" style="margin-top:var(--s3)" id="btn-demo-ins-warn" aria-label="Demo: show insurance not recognised state">Demo: Not Recognised</button>
+          </div>
+        </div>
+
+        <!-- Confirmation generation indicator (UXR-504) -->
+        <div class="confirm-progress" id="confirm-progress" role="status" aria-live="polite">
+          <div class="conf-spinner" aria-hidden="true"></div>
+          <span id="confirm-progress-text">Generating confirmation email…</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: Booking summary -->
+      <div>
+        <div class="summary-card">
+          <div class="summary-title">📋 Booking summary</div>
+          <div class="summary-row">
+            <span class="summary-label">Provider</span>
+            <span class="summary-value">Dr. M. Okafor</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Type</span>
+            <span class="summary-value">Annual Physical</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Date</span>
+            <span class="summary-value">May 20, 2026</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Time</span>
+            <span class="summary-value" id="summary-time"><span class="summary-empty">Select a slot</span></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Duration</span>
+            <span class="summary-value">30 minutes</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Insurance</span>
+            <span class="summary-value" id="summary-insurance">BlueCross BlueShield <span class="badge badge-success">✓</span></span>
+          </div>
+          <div style="margin-top:var(--s6);display:flex;flex-direction:column;gap:var(--s3)">
+            <button id="btn-confirm-booking" class="btn btn-primary btn-w100" disabled aria-label="Confirm booking — select a slot first">Confirm booking</button>
+            <a href="wireframe-SCR-003-patient-dashboard.html" class="btn btn-ghost btn-w100">Cancel</a>
+          </div>
+          <p style="font-size:var(--t-sm);color:var(--ct-s);margin-top:var(--s3);text-align:center">You'll receive an email confirmation and PDF receipt.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let selectedSlot = null;
+    let isWaitlist = false;
+
+    // Slot selection (UXR-501 — optimistic UI within 200ms)
+    document.getElementById('slot-grid').addEventListener('click', (e) => {
+      const cell = e.target.closest('.slot-cell');
+      if (!cell || cell.disabled || cell.classList.contains('taken') || cell.classList.contains('blocked')) return;
+
+      // Clear previous selection
+      document.querySelectorAll('.slot-cell.selected').forEach(c => {
+        c.classList.remove('selected');
+        c.classList.add('available');
+        c.querySelector('.slot-status-text').textContent = 'Available';
+      });
+
+      const time = cell.dataset.time;
+      const slotId = cell.dataset.slot;
+      isWaitlist = cell.classList.contains('preferred-candidate');
+
+      if (!isWaitlist) {
+        cell.classList.remove('available');
+        cell.classList.add('selected');
+        cell.querySelector('.slot-status-text').textContent = 'Selected ✓';
+      }
+
+      selectedSlot = {time, slotId};
+      document.getElementById('summary-time').textContent = time;
+      document.getElementById('slot-selected-msg').textContent = isWaitlist
+        ? `You selected ${time} as a preferred slot — you'll be added to the waitlist.`
+        : `Slot selected: ${time}`;
+      document.getElementById('waitlist-note').style.display = isWaitlist ? 'block' : 'none';
+      document.getElementById('btn-confirm-booking').disabled = false;
+      document.getElementById('btn-confirm-booking').textContent = isWaitlist ? 'Register waitlist slot' : 'Confirm booking';
+    });
+
+    // Insurance demo: not recognised
+    document.getElementById('btn-demo-ins-warn').addEventListener('click', () => {
+      const status = document.getElementById('ins-status');
+      if (status.classList.contains('valid')) {
+        status.classList.remove('valid');
+        status.classList.add('unrecognised');
+        status.innerHTML = '<span aria-hidden="true">⚠</span><span>Insurance provider not recognised. You can still proceed — please bring your insurance card to your appointment.</span>';
+        document.getElementById('btn-demo-ins-warn').textContent = 'Demo: Validated';
+      } else {
+        status.classList.remove('unrecognised');
+        status.classList.add('valid');
+        status.innerHTML = '<span aria-hidden="true">✓</span><span>BlueCross BlueShield — validated. Booking will proceed.</span>';
+        document.getElementById('btn-demo-ins-warn').textContent = 'Demo: Not Recognised';
+      }
+    });
+
+    // Confirm booking → FL-002 success path
+    document.getElementById('btn-confirm-booking').addEventListener('click', () => {
+      if (!selectedSlot) return;
+      const btn = document.getElementById('btn-confirm-booking');
+      btn.disabled = true;
+      btn.innerHTML = '<span style="width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block"></span> Confirming…';
+      // Show PDF generation progress (UXR-504)
+      const progress = document.getElementById('confirm-progress');
+      progress.classList.add('visible');
+      setTimeout(() => {
+        if (isWaitlist) {
+          window.location.href = 'wireframe-SCR-006-preferred-slot-confirm.html';
+        } else {
+          document.getElementById('confirm-progress-text').textContent = '✓ Confirmation emailed to sarah.johnson@email.com';
+          setTimeout(() => { window.location.href = 'wireframe-SCR-003-patient-dashboard.html'; }, 1500);
+        }
+      }, 1200);
+    });
+
+    // Demo: show slot conflict toast (UXR-601)
+    setTimeout(() => {
+      // Auto-show after 3s for demo purposes
+    }, 3000);
+    // Manual demo button
+    document.addEventListener('keydown', e => {
+      if (e.key === 'c' && e.ctrlKey) {
+        document.getElementById('conflict-toast').classList.toggle('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

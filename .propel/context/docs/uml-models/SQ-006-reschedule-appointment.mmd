@@ -1,0 +1,45 @@
+sequenceDiagram
+    participant P as Patient (Browser)
+    participant API as AppointmentController
+    participant BOOK as BookingService
+    participant DB as PostgreSQL
+    participant REDIS as Upstash Redis
+    participant HF as Hangfire
+    participant AUDIT as AuditService
+
+    Note over P,AUDIT: UC-006 — Reschedule an Appointment
+
+    P->>API: GET /api/v1/slots/available (choose new slot)
+    API->>REDIS: GET slot:available
+    REDIS-->>API: availableSlots[]
+    API-->>P: 200 {availableSlots}
+
+    P->>API: PUT /api/v1/appointments/{appointmentId}/reschedule {newSlotId}
+    API->>BOOK: RescheduleAppointment(patientId, appointmentId, newSlotId)
+    BOOK->>DB: SELECT Appointment + old AppointmentSlot FOR UPDATE
+    alt New slot taken (race condition)
+        DB-->>BOOK: newSlot isBooked = true
+        BOOK-->>API: SlotConflict
+        API-->>P: 409 "Selected slot unavailable — please choose another"
+    else Both slots available for swap
+        DB-->>BOOK: appointment {oldSlotId, rowVersion} + newSlot {rowVersion}
+        BOOK->>DB: BEGIN TRANSACTION
+        BOOK->>DB: UPDATE AppointmentSlot SET isBooked = false WHERE id = oldSlotId AND rowVersion = {expected}
+        BOOK->>DB: UPDATE AppointmentSlot SET isBooked = true WHERE id = newSlotId AND rowVersion = {expected}
+        BOOK->>DB: UPDATE Appointment SET slotId = newSlotId, status = Rescheduled
+        alt Transaction fails (concurrent modification)
+            DB-->>BOOK: rowVersion conflict
+            BOOK->>DB: ROLLBACK
+            BOOK-->>API: ConcurrencyConflict
+            API-->>P: 409 "Conflict detected — please retry"
+        else Transaction succeeds
+            DB-->>BOOK: ok
+            BOOK->>DB: COMMIT
+            BOOK->>REDIS: INVALIDATE slot:available
+            BOOK->>HF: Enqueue PDFConfirmationJob(appointmentId, rescheduled=true)
+            BOOK->>HF: Enqueue SlotSwapEvaluationJob(oldSlotId)
+            BOOK->>AUDIT: Log(actor: patientId, action: APPOINTMENT_RESCHEDULED, target: Appointment)
+            BOOK-->>API: 200 ok
+            API-->>P: 200 rescheduled — updated PDF confirmation emailed
+        end
+    end

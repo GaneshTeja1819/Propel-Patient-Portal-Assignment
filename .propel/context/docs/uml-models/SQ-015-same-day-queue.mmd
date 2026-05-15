@@ -1,0 +1,40 @@
+sequenceDiagram
+    participant S as Staff (Browser)
+    participant API as StaffController
+    participant QUEUE as QueueService
+    participant DB as PostgreSQL
+    participant AUDIT as AuditService
+
+    Note over S,AUDIT: UC-015 — Manage Same-Day Queue
+
+    S->>API: GET /api/v1/staff/queue/today
+    API->>QUEUE: GetTodayQueue(today)
+    QUEUE->>DB: SELECT Appointment WHERE DATE(startDateTime) = today ORDER BY startDateTime ASC
+    DB-->>QUEUE: appointments[] with status indicators
+    QUEUE-->>API: 200 {queueEntries[]}
+    API-->>S: render same-day queue dashboard
+
+    opt Reorder queue entries
+        S->>API: PUT /api/v1/staff/queue/reorder {appointmentId, newPosition}
+        API->>QUEUE: ReorderQueue(appointmentId, newPosition)
+        QUEUE->>DB: UPDATE Appointment SET queuePosition = newPosition
+        alt Reorder conflicts with slot constraint
+            QUEUE-->>API: SlotConstraintWarning
+            API-->>S: 200 {warning: "Reorder conflicts with slot time — proceed?"}
+            S->>API: POST /api/v1/staff/queue/reorder/confirm {force: true}
+            QUEUE->>DB: UPDATE Appointment SET queuePosition = newPosition (override)
+        else Reorder accepted
+            DB-->>QUEUE: ok
+        end
+        QUEUE->>AUDIT: Log(actor: staffId, action: QUEUE_REORDERED, target: Appointment)
+        API-->>S: 200 queue updated
+    end
+
+    opt Remove patient from queue
+        S->>API: DELETE /api/v1/staff/queue/{appointmentId} {reason}
+        API->>QUEUE: RemoveFromQueue(staffId, appointmentId, reason)
+        QUEUE->>DB: UPDATE Appointment SET status = Removed, removalReason = reason
+        QUEUE->>AUDIT: Log(actor: staffId, action: PATIENT_REMOVED_FROM_QUEUE, target: Appointment, metadata: {reason})
+        QUEUE-->>API: 200 ok
+        API-->>S: 200 patient removed from queue
+    end

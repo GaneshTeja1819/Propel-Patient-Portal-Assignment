@@ -1,0 +1,15 @@
+@startuml uc-mark-arrived
+left to right direction
+actor "Staff" as S
+actor "Patient\n(Blocked)" as P
+rectangle "Patient Arrival" {
+  usecase "Mark Patient Arrived\n(UC-016)" as UC016
+  usecase "Update Appointment\nStatus" as UAS
+  usecase "Write Audit Log" as AL
+  usecase "Self-Check-In Blocked\n(Exception)" as BLOCK
+}
+S --> UC016
+UC016 ..> UAS : <<include>>
+UC016 ..> AL : <<include>>
+P --> BLOCK : Attempt denied
+@enduml

@@ -1,0 +1,22 @@
+@startuml uc-ai-extraction
+left to right direction
+actor "Hangfire\n(System)" as HF
+actor "Gemini AI\nEngine" as AI
+rectangle "AI Clinical Data Extraction" {
+  usecase "Extract Clinical Data\n(UC-021)" as UC021
+  usecase "Retrieve PDF Document" as RPD
+  usecase "Invoke Gemini AI" as IGA
+  usecase "Validate Extracted Schema" as VES
+  usecase "Store Structured Data" as SSD
+  usecase "Trigger De-duplication\n& Conflict Pipeline" as TDCP
+  usecase "Write Audit Log" as AL
+}
+HF --> UC021
+UC021 ..> RPD : <<include>>
+UC021 ..> IGA : <<include>>
+IGA --> AI
+UC021 ..> VES : <<include>>
+UC021 ..> SSD : <<include>>
+UC021 ..> TDCP : <<include>>
+UC021 ..> AL : <<include>>
+@enduml

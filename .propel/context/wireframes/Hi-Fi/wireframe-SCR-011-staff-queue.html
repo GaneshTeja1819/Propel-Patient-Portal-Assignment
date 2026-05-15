@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-011 | Staff Dashboard — Queue | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-011 Staff Queue
+  | Element                  | Action | Target Screen                                  |
+  |--------------------------|--------|------------------------------------------------|
+  | #btn-new-walkin          | click  | wireframe-SCR-012-walkin-booking.html          |
+  | .btn-verify-codes        | click  | wireframe-SCR-014-code-verification.html       |
+  | .btn-view-profile (row)  | click  | wireframe-SCR-013-staff-patient-profile.html   |
+  | #btn-mark-arrived        | click  | (inline status update)                         |
+
+  Source UCs: UC-014 (Walk-in), UC-015 (Same-day Queue), UC-016 (Arrival)
+  UXR: UXR-104 (queue ≤1280px without scroll), UXR-301, UXR-405 (RBAC — staff role)
+  FL: FL-007 (queue → walk-in), FL-011 (queue → code verification)
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;--c-err:#DC2626;--c-err-bg:#FEE2E2;--c-ai:#7C3AED;--c-ai-bg:#EDE9FE;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);--nav-h:64px;--max-w:1280px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}a:hover{text-decoration:underline}
+    .topnav{height:var(--nav-h);background:var(--cs);border-bottom:1px solid var(--cbord);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topnav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--s8);height:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--s4)}
+    .nav-logo{display:flex;align-items:center;gap:var(--s2);font-weight:700;color:var(--ct);font-size:var(--t-md)}
+    .nav-logo-mark{width:32px;height:32px;background:var(--c-ok);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-weight:700;font-size:var(--t-base)}
+    .nav-links{display:flex;align-items:center;gap:var(--s1)}
+    .nav-link{padding:var(--s2) var(--s3);border-radius:var(--r-sm);font-size:var(--t-base);color:var(--ct-s);font-weight:500;text-decoration:none;transition:background .1s}
+    .nav-link:hover{background:var(--cs-s);color:var(--ct);text-decoration:none}
+    .nav-link.active{background:var(--cb-l);color:var(--cb);font-weight:600}
+    .role-badge{display:flex;align-items:center;gap:var(--s2);padding:var(--s1) var(--s3);background:var(--c-ok-bg);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;color:var(--c-ok)}
+    .main-content{max-width:var(--max-w);margin:0 auto;padding:var(--s8)}
+    .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s6);flex-wrap:wrap;gap:var(--s4)}
+    .page-title{font-size:var(--t-2xl);font-weight:600;color:var(--ct)}
+    .page-subtitle{font-size:var(--t-sm);color:var(--ct-s);margin-top:var(--s1)}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4);margin-bottom:var(--s8)}
+    .stat-card{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s4) var(--s6);box-shadow:var(--sh-sm)}
+    .stat-value{font-size:var(--t-2xl);font-weight:700;color:var(--ct)}
+    .stat-label{font-size:var(--t-sm);color:var(--ct-s);margin-top:var(--s1)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s4);height:44px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s;text-decoration:none;white-space:nowrap}
+    .btn-sm{height:34px;padding:0 var(--s3);font-size:var(--t-sm)}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h);text-decoration:none}
+    .btn-secondary{background:var(--cs);color:var(--ct);border-color:var(--cbord)}
+    .btn-secondary:hover{background:var(--cs-s);text-decoration:none}
+    .btn-success{background:var(--c-ok);color:var(--ct-on);border-color:var(--c-ok)}
+    .btn-success:hover{background:#15803D;text-decoration:none}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l);text-decoration:none}
+    .card{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);box-shadow:var(--sh-sm)}
+    .card-header{padding:var(--s4) var(--s6);border-bottom:1px solid var(--cbord);display:flex;align-items:center;justify-content:space-between;gap:var(--s4);flex-wrap:wrap}
+    .card-title{font-size:var(--t-md);font-weight:600;color:var(--ct)}
+    .badge{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s3);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;white-space:nowrap}
+    .badge-booked{background:var(--cb-l);color:var(--cb)}
+    .badge-arrived{background:var(--c-ok-bg);color:var(--c-ok)}
+    .badge-walkin{background:var(--c-warn-bg);color:var(--c-warn)}
+    .badge-cancelled{background:var(--cs-s);color:var(--ct-d)}
+    .badge-ai{background:var(--c-ai-bg);color:var(--c-ai)}
+    /* Queue table */
+    .queue-table{width:100%;border-collapse:collapse}
+    .queue-table th{text-align:left;font-size:var(--t-xs);font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ct-s);padding:var(--s3) var(--s4);border-bottom:2px solid var(--cbord);background:var(--cs-s);white-space:nowrap}
+    .queue-table td{padding:var(--s3) var(--s4);border-bottom:1px solid var(--cbord);font-size:var(--t-sm);vertical-align:middle}
+    .queue-table tr:last-child td{border-bottom:none}
+    .queue-table tr:hover td{background:var(--cs-m)}
+    .patient-name{font-weight:600;color:var(--ct);margin-bottom:var(--s1)}
+    .patient-meta{font-size:var(--t-xs);color:var(--ct-s)}
+    .intake-status{font-size:var(--t-xs)}
+    .intake-complete{color:var(--c-ok)}
+    .intake-missing{color:var(--c-warn)}
+    .row-actions{display:flex;gap:var(--s2);flex-wrap:nowrap}
+    /* Filter bar */
+    .filter-bar{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s4)}
+    .filter-btn{padding:var(--s1) var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-full);font-size:var(--t-sm);font-weight:600;cursor:pointer;background:var(--cs);color:var(--ct-s);font-family:var(--ff);transition:background .15s}
+    .filter-btn.active{background:var(--cb-l);color:var(--cb);border-color:var(--cb)}
+    .filter-btn:hover:not(.active){background:var(--cs-s)}
+    @media(max-width:1024px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:640px){.main-content{padding:var(--s4)}.topnav-inner{padding:0 var(--s4)}.stats-row{grid-template-columns:1fr 1fr}.queue-table{font-size:var(--t-xs)}.row-actions{flex-wrap:wrap}}
+  </style>
+</head>
+<body>
+  <nav class="topnav" aria-label="Main navigation — Staff Portal">
+    <div class="topnav-inner">
+      <a href="wireframe-SCR-011-staff-queue.html" class="nav-logo" aria-label="Staff Portal home">
+        <div class="nav-logo-mark" aria-hidden="true">S</div>
+        <span>Staff Portal</span>
+      </a>
+      <div class="nav-links">
+        <a href="wireframe-SCR-011-staff-queue.html" class="nav-link active" aria-current="page">📋 Queue</a>
+        <a href="wireframe-SCR-012-walkin-booking.html" class="nav-link">➕ New Walk-in</a>
+      </div>
+      <div style="display:flex;align-items:center;gap:var(--s3)">
+        <span class="role-badge" aria-label="Logged in as Staff role">👩‍⚕ Staff</span>
+        <a href="wireframe-SCR-001-login.html" class="btn btn-sm" style="height:34px;border:1px solid var(--cbord);background:var(--cs);color:var(--ct-s);font-weight:500;border-radius:var(--r-sm);padding:0 var(--s3);font-size:var(--t-sm)">Sign out</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content" role="main">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Today's Queue</h1>
+        <p class="page-subtitle">Friday, May 20, 2026 · Dr. M. Okafor · Metro Health Clinic</p>
+      </div>
+      <a href="wireframe-SCR-012-walkin-booking.html" class="btn btn-primary" id="btn-new-walkin">➕ New Walk-in</a>
+    </div>
+
+    <!-- Stats (UXR-104) -->
+    <div class="stats-row" role="region" aria-label="Queue summary">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-total">6</div>
+        <div class="stat-label">Total appointments</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color:var(--c-ok)" id="stat-arrived">2</div>
+        <div class="stat-label">Arrived</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color:var(--cb)" id="stat-booked">3</div>
+        <div class="stat-label">Booked</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color:var(--c-warn)" id="stat-walkin">1</div>
+        <div class="stat-label">Walk-ins</div>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar" role="group" aria-label="Filter queue by status">
+      <button class="filter-btn active" onclick="filterQueue('all', this)">All (6)</button>
+      <button class="filter-btn" onclick="filterQueue('booked', this)">Booked (3)</button>
+      <button class="filter-btn" onclick="filterQueue('arrived', this)">Arrived (2)</button>
+      <button class="filter-btn" onclick="filterQueue('walkin', this)">Walk-in (1)</button>
+    </div>
+
+    <!-- Queue table (UXR-104: all appointments visible without scroll at ≤1280px) -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Appointments</h2>
+        <span style="font-size:var(--t-sm);color:var(--ct-s)">Last updated: just now</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="queue-table" aria-label="Today's appointment queue">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Patient</th>
+              <th>Type</th>
+              <th>Intake</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="queue-body">
+            <!-- appt-003: Arrived (Michael Chen) -->
+            <tr data-status="arrived">
+              <td><strong>9:00 AM</strong></td>
+              <td>
+                <div class="patient-name">Michael Chen</div>
+                <div class="patient-meta">DOB: Jul 8, 1978 · M · (555) 831-4920</div>
+              </td>
+              <td>Annual Physical</td>
+              <td><span class="intake-status intake-complete">✓ Complete</span></td>
+              <td><span class="badge badge-arrived">✓ Arrived</span></td>
+              <td>
+                <div class="row-actions">
+                  <a href="wireframe-SCR-013-staff-patient-profile.html" class="btn btn-sm btn-ghost btn-view-profile" aria-label="View Michael Chen's profile">Profile</a>
+                  <a href="wireframe-SCR-014-code-verification.html" class="btn btn-sm btn-secondary btn-verify-codes" aria-label="Verify medical codes for Michael Chen">Verify codes</a>
+                </div>
+              </td>
+            </tr>
+            <!-- appt-004: Booked (Emily Carter) -->
+            <tr data-status="booked">
+              <td><strong>10:00 AM</strong></td>
+              <td>
+                <div class="patient-name">Emily Carter</div>
+                <div class="patient-meta">DOB: Sep 22, 1990 · F · (555) 617-3302</div>
+              </td>
+              <td>Follow-up</td>
+              <td><span class="intake-status intake-complete">✓ Complete</span></td>
+              <td><span class="badge badge-booked">Booked</span></td>
+              <td>
+                <div class="row-actions">
+                  <a href="wireframe-SCR-013-staff-patient-profile.html" class="btn btn-sm btn-ghost">Profile</a>
+                  <button class="btn btn-sm btn-success" onclick="markArrived(this)" aria-label="Mark Emily Carter as arrived">Mark arrived</button>
+                </div>
+              </td>
+            </tr>
+            <!-- appt-005: Booked (James Wilson) -->
+            <tr data-status="booked">
+              <td><strong>11:00 AM</strong></td>
+              <td>
+                <div class="patient-name">James Wilson</div>
+                <div class="patient-meta">DOB: Feb 3, 1955 · M · (555) 409-7741</div>
+              </td>
+              <td>Consultation</td>
+              <td><span class="intake-status intake-missing">⚠ Missing</span></td>
+              <td><span class="badge badge-booked">Booked</span></td>
+              <td>
+                <div class="row-actions">
+                  <a href="wireframe-SCR-013-staff-patient-profile.html" class="btn btn-sm btn-ghost">Profile</a>
+                  <button class="btn btn-sm btn-success" onclick="markArrived(this)" aria-label="Mark James Wilson as arrived">Mark arrived</button>
+                </div>
+              </td>
+            </tr>
+            <!-- Walk-in: appt-006 (Lisa Nguyen, UC-014) -->
+            <tr data-status="walkin" style="background:rgba(217,119,6,.04)">
+              <td><strong>1:00 PM</strong></td>
+              <td>
+                <div class="patient-name">Lisa Nguyen <span class="badge badge-walkin" style="vertical-align:middle">Walk-in</span></div>
+                <div class="patient-meta">DOB: Oct 15, 1987 · F · New patient</div>
+              </td>
+              <td>New Patient</td>
+              <td><span class="intake-status intake-missing">⚠ Not started</span></td>
+              <td><span class="badge badge-walkin">Walk-in</span></td>
+              <td>
+                <div class="row-actions">
+                  <a href="wireframe-SCR-013-staff-patient-profile.html" class="btn btn-sm btn-ghost">Profile</a>
+                  <button class="btn btn-sm btn-success" onclick="markArrived(this)" aria-label="Mark Lisa Nguyen as arrived">Mark arrived</button>
+                </div>
+              </td>
+            </tr>
+            <!-- appt arrived already -->
+            <tr data-status="arrived">
+              <td><strong>2:00 PM</strong></td>
+              <td>
+                <div class="patient-name">Robert Kim</div>
+                <div class="patient-meta">DOB: Nov 30, 1962 · M · (555) 224-5519</div>
+              </td>
+              <td>Annual Physical</td>
+              <td><span class="intake-status intake-complete">✓ Complete</span></td>
+              <td><span class="badge badge-arrived">✓ Arrived</span></td>
+              <td>
+                <div class="row-actions">
+                  <a href="wireframe-SCR-013-staff-patient-profile.html" class="btn btn-sm btn-ghost">Profile</a>
+                  <a href="wireframe-SCR-014-code-verification.html" class="btn btn-sm btn-secondary">Verify codes</a>
+                </div>
+              </td>
+            </tr>
+            <!-- Cancelled -->
+            <tr data-status="cancelled" style="opacity:.6">
+              <td><strong>3:00 PM</strong></td>
+              <td>
+                <div class="patient-name" style="text-decoration:line-through;color:var(--ct-d)">David Park</div>
+                <div class="patient-meta">DOB: May 5, 1978 · M</div>
+              </td>
+              <td>Follow-up</td>
+              <td><span class="intake-status" style="color:var(--ct-d)">— N/A</span></td>
+              <td><span class="badge badge-cancelled">Cancelled</span></td>
+              <td><span style="font-size:var(--t-xs);color:var(--ct-d)">Slot released</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function filterQueue(status, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('#queue-body tr').forEach(row => {
+        row.style.display = (status === 'all' || row.dataset.status === status) ? '' : 'none';
+      });
+    }
+
+    function markArrived(btn) {
+      const row = btn.closest('tr');
+      btn.disabled = true;
+      btn.textContent = 'Updating…';
+      setTimeout(() => {
+        row.querySelector('.badge').className = 'badge badge-arrived';
+        row.querySelector('.badge').textContent = '✓ Arrived';
+        row.dataset.status = 'arrived';
+        btn.closest('.row-actions').innerHTML = `
+          <a href="wireframe-SCR-013-staff-patient-profile.html" class="btn btn-sm btn-ghost">Profile</a>
+          <a href="wireframe-SCR-014-code-verification.html" class="btn btn-sm btn-secondary">Verify codes</a>
+        `;
+      }, 600);
+    }
+  </script>
+</body>
+</html>

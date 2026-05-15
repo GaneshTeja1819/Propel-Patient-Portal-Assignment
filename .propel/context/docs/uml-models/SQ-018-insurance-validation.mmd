@@ -1,0 +1,36 @@
+sequenceDiagram
+    participant P as Patient (Browser)
+    participant API as AppointmentController
+    participant INS as InsuranceService
+    participant DB as PostgreSQL (InsuranceRecord)
+    participant AUDIT as AuditService
+
+    Note over P,AUDIT: UC-018 — Insurance Soft Validation (inline during UC-004 booking flow)
+
+    Note over P,API: Patient is on booking form — enters insurance details
+
+    P->>API: POST /api/v1/insurance/validate {insuranceName, insuranceId}
+    API->>INS: SoftValidate(insuranceName, insuranceId)
+    INS->>DB: SELECT InsuranceRecord WHERE providerName ILIKE insuranceName
+    alt Insurance fields left blank
+        Note over INS: validation skipped
+        INS-->>API: 200 {result: "NotProvided"}
+        API-->>P: no indicator — booking continues
+    else Provider not found
+        DB-->>INS: null
+        INS-->>API: 200 {result: "NotRecognised"}
+        API-->>P: display amber indicator "Insurance not recognised — you may still proceed"
+    else Provider found — validate ID format
+        DB-->>INS: {insuranceIdPattern}
+        INS->>INS: RegexMatch(insuranceId, insuranceIdPattern)
+        alt ID matches pattern
+            INS-->>API: 200 {result: "Validated"}
+            API-->>P: display green indicator "Insurance validated"
+        else ID does not match pattern
+            INS-->>API: 200 {result: "IdFormatMismatch"}
+            API-->>P: display amber indicator "Insurance ID format not recognised — you may still proceed"
+        end
+    end
+
+    Note over P,API: Booking flow continues regardless of validation result
+    Note over AUDIT: Validation result appended as metadata on Appointment record

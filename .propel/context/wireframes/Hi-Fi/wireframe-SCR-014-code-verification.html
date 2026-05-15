@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-014 | Medical Code Verification | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-014 Medical Code Verification
+  | Element              | Action | Target Screen                                  |
+  |----------------------|--------|------------------------------------------------|
+  | #nav-queue           | click  | wireframe-SCR-011-staff-queue.html             |
+  | #btn-done            | click  | wireframe-SCR-011-staff-queue.html             |
+  | Modify modal close   | click  | (inline — same screen)                        |
+
+  Source UCs: UC-023 (AI Code Suggestion), UC-024 (Verify Medical Codes)
+  UXR: UXR-107 (audit trail on accept/modify/reject), UXR-403 (AI badge + confidence %)
+  FL: FL-011 (queue → code verification → queue)
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;--c-err:#DC2626;--c-err-h:#B91C1C;--c-err-bg:#FEE2E2;--c-ai:#7C3AED;--c-ai-bg:#EDE9FE;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);--nav-h:64px;--max-w:1280px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}a:hover{text-decoration:underline}
+    .topnav{height:var(--nav-h);background:var(--cs);border-bottom:1px solid var(--cbord);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topnav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--s8);height:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--s4)}
+    .nav-logo{display:flex;align-items:center;gap:var(--s2);font-weight:700;color:var(--ct);font-size:var(--t-md)}
+    .nav-logo-mark{width:32px;height:32px;background:var(--c-ok);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-weight:700;font-size:var(--t-base)}
+    .nav-link{padding:var(--s2) var(--s3);border-radius:var(--r-sm);font-size:var(--t-base);color:var(--ct-s);font-weight:500;text-decoration:none;transition:background .1s}
+    .nav-link:hover{background:var(--cs-s);color:var(--ct);text-decoration:none}
+    .role-badge{display:flex;align-items:center;gap:var(--s2);padding:var(--s1) var(--s3);background:var(--c-ok-bg);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;color:var(--c-ok)}
+    .main-content{max-width:var(--max-w);margin:0 auto;padding:var(--s8)}
+    .breadcrumb{display:flex;align-items:center;gap:var(--s2);font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s6)}
+    .breadcrumb a{color:var(--ct-s)}
+    .breadcrumb a:hover{color:var(--cb)}
+    .breadcrumb-sep{color:var(--ct-d)}
+    .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s6);flex-wrap:wrap;gap:var(--s4)}
+    .page-title{font-size:var(--t-2xl);font-weight:600;color:var(--ct)}
+    .patient-summary{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s4) var(--s6);margin-bottom:var(--s6);display:flex;align-items:center;gap:var(--s4);flex-wrap:wrap}
+    .patient-summary-label{font-size:var(--t-sm);color:var(--ct-s)}
+    .patient-summary-value{font-weight:600}
+    .badge{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s2);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;white-space:nowrap}
+    .badge-ai{background:var(--c-ai-bg);color:var(--c-ai);border:1px solid #DDD6FE}
+    .badge-accepted{background:var(--c-ok-bg);color:var(--c-ok)}
+    .badge-modified{background:var(--cb-l);color:var(--cb)}
+    .badge-rejected{background:var(--cs-s);color:var(--ct-d);text-decoration:line-through}
+    .badge-pending{background:var(--c-warn-bg);color:var(--c-warn)}
+    /* Code suggestion rows */
+    .code-row{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s4) var(--s6);margin-bottom:var(--s4);transition:border-color .2s}
+    .code-row.accepted{border-color:var(--c-ok);border-left:4px solid var(--c-ok)}
+    .code-row.modified{border-color:var(--cb);border-left:4px solid var(--cb)}
+    .code-row.rejected{opacity:.6;border-color:var(--cbord);border-left:4px solid var(--ct-d)}
+    .code-top{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s4);margin-bottom:var(--s3);flex-wrap:wrap}
+    .code-main{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
+    .code-value{font-size:var(--t-xl);font-weight:700;font-family:monospace}
+    .code-desc{font-size:var(--t-base);font-weight:600}
+    .code-meta{font-size:var(--t-sm);color:var(--ct-s);display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
+    .confidence-bar-wrap{width:80px;height:8px;background:var(--cbord);border-radius:var(--r-full);overflow:hidden}
+    .confidence-bar{height:100%;border-radius:var(--r-full)}
+    .confidence-high{background:var(--c-ok)}
+    .confidence-med{background:var(--c-warn)}
+    .confidence-low{background:var(--c-err)}
+    .code-evidence{background:var(--cs-m);border:1px solid var(--cbord);border-radius:var(--r-sm);padding:var(--s3);font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s3);border-left:3px solid var(--c-ai)}
+    .code-evidence-label{font-size:var(--t-xs);font-weight:700;color:var(--c-ai);text-transform:uppercase;letter-spacing:.05em;margin-bottom:var(--s1)}
+    .code-actions{display:flex;gap:var(--s2);flex-wrap:wrap}
+    .code-status-msg{font-size:var(--t-xs);color:var(--ct-d);font-style:italic;margin-top:var(--s2)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s4);height:40px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-sm);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s;text-decoration:none;white-space:nowrap}
+    .btn-lg{height:44px;font-size:var(--t-base);padding:0 var(--s6)}
+    .btn-accept{background:var(--c-ok-bg);color:var(--c-ok);border-color:var(--c-ok)}
+    .btn-accept:hover{background:#BBF7D0}
+    .btn-modify{background:var(--cb-l);color:var(--cb);border-color:var(--cb)}
+    .btn-modify:hover{background:#BFDBFE}
+    .btn-reject{background:var(--c-err-bg);color:var(--c-err);border-color:var(--c-err)}
+    .btn-reject:hover{background:#FECACA}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h);text-decoration:none}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l);text-decoration:none}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    /* Modify Modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;z-index:1000;display:none}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--cs);border-radius:var(--r-lg);box-shadow:var(--sh-lg);max-width:480px;width:100%;padding:var(--s8);margin:var(--s4)}
+    .modal-title{font-size:var(--t-lg);font-weight:600;margin-bottom:var(--s6)}
+    .field{display:flex;flex-direction:column;gap:var(--s1);margin-bottom:var(--s4)}
+    .field label{font-size:var(--t-sm);font-weight:600;color:var(--ct-s);text-transform:uppercase;letter-spacing:.05em}
+    .field input,.field textarea{width:100%;padding:var(--s2) var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);color:var(--ct)}
+    .field input{height:44px}
+    .field textarea{min-height:80px;resize:vertical}
+    .field input:focus,.field textarea:focus{border-color:var(--cbord-f);outline:3px solid rgba(26,86,219,.2);outline-offset:0}
+    .modal-actions{display:flex;gap:var(--s3);justify-content:flex-end;margin-top:var(--s6)}
+    /* Progress summary */
+    .progress-summary{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s4) var(--s6);margin-bottom:var(--s6);display:flex;align-items:center;gap:var(--s6);flex-wrap:wrap}
+    .ps-stat{text-align:center}
+    .ps-num{font-size:var(--t-xl);font-weight:700}
+    .ps-label{font-size:var(--t-xs);color:var(--ct-s)}
+    @media(max-width:640px){.main-content{padding:var(--s4)}.topnav-inner{padding:0 var(--s4)}.code-top{flex-direction:column}.code-actions{flex-wrap:wrap}}
+  </style>
+</head>
+<body>
+  <!-- Modify code modal (UC-023 — modify code) -->
+  <div id="modify-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modify-modal-title">
+    <div class="modal">
+      <h2 id="modify-modal-title" class="modal-title">Modify code suggestion</h2>
+      <div class="field">
+        <label for="modify-code">ICD-10 / CPT code <span style="color:var(--c-err)">*</span></label>
+        <input type="text" id="modify-code" value="" placeholder="e.g. I10" aria-required="true">
+      </div>
+      <div class="field">
+        <label for="modify-desc">Code description</label>
+        <input type="text" id="modify-desc" value="" placeholder="Description">
+      </div>
+      <div class="field">
+        <label for="modify-reason">Reason for modification</label>
+        <textarea id="modify-reason" placeholder="Describe why you changed this code…"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="document.getElementById('modify-modal').classList.remove('open')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveModify()">Save modification</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="topnav" aria-label="Main navigation — Staff Portal">
+    <div class="topnav-inner">
+      <a href="wireframe-SCR-011-staff-queue.html" class="nav-logo" aria-label="Staff Portal home" id="nav-queue">
+        <div class="nav-logo-mark" aria-hidden="true">S</div>
+        <span>Staff Portal</span>
+      </a>
+      <a href="wireframe-SCR-011-staff-queue.html" class="nav-link">📋 Queue</a>
+      <span class="role-badge" aria-label="Staff role">👩‍⚕ Staff</span>
+    </div>
+  </nav>
+
+  <main class="main-content" role="main">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="wireframe-SCR-011-staff-queue.html">Queue</a>
+      <span class="breadcrumb-sep" aria-hidden="true">/</span>
+      <a href="wireframe-SCR-013-staff-patient-profile.html">Michael Chen</a>
+      <span class="breadcrumb-sep" aria-hidden="true">/</span>
+      <span style="color:var(--ct);font-weight:600" aria-current="page">Code Verification</span>
+    </nav>
+
+    <div class="page-header">
+      <h1 class="page-title">Medical Code Verification</h1>
+      <a href="wireframe-SCR-011-staff-queue.html" class="btn btn-ghost" id="btn-done">← Back to queue</a>
+    </div>
+
+    <!-- Patient context -->
+    <div class="patient-summary">
+      <div><span class="patient-summary-label">Patient</span><br><span class="patient-summary-value">Michael Chen</span></div>
+      <div><span class="patient-summary-label">Appointment</span><br><span class="patient-summary-value">Annual Physical · May 20, 2026 · 9:00 AM</span></div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:var(--s2)">
+        <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI Suggested</span>
+        <span style="font-size:var(--t-sm);color:var(--ct-s)">4 codes · All pending review</span>
+      </div>
+    </div>
+
+    <!-- Decision progress summary -->
+    <div class="progress-summary" role="status" aria-live="polite" aria-label="Code review progress">
+      <div class="ps-stat"><div class="ps-num" id="stat-pending" style="color:var(--c-warn)">4</div><div class="ps-label">Pending</div></div>
+      <div class="ps-stat"><div class="ps-num" id="stat-accepted" style="color:var(--c-ok)">0</div><div class="ps-label">Accepted</div></div>
+      <div class="ps-stat"><div class="ps-num" id="stat-modified" style="color:var(--cb)">0</div><div class="ps-label">Modified</div></div>
+      <div class="ps-stat"><div class="ps-num" id="stat-rejected" style="color:var(--c-err)">0</div><div class="ps-label">Rejected</div></div>
+      <button class="btn btn-primary btn-lg" id="btn-submit-all" onclick="submitAll()" style="margin-left:auto" disabled>Submit all decisions</button>
+    </div>
+
+    <!-- Code rows (mcs-001 through mcs-004) -->
+    <!-- mcs-001: I10 Hypertension (high confidence) -->
+    <div class="code-row" id="row-mcs001" data-state="pending">
+      <div class="code-top">
+        <div>
+          <div class="code-main">
+            <span class="code-value">I10</span>
+            <span class="code-desc">Essential Hypertension</span>
+            <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span>
+            <span id="state-badge-mcs001" class="badge badge-pending">⏳ Pending</span>
+          </div>
+          <div class="code-meta" style="margin-top:var(--s2)">
+            <span>ICD-10-CM</span>
+            <span>Confidence:</span>
+            <div class="confidence-bar-wrap" aria-label="Confidence: 94%"><div class="confidence-bar confidence-high" style="width:94%"></div></div>
+            <strong>94%</strong>
+          </div>
+        </div>
+      </div>
+      <div class="code-evidence">
+        <div class="code-evidence-label">AI evidence snippet</div>
+        "Patient has a documented history of hypertension with BP readings consistently above 130/80. Current medication: Lisinopril 10mg daily."
+      </div>
+      <div class="code-actions">
+        <button class="btn btn-accept" onclick="decide('mcs001','accepted')" aria-label="Accept I10 — Essential Hypertension">✓ Accept</button>
+        <button class="btn btn-modify" onclick="openModify('mcs001','I10','Essential Hypertension')" aria-label="Modify I10">✏ Modify</button>
+        <button class="btn btn-reject" onclick="decide('mcs001','rejected')" aria-label="Reject I10">✕ Reject</button>
+      </div>
+      <div id="audit-mcs001" class="code-status-msg" aria-live="polite"></div>
+    </div>
+
+    <!-- mcs-002: E78.5 Hyperlipidemia (high confidence) -->
+    <div class="code-row" id="row-mcs002" data-state="pending">
+      <div class="code-top">
+        <div>
+          <div class="code-main">
+            <span class="code-value">E78.5</span>
+            <span class="code-desc">Hyperlipidemia, Unspecified</span>
+            <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span>
+            <span id="state-badge-mcs002" class="badge badge-pending">⏳ Pending</span>
+          </div>
+          <div class="code-meta" style="margin-top:var(--s2)">
+            <span>ICD-10-CM</span>
+            <span>Confidence:</span>
+            <div class="confidence-bar-wrap" aria-label="Confidence: 91%"><div class="confidence-bar confidence-high" style="width:91%"></div></div>
+            <strong>91%</strong>
+          </div>
+        </div>
+      </div>
+      <div class="code-evidence">
+        <div class="code-evidence-label">AI evidence snippet</div>
+        "Lab results (Mar 2026): Total cholesterol 215 mg/dL, LDL 138 mg/dL. Patient on Atorvastatin 40mg."
+      </div>
+      <div class="code-actions">
+        <button class="btn btn-accept" onclick="decide('mcs002','accepted')">✓ Accept</button>
+        <button class="btn btn-modify" onclick="openModify('mcs002','E78.5','Hyperlipidemia, Unspecified')">✏ Modify</button>
+        <button class="btn btn-reject" onclick="decide('mcs002','rejected')">✕ Reject</button>
+      </div>
+      <div id="audit-mcs002" class="code-status-msg" aria-live="polite"></div>
+    </div>
+
+    <!-- mcs-003: 99214 E&M Visit (medium confidence) -->
+    <div class="code-row" id="row-mcs003" data-state="pending">
+      <div class="code-top">
+        <div>
+          <div class="code-main">
+            <span class="code-value">99214</span>
+            <span class="code-desc">Office Visit — Moderate Complexity</span>
+            <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span>
+            <span id="state-badge-mcs003" class="badge badge-pending">⏳ Pending</span>
+          </div>
+          <div class="code-meta" style="margin-top:var(--s2)">
+            <span>CPT</span>
+            <span>Confidence:</span>
+            <div class="confidence-bar-wrap" aria-label="Confidence: 72%"><div class="confidence-bar confidence-med" style="width:72%"></div></div>
+            <strong>72%</strong>
+          </div>
+        </div>
+      </div>
+      <div class="code-evidence">
+        <div class="code-evidence-label">AI evidence snippet</div>
+        "Annual physical with 2 chronic conditions managed (HTN, hyperlipidemia). Visit duration and complexity suggest 99214 rather than 99213."
+      </div>
+      <div class="code-actions">
+        <button class="btn btn-accept" onclick="decide('mcs003','accepted')">✓ Accept</button>
+        <button class="btn btn-modify" onclick="openModify('mcs003','99214','Office Visit — Moderate Complexity')">✏ Modify</button>
+        <button class="btn btn-reject" onclick="decide('mcs003','rejected')">✕ Reject</button>
+      </div>
+      <div id="audit-mcs003" class="code-status-msg" aria-live="polite"></div>
+    </div>
+
+    <!-- mcs-004: 85025 CBC (low confidence) -->
+    <div class="code-row" id="row-mcs004" data-state="pending">
+      <div class="code-top">
+        <div>
+          <div class="code-main">
+            <span class="code-value">85025</span>
+            <span class="code-desc">Complete Blood Count (CBC)</span>
+            <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span>
+            <span id="state-badge-mcs004" class="badge badge-pending">⏳ Pending</span>
+          </div>
+          <div class="code-meta" style="margin-top:var(--s2)">
+            <span>CPT</span>
+            <span>Confidence:</span>
+            <div class="confidence-bar-wrap" aria-label="Confidence: 58%"><div class="confidence-bar confidence-low" style="width:58%"></div></div>
+            <strong>58%</strong>
+          </div>
+        </div>
+      </div>
+      <div class="code-evidence">
+        <div class="code-evidence-label">AI evidence snippet</div>
+        "CBC ordered during annual physical. Low confidence — verify whether lab was performed at this visit or only referenced from Mar 2026 records."
+      </div>
+      <div class="code-actions">
+        <button class="btn btn-accept" onclick="decide('mcs004','accepted')">✓ Accept</button>
+        <button class="btn btn-modify" onclick="openModify('mcs004','85025','Complete Blood Count (CBC)')">✏ Modify</button>
+        <button class="btn btn-reject" onclick="decide('mcs004','rejected')">✕ Reject</button>
+      </div>
+      <div id="audit-mcs004" class="code-status-msg" aria-live="polite"></div>
+    </div>
+  </main>
+
+  <script>
+    const states = {mcs001:'pending',mcs002:'pending',mcs003:'pending',mcs004:'pending'};
+    let currentModifyId = null;
+
+    function decide(id, decision) {
+      states[id] = decision;
+      const row = document.getElementById('row-' + id);
+      const badge = document.getElementById('state-badge-' + id);
+      const audit = document.getElementById('audit-' + id);
+      row.className = 'code-row ' + decision;
+      if (decision === 'accepted') {
+        badge.className = 'badge badge-accepted'; badge.textContent = '✓ Accepted';
+        audit.textContent = `Accepted by Staff — ${new Date().toLocaleTimeString()}`;
+      } else if (decision === 'modified') {
+        badge.className = 'badge badge-modified'; badge.textContent = '✏ Modified';
+        audit.textContent = `Modified by Staff — ${new Date().toLocaleTimeString()}`;
+      } else {
+        badge.className = 'badge'; badge.style.cssText='background:var(--cs-s);color:var(--ct-d)';
+        badge.textContent = '✕ Rejected';
+        audit.textContent = `Rejected by Staff — ${new Date().toLocaleTimeString()}`;
+        row.querySelector('.code-actions').querySelectorAll('button').forEach(b=>b.disabled=true);
+      }
+      updateStats();
+    }
+
+    function updateStats() {
+      const vals = Object.values(states);
+      document.getElementById('stat-pending').textContent = vals.filter(v=>v==='pending').length;
+      document.getElementById('stat-accepted').textContent = vals.filter(v=>v==='accepted').length;
+      document.getElementById('stat-modified').textContent = vals.filter(v=>v==='modified').length;
+      document.getElementById('stat-rejected').textContent = vals.filter(v=>v==='rejected').length;
+      const allDecided = vals.every(v=>v!=='pending');
+      document.getElementById('btn-submit-all').disabled = !allDecided;
+    }
+
+    function openModify(id, code, desc) {
+      currentModifyId = id;
+      document.getElementById('modify-code').value = code;
+      document.getElementById('modify-desc').value = desc;
+      document.getElementById('modify-reason').value = '';
+      document.getElementById('modify-modal').classList.add('open');
+    }
+
+    function saveModify() {
+      if (currentModifyId) decide(currentModifyId, 'modified');
+      document.getElementById('modify-modal').classList.remove('open');
+    }
+
+    function submitAll() {
+      const btn = document.getElementById('btn-submit-all');
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+      setTimeout(() => { window.location.href = 'wireframe-SCR-011-staff-queue.html'; }, 900);
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') document.getElementById('modify-modal').classList.remove('open');
+    });
+  </script>
+</body>
+</html>

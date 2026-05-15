@@ -1,0 +1,18 @@
+@startuml uc-send-reminder
+left to right direction
+actor "Hangfire\n(System)" as HF
+actor "Email/SMS\nGateway" as GW
+rectangle "Reminders & Notifications" {
+  usecase "Send Reminder /\nNotification (UC-012)" as UC012
+  usecase "Retrieve Appointment\n& Contact" as RAC
+  usecase "Compose Message" as CM
+  usecase "Dispatch via Gateway" as DG
+  usecase "Log Delivery Status" as LDS
+}
+HF --> UC012
+UC012 ..> RAC : <<include>>
+UC012 ..> CM : <<include>>
+UC012 ..> DG : <<include>>
+UC012 ..> LDS : <<include>>
+DG --> GW
+@enduml

@@ -1,0 +1,491 @@
+{
+  "_meta": {
+    "description": "Sample data for UPACIP high-fidelity wireframes. Entities reflect healthcare scheduling and clinical intelligence domain. Used by all Hi-Fi HTML wireframes for realistic content binding.",
+    "entities": {
+      "user": "Authenticated system user with role (Patient | Staff | Admin). Patients book appointments and complete intake. Staff manage walk-ins and queue. Admins manage user accounts.",
+      "appointment": "A scheduled meeting between a patient and a provider at a specific slot. Can be Booked, Arrived, Cancelled, or Completed.",
+      "appointmentSlot": "A discrete available time block on a provider's schedule. Can be Available, Taken, or Blocked.",
+      "waitlistEntry": "A preferred-slot request registered by a patient when their desired slot is unavailable.",
+      "intakeRecord": "Pre-appointment health information submitted by a patient via AI or manual intake.",
+      "clinicalDocument": "A PDF clinical document uploaded by a patient. Triggers AI extraction upon upload.",
+      "extractedClinicalData": "Structured data extracted from a clinicalDocument by the Gemini AI pipeline.",
+      "patientProfile360": "Aggregated patient view combining intake, extracted clinical data, and manual entries.",
+      "dataConflict": "A discrepancy detected between values from multiple clinical data sources for the same patient.",
+      "medicalCodeSuggestion": "An ICD-10 or CPT code suggested by the Gemini AI for a patient encounter, pending staff verification.",
+      "notification": "A system notification delivered to a user.",
+      "insuranceRecord": "Insurance provider name and member ID associated with an appointment.",
+      "calendarSync": "An OAuth-connected external calendar (Google or Outlook) for appointment sync."
+    }
+  },
+
+  "user": [
+    {
+      "id": "usr-001",
+      "email": "sarah.johnson@email.com",
+      "firstName": "Sarah",
+      "lastName": "Johnson",
+      "role": "Patient",
+      "dateOfBirth": "1985-03-12",
+      "phone": "(555) 214-8832",
+      "createdAt": "2025-11-04",
+      "isActive": true
+    },
+    {
+      "id": "usr-002",
+      "email": "michael.chen@email.com",
+      "firstName": "Michael",
+      "lastName": "Chen",
+      "role": "Patient",
+      "dateOfBirth": "1972-07-29",
+      "phone": "(555) 302-5519",
+      "createdAt": "2025-09-18",
+      "isActive": true
+    },
+    {
+      "id": "usr-003",
+      "email": "emma.rodriguez@email.com",
+      "firstName": "Emma",
+      "lastName": "Rodriguez",
+      "role": "Patient",
+      "dateOfBirth": "1990-11-05",
+      "phone": "(555) 481-7743",
+      "createdAt": "2026-01-22",
+      "isActive": true
+    },
+    {
+      "id": "usr-004",
+      "email": "a.walsh@clinic.com",
+      "firstName": "Amanda",
+      "lastName": "Walsh",
+      "role": "Staff",
+      "phone": "(555) 900-1122",
+      "createdAt": "2024-03-01",
+      "isActive": true
+    },
+    {
+      "id": "usr-005",
+      "email": "alex.thompson@clinic.com",
+      "firstName": "Alex",
+      "lastName": "Thompson",
+      "role": "Staff",
+      "phone": "(555) 900-1133",
+      "createdAt": "2024-05-15",
+      "isActive": true
+    },
+    {
+      "id": "usr-006",
+      "email": "jennifer.park@clinic.com",
+      "firstName": "Jennifer",
+      "lastName": "Park",
+      "role": "Admin",
+      "phone": "(555) 900-0011",
+      "createdAt": "2023-08-01",
+      "isActive": true
+    },
+    {
+      "id": "usr-007",
+      "email": "david.nguyen@email.com",
+      "firstName": "David",
+      "lastName": "Nguyen",
+      "role": "Patient",
+      "dateOfBirth": "1958-04-18",
+      "phone": "(555) 642-9921",
+      "createdAt": "2025-06-10",
+      "isActive": false,
+      "deactivatedAt": "2026-03-20"
+    }
+  ],
+
+  "appointmentSlot": [
+    { "id": "slot-001", "date": "2026-05-20", "time": "09:00 AM", "duration": 30, "status": "Available", "provider": "Dr. M. Okafor" },
+    { "id": "slot-002", "date": "2026-05-20", "time": "09:30 AM", "duration": 30, "status": "Taken", "provider": "Dr. M. Okafor" },
+    { "id": "slot-003", "date": "2026-05-20", "time": "10:00 AM", "duration": 30, "status": "Available", "provider": "Dr. M. Okafor" },
+    { "id": "slot-004", "date": "2026-05-20", "time": "10:30 AM", "duration": 30, "status": "Available", "provider": "Dr. M. Okafor" },
+    { "id": "slot-005", "date": "2026-05-20", "time": "11:00 AM", "duration": 30, "status": "Taken", "provider": "Dr. M. Okafor" },
+    { "id": "slot-006", "date": "2026-05-20", "time": "11:30 AM", "duration": 30, "status": "Available", "provider": "Dr. M. Okafor" },
+    { "id": "slot-007", "date": "2026-05-20", "time": "01:00 PM", "duration": 30, "status": "Available", "provider": "Dr. M. Okafor" },
+    { "id": "slot-008", "date": "2026-05-20", "time": "01:30 PM", "duration": 30, "status": "Available", "provider": "Dr. M. Okafor" },
+    { "id": "slot-009", "date": "2026-05-20", "time": "02:00 PM", "duration": 30, "status": "Taken", "provider": "Dr. M. Okafor" },
+    { "id": "slot-010", "date": "2026-05-20", "time": "02:30 PM", "duration": 30, "status": "Available", "provider": "Dr. M. Okafor" },
+    { "id": "slot-011", "date": "2026-05-20", "time": "03:00 PM", "duration": 30, "status": "Available", "provider": "Dr. M. Okafor" },
+    { "id": "slot-012", "date": "2026-05-20", "time": "03:30 PM", "duration": 30, "status": "Blocked", "provider": "Dr. M. Okafor" }
+  ],
+
+  "appointment": [
+    {
+      "id": "appt-001",
+      "patientId": "usr-001",
+      "slotId": "slot-003",
+      "provider": "Dr. M. Okafor",
+      "type": "Annual Physical",
+      "status": "Booked",
+      "date": "2026-05-20",
+      "time": "10:00 AM",
+      "insuranceProvider": "BlueCross BlueShield",
+      "insuranceMemberId": "BCB-44721-A",
+      "insuranceStatus": "Validated",
+      "intakeCompleted": false,
+      "createdAt": "2026-05-14"
+    },
+    {
+      "id": "appt-002",
+      "patientId": "usr-001",
+      "slotId": null,
+      "provider": "Dr. M. Okafor",
+      "type": "Follow-up",
+      "status": "Booked",
+      "date": "2026-06-10",
+      "time": "02:00 PM",
+      "insuranceProvider": "BlueCross BlueShield",
+      "insuranceMemberId": "BCB-44721-A",
+      "insuranceStatus": "Validated",
+      "intakeCompleted": true,
+      "createdAt": "2026-04-20"
+    },
+    {
+      "id": "appt-003",
+      "patientId": "usr-002",
+      "slotId": null,
+      "provider": "Dr. M. Okafor",
+      "type": "Consultation",
+      "status": "Arrived",
+      "date": "2026-05-14",
+      "time": "09:30 AM",
+      "insuranceProvider": "Aetna",
+      "insuranceMemberId": "AET-09341-C",
+      "insuranceStatus": "Validated",
+      "intakeCompleted": true,
+      "createdAt": "2026-05-02"
+    },
+    {
+      "id": "appt-004",
+      "patientId": "usr-003",
+      "slotId": null,
+      "provider": "Dr. M. Okafor",
+      "type": "New Patient Visit",
+      "status": "Booked",
+      "date": "2026-05-14",
+      "time": "11:00 AM",
+      "insuranceProvider": "United Healthcare",
+      "insuranceMemberId": "UHC-55219-E",
+      "insuranceStatus": "Not Recognised",
+      "intakeCompleted": false,
+      "createdAt": "2026-05-07"
+    },
+    {
+      "id": "appt-005",
+      "patientId": "usr-001",
+      "slotId": null,
+      "provider": "Dr. S. Patel",
+      "type": "Dermatology Consult",
+      "status": "Completed",
+      "date": "2026-04-15",
+      "time": "10:30 AM",
+      "insuranceProvider": "BlueCross BlueShield",
+      "insuranceMemberId": "BCB-44721-A",
+      "insuranceStatus": "Validated",
+      "intakeCompleted": true,
+      "createdAt": "2026-04-01"
+    },
+    {
+      "id": "appt-006",
+      "patientId": "usr-002",
+      "slotId": null,
+      "provider": "Dr. M. Okafor",
+      "type": "Walk-in",
+      "status": "Booked",
+      "date": "2026-05-14",
+      "time": "01:30 PM",
+      "insuranceProvider": "Aetna",
+      "insuranceMemberId": "AET-09341-C",
+      "insuranceStatus": "Validated",
+      "intakeCompleted": false,
+      "createdAt": "2026-05-14",
+      "isWalkin": true
+    }
+  ],
+
+  "waitlistEntry": [
+    {
+      "id": "wl-001",
+      "patientId": "usr-001",
+      "preferredSlotId": "slot-005",
+      "preferredDate": "2026-05-20",
+      "preferredTime": "11:00 AM",
+      "provider": "Dr. M. Okafor",
+      "status": "Active",
+      "queuePosition": 2,
+      "createdAt": "2026-05-14"
+    }
+  ],
+
+  "intakeRecord": [
+    {
+      "id": "intake-001",
+      "patientId": "usr-001",
+      "appointmentId": "appt-002",
+      "method": "AI",
+      "chiefComplaint": "Persistent lower back pain for 3 weeks, worse in the morning",
+      "currentMedications": ["Ibuprofen 400mg as needed", "Vitamin D 2000 IU daily"],
+      "allergies": ["Penicillin — rash and hives"],
+      "smokingStatus": "Never",
+      "alcoholUse": "Occasional",
+      "exerciseFrequency": "3–4 times per week",
+      "completedAt": "2026-04-22",
+      "aiAssisted": true
+    },
+    {
+      "id": "intake-002",
+      "patientId": "usr-002",
+      "appointmentId": "appt-003",
+      "method": "Manual",
+      "chiefComplaint": "Routine check-up and blood pressure monitoring",
+      "currentMedications": ["Lisinopril 10mg daily", "Atorvastatin 20mg daily", "Aspirin 81mg daily"],
+      "allergies": ["Sulfa drugs — difficulty breathing"],
+      "smokingStatus": "Former — quit 2018",
+      "alcoholUse": "None",
+      "exerciseFrequency": "2–3 times per week",
+      "completedAt": "2026-05-10",
+      "aiAssisted": false
+    }
+  ],
+
+  "clinicalDocument": [
+    {
+      "id": "doc-001",
+      "patientId": "usr-002",
+      "type": "Historical",
+      "filename": "cardiology-report-2025-11.pdf",
+      "uploadedAt": "2026-02-14",
+      "sizeKb": 384,
+      "extractionStatus": "Complete",
+      "extractedAt": "2026-02-14"
+    },
+    {
+      "id": "doc-002",
+      "patientId": "usr-002",
+      "type": "Post-visit",
+      "filename": "discharge-summary-general-2026-01.pdf",
+      "uploadedAt": "2026-01-28",
+      "sizeKb": 128,
+      "extractionStatus": "Complete",
+      "extractedAt": "2026-01-28"
+    },
+    {
+      "id": "doc-003",
+      "patientId": "usr-001",
+      "type": "Historical",
+      "filename": "dermatology-consult-2025-09.pdf",
+      "uploadedAt": "2026-04-15",
+      "sizeKb": 256,
+      "extractionStatus": "Complete",
+      "extractedAt": "2026-04-15"
+    },
+    {
+      "id": "doc-004",
+      "patientId": "usr-001",
+      "type": "Post-visit",
+      "filename": "lab-results-2026-04.pdf",
+      "uploadedAt": "2026-04-22",
+      "sizeKb": 92,
+      "extractionStatus": "Failed",
+      "extractedAt": null,
+      "extractionError": "Unable to parse scanned image — handwritten annotations detected"
+    }
+  ],
+
+  "extractedClinicalData": [
+    {
+      "id": "ecd-001",
+      "documentId": "doc-001",
+      "patientId": "usr-002",
+      "category": "Vitals",
+      "field": "Blood Pressure",
+      "value": "148/92 mmHg",
+      "recordedDate": "2025-11-10",
+      "source": "Cardiology Report — Nov 2025",
+      "provenance": "AI",
+      "confidence": 0.97
+    },
+    {
+      "id": "ecd-002",
+      "documentId": "doc-001",
+      "patientId": "usr-002",
+      "category": "Medications",
+      "field": "Metoprolol",
+      "value": "25mg twice daily — started Nov 2025",
+      "recordedDate": "2025-11-10",
+      "source": "Cardiology Report — Nov 2025",
+      "provenance": "AI",
+      "confidence": 0.94
+    },
+    {
+      "id": "ecd-003",
+      "documentId": "doc-002",
+      "patientId": "usr-002",
+      "category": "Medications",
+      "field": "Metoprolol",
+      "value": "50mg once daily — adjusted Jan 2026",
+      "recordedDate": "2026-01-20",
+      "source": "Discharge Summary — Jan 2026",
+      "provenance": "AI",
+      "confidence": 0.96
+    }
+  ],
+
+  "dataConflict": [
+    {
+      "id": "conf-001",
+      "patientId": "usr-002",
+      "field": "Metoprolol dosage",
+      "value1": "25mg twice daily",
+      "value1Source": "Cardiology Report — Nov 2025",
+      "value2": "50mg once daily",
+      "value2Source": "Discharge Summary — Jan 2026",
+      "severity": "High",
+      "status": "Unresolved",
+      "detectedAt": "2026-01-28"
+    }
+  ],
+
+  "medicalCodeSuggestion": [
+    {
+      "id": "mcs-001",
+      "appointmentId": "appt-003",
+      "patientId": "usr-002",
+      "type": "ICD-10",
+      "code": "I10",
+      "description": "Essential (primary) hypertension",
+      "confidence": 0.96,
+      "evidence": "BP reading 148/92 mmHg on cardiology report; patient on antihypertensive medications (Lisinopril, Metoprolol)",
+      "status": "Pending",
+      "aiGenerated": true
+    },
+    {
+      "id": "mcs-002",
+      "appointmentId": "appt-003",
+      "patientId": "usr-002",
+      "type": "ICD-10",
+      "code": "E78.5",
+      "description": "Hyperlipidemia, unspecified",
+      "confidence": 0.89,
+      "evidence": "Patient on Atorvastatin 20mg daily per intake record",
+      "status": "Pending",
+      "aiGenerated": true
+    },
+    {
+      "id": "mcs-003",
+      "appointmentId": "appt-003",
+      "patientId": "usr-002",
+      "type": "CPT",
+      "code": "99214",
+      "description": "Office or other outpatient visit, established patient, moderate complexity",
+      "confidence": 0.82,
+      "evidence": "Follow-up consultation with existing patient; multiple chronic conditions reviewed; 25-minute encounter",
+      "status": "Pending",
+      "aiGenerated": true
+    },
+    {
+      "id": "mcs-004",
+      "appointmentId": "appt-003",
+      "patientId": "usr-002",
+      "type": "CPT",
+      "code": "85025",
+      "description": "Complete blood count (CBC) with differential",
+      "confidence": 0.74,
+      "evidence": "Mentioned in discharge summary as recommended follow-up test",
+      "status": "Pending",
+      "aiGenerated": true
+    }
+  ],
+
+  "notification": [
+    {
+      "id": "notif-001",
+      "userId": "usr-001",
+      "type": "Reminder",
+      "message": "Reminder: Your appointment with Dr. M. Okafor is tomorrow at 10:00 AM.",
+      "isRead": false,
+      "createdAt": "2026-05-19T08:00:00Z"
+    },
+    {
+      "id": "notif-002",
+      "userId": "usr-001",
+      "type": "Confirmation",
+      "message": "Booking confirmed: Annual Physical with Dr. M. Okafor on May 20 at 10:00 AM. Confirmation emailed.",
+      "isRead": true,
+      "createdAt": "2026-05-14T10:32:00Z"
+    },
+    {
+      "id": "notif-003",
+      "userId": "usr-001",
+      "type": "WaitlistUpdate",
+      "message": "You are #2 in the waitlist for the 11:00 AM slot on May 20.",
+      "isRead": false,
+      "createdAt": "2026-05-14T10:33:00Z"
+    }
+  ],
+
+  "calendarSync": [
+    {
+      "id": "calsync-001",
+      "userId": "usr-001",
+      "provider": "Google",
+      "status": "Connected",
+      "connectedAt": "2026-03-15",
+      "lastSyncedAt": "2026-05-14T10:32:00Z"
+    }
+  ],
+
+  "insuranceRecord": [
+    {
+      "id": "ins-001",
+      "patientId": "usr-001",
+      "providerName": "BlueCross BlueShield",
+      "memberId": "BCB-44721-A",
+      "validationStatus": "Validated",
+      "validatedAt": "2026-05-14"
+    },
+    {
+      "id": "ins-002",
+      "patientId": "usr-002",
+      "providerName": "Aetna",
+      "memberId": "AET-09341-C",
+      "validationStatus": "Validated",
+      "validatedAt": "2026-05-02"
+    },
+    {
+      "id": "ins-003",
+      "patientId": "usr-003",
+      "providerName": "United Healthcare",
+      "memberId": "UHC-55219-E",
+      "validationStatus": "Not Recognised",
+      "validatedAt": "2026-05-07"
+    }
+  ],
+
+  "patientProfile360": [
+    {
+      "id": "profile-001",
+      "patientId": "usr-002",
+      "generatedAt": "2026-02-14",
+      "lastUpdated": "2026-05-10",
+      "vitals": [
+        { "field": "Blood Pressure", "value": "148/92 mmHg", "date": "2025-11-10", "provenance": "AI", "verified": false },
+        { "field": "Heart Rate", "value": "74 bpm", "date": "2025-11-10", "provenance": "AI", "verified": true },
+        { "field": "Weight", "value": "82 kg", "date": "2026-01-20", "provenance": "AI", "verified": false }
+      ],
+      "medications": [
+        { "name": "Lisinopril", "dose": "10mg daily", "provenance": "Manual", "verified": true },
+        { "name": "Atorvastatin", "dose": "20mg daily", "provenance": "Manual", "verified": true },
+        { "name": "Aspirin", "dose": "81mg daily", "provenance": "Manual", "verified": true },
+        { "name": "Metoprolol", "dose": "CONFLICTED — see conflict", "provenance": "AI", "verified": false, "hasConflict": true }
+      ],
+      "conditions": [
+        { "name": "Essential Hypertension (I10)", "onsetDate": "2020-06-01", "provenance": "AI", "verified": false },
+        { "name": "Hyperlipidemia (E78.5)", "onsetDate": "2021-03-15", "provenance": "AI", "verified": false }
+      ],
+      "conflicts": 1
+    }
+  ]
+}

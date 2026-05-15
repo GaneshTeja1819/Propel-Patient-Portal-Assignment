@@ -1,0 +1,18 @@
+@startuml uc-calendar-sync
+left to right direction
+actor "Patient" as P
+actor "Google Calendar\nAPI" as GCal
+actor "Microsoft Graph\nAPI (Outlook)" as OL
+rectangle "Calendar Synchronization" {
+  usecase "Sync to Calendar\n(UC-013)" as UC013
+  usecase "OAuth Consent\n(one-time)" as OAUTH
+  usecase "Create / Update /\nDelete Event" as CRUD
+  usecase "Log Sync Status" as LSS
+}
+P --> UC013
+UC013 ..> OAUTH : <<extend>>
+UC013 ..> CRUD : <<include>>
+UC013 ..> LSS : <<include>>
+CRUD --> GCal : Google events
+CRUD --> OL : Outlook events
+@enduml

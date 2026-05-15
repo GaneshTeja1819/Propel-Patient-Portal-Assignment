@@ -1,0 +1,16 @@
+@startuml uc-cancel-appointment
+left to right direction
+actor "Patient" as P
+rectangle "Appointment Cancellation" {
+  usecase "Cancel Appointment\n(UC-005)" as UC005
+  usecase "Confirm Cancellation" as CC
+  usecase "Release Slot" as RS
+  usecase "Notify Waitlisted Patients" as NWP
+  usecase "Write Audit Log" as AL
+}
+P --> UC005
+UC005 ..> CC : <<include>>
+UC005 ..> RS : <<include>>
+UC005 ..> NWP : <<include>>
+UC005 ..> AL : <<include>>
+@enduml

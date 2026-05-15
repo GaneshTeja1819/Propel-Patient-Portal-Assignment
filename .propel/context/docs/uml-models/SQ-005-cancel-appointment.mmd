@@ -1,0 +1,40 @@
+sequenceDiagram
+    participant P as Patient (Browser)
+    participant API as AppointmentController
+    participant BOOK as BookingService
+    participant DB as PostgreSQL
+    participant REDIS as Upstash Redis
+    participant HF as Hangfire
+    participant AUDIT as AuditService
+
+    Note over P,AUDIT: UC-005 — Cancel an Appointment
+
+    P->>API: GET /api/v1/appointments (list own appointments)
+    API->>DB: SELECT Appointment WHERE patientId = ? AND status = Booked
+    DB-->>API: appointments[]
+    API-->>P: 200 {appointments}
+
+    P->>API: DELETE /api/v1/appointments/{appointmentId}
+    API->>BOOK: CancelAppointment(patientId, appointmentId)
+    BOOK->>DB: SELECT Appointment WHERE id = ? AND patientId = ?
+    alt Appointment not found or not owned by patient
+        DB-->>BOOK: null
+        BOOK-->>API: NotFound/Forbidden
+        API-->>P: 404/403 error
+    else Appointment is in the past
+        DB-->>BOOK: appointment {scheduledAt < now}
+        BOOK-->>API: CannotCancelPastAppointment
+        API-->>P: 422 "Cannot cancel a past appointment"
+    else Valid future appointment
+        DB-->>BOOK: appointment {slotId, status: Booked}
+        BOOK->>API: PromptConfirmation
+        API-->>P: 200 {confirmationRequired: true}
+        P->>API: POST /api/v1/appointments/{appointmentId}/cancel/confirm
+        BOOK->>DB: UPDATE Appointment SET status = Cancelled
+        BOOK->>DB: UPDATE AppointmentSlot SET isBooked = false WHERE id = slotId
+        BOOK->>REDIS: INVALIDATE slot:available
+        BOOK->>HF: Enqueue SlotSwapEvaluationJob(slotId)
+        BOOK->>AUDIT: Log(actor: patientId, action: APPOINTMENT_CANCELLED, target: Appointment)
+        BOOK-->>API: 200 ok
+        API-->>P: 200 appointment cancelled
+    end

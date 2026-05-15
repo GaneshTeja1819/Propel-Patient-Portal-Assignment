@@ -1,0 +1,42 @@
+@startuml system-context
+!define RECTANGLE class
+
+skinparam rectangle {
+  BackgroundColor #EEF4FF
+  BorderColor #336699
+}
+skinparam actor {
+  BackgroundColor #FFFBE6
+  BorderColor #CC8800
+}
+
+title System Context – Unified Patient Access & Clinical Intelligence Platform
+
+actor "Patient" as P
+actor "Staff" as S
+actor "Admin" as A
+
+rectangle "Unified Patient Access\n& Clinical Intelligence\nPlatform" as SYS {
+}
+
+rectangle "Gemini AI Engine" as Gemini
+rectangle "Google Calendar API" as GCal
+rectangle "Microsoft Graph API\n(Outlook)" as Outlook
+rectangle "Email / SMS Gateway" as Notify
+rectangle "Supabase / PostgreSQL" as DB
+rectangle "Upstash Redis" as Redis
+rectangle "Hangfire\nBackground Jobs" as Hangfire
+
+P --> SYS : Book / cancel / reschedule appointments\nComplete intake / upload documents
+S --> SYS : Walk-in booking / queue / arrival\nReview profiles / verify codes
+A --> SYS : Manage users & roles
+
+SYS --> Gemini : Conversational intake\nClinical data extraction\nCode suggestions
+SYS --> GCal : Sync calendar events
+SYS --> Outlook : Sync calendar events
+SYS --> Notify : Send SMS / Email reminders\n& PDF confirmations
+SYS --> DB : Persist structured data
+SYS --> Redis : Cache slot availability\n& sessions
+SYS --> Hangfire : Trigger auto-swap\n& reminder jobs
+
+@enduml

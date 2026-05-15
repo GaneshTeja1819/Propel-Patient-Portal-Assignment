@@ -1,0 +1,127 @@
+@startuml data-flow
+skinparam rectangle {
+  BackgroundColor #EEF4FF
+  BorderColor #336699
+}
+skinparam database {
+  BackgroundColor #E8F5E9
+  BorderColor #388E3C
+}
+skinparam actor {
+  BackgroundColor #FFFBE6
+  BorderColor #CC8800
+}
+skinparam component {
+  BackgroundColor #FCE4EC
+  BorderColor #C62828
+}
+
+title Data Flow – Unified Patient Access & Clinical Intelligence Platform
+
+actor "Patient" as PAT
+actor "Staff" as STAFF
+actor "Admin" as ADMIN
+
+rectangle "React SPA\n(Browser)" as SPA
+
+rectangle "ASP.NET Core API\n(MonsterASP / IIS)" as API {
+  component "Auth & RBAC\nMiddleware" as AUTH_MW
+  component "Appointment\nBooking Service" as BOOK_SVC
+  component "Intake Service" as INTAKE_SVC
+  component "Document Service" as DOC_SVC
+  component "Profile360 Service" as PROFILE_SVC
+  component "Medical Coding\nService" as CODE_SVC
+  component "Audit Service" as AUDIT_SVC
+}
+
+rectangle "Hangfire Background\nJob Engine" as HF {
+  component "Slot Swap Job" as SWAP_JOB
+  component "Reminder Job" as REM_JOB
+  component "AI Extraction Job" as EXTRACT_JOB
+  component "Code Suggestion Job" as CODE_JOB
+  component "PDF Gen Job" as PDF_JOB
+  component "Calendar Sync Job" as CAL_JOB
+}
+
+rectangle "AES-256-GCM\nEncryption Layer" as ENC
+
+database "Supabase\nPostgreSQL" as PG {
+  component "appointments\nslots\nwaitlist\nusers" as PG_SCHED
+  component "intake_records\nclinical_documents\nextracted_data\npatient_profile360\ndata_conflicts" as PG_CLINICAL
+  component "medical_code_suggestions\ninsurance_records\nnotifications\ncalendar_sync" as PG_OTHER
+  component "audit.audit_logs\n(append-only)" as PG_AUDIT
+}
+
+database "Upstash Redis\n(Slot Cache)" as REDIS
+
+database "Supabase Storage\n(PDF Blobs)" as BLOB
+
+rectangle "Gemini API\n(gemini-1.5-pro)" as GEMINI
+
+rectangle "Email/SMS\nGateway" as NOTIFY
+
+rectangle "Google Calendar\n/ Outlook API" as CAL_EXT
+
+rectangle "QuestPDF\n(PDF Generator)" as QUESTPDF
+
+rectangle "PdfPig\n(PDF Text Extractor)" as PDFPIG
+
+PAT --> SPA : Booking / Intake /\nUpload / Profile
+STAFF --> SPA : Walk-in / Queue /\nArrival / Coding review
+ADMIN --> SPA : User management
+
+SPA --> API : HTTPS REST /api/v1/\n(JWT HttpOnly cookie)
+
+API --> AUTH_MW : every request
+AUTH_MW --> BOOK_SVC
+AUTH_MW --> INTAKE_SVC
+AUTH_MW --> DOC_SVC
+AUTH_MW --> PROFILE_SVC
+AUTH_MW --> CODE_SVC
+AUTH_MW --> AUDIT_SVC
+
+BOOK_SVC --> REDIS : read slot availability\n(TTL ≤ 5s)
+BOOK_SVC --> ENC : encrypt PHI fields
+ENC --> PG_SCHED : write Appointment\n+ AppointmentSlot (rowVersion lock)
+BOOK_SVC --> HF : enqueue PDF gen job\n& reminder job
+
+INTAKE_SVC --> ENC : encrypt intake JSON
+ENC --> PG_CLINICAL : write IntakeRecord
+
+DOC_SVC --> ENC : encrypt storage path
+ENC --> PG_CLINICAL : write ClinicalDocument record
+DOC_SVC --> BLOB : store encrypted PDF
+
+HF --> EXTRACT_JOB
+EXTRACT_JOB --> BLOB : read PDF
+EXTRACT_JOB --> PDFPIG : extract raw text
+PDFPIG --> GEMINI : structured extraction prompt (function calling)
+GEMINI --> EXTRACT_JOB : JSON: vitals / meds / diagnoses
+EXTRACT_JOB --> ENC : encrypt extracted JSON
+ENC --> PG_CLINICAL : write ExtractedClinicalData\n& update PatientProfile360
+
+HF --> CODE_JOB
+CODE_JOB --> GEMINI : coding context + function calling
+GEMINI --> CODE_JOB : ICD-10 / CPT candidates
+CODE_JOB --> PG_OTHER : write MedicalCodeSuggestion
+
+HF --> SWAP_JOB
+SWAP_JOB --> PG_SCHED : atomic slot swap\n(UPDATE with rowVersion)
+SWAP_JOB --> REDIS : invalidate cached slot
+
+HF --> REM_JOB
+REM_JOB --> NOTIFY : dispatch Email + SMS
+
+HF --> CAL_JOB
+CAL_JOB --> CAL_EXT : create / update / delete calendar event
+
+HF --> PDF_JOB
+PDF_JOB --> QUESTPDF : render PDF
+QUESTPDF --> NOTIFY : send PDF via Email
+
+AUDIT_SVC --> PG_AUDIT : append-only INSERT\n(actor, action, timestamp)
+
+CODE_SVC --> PG_OTHER : read suggestions\nfor Staff UI
+
+PROFILE_SVC --> PG_CLINICAL : read PatientProfile360\n+ DataConflicts
+@enduml

@@ -1,0 +1,16 @@
+@startuml uc-upload-document
+left to right direction
+actor "Patient" as P
+rectangle "Clinical Document Upload" {
+  usecase "Upload Clinical\nDocument (UC-019)" as UC019
+  usecase "Validate File Type/Size" as VFS
+  usecase "Store Document\nEncrypted" as SDE
+  usecase "Queue AI\nExtraction Job" as QAEJ
+  usecase "Write Audit Log" as AL
+}
+P --> UC019
+UC019 ..> VFS : <<include>>
+UC019 ..> SDE : <<include>>
+UC019 ..> QAEJ : <<include>>
+UC019 ..> AL : <<include>>
+@enduml

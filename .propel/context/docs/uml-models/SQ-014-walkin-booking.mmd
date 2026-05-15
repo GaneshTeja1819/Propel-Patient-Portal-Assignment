@@ -1,0 +1,46 @@
+sequenceDiagram
+    participant S as Staff (Browser)
+    participant API as StaffController
+    participant STAFF_SVC as StaffService
+    participant BOOK as BookingService
+    participant DB as PostgreSQL
+    participant REDIS as Upstash Redis
+    participant AUDIT as AuditService
+
+    Note over S,AUDIT: UC-014 — Staff Walk-in Booking
+
+    S->>API: GET /api/v1/slots/available
+    API->>REDIS: GET slot:available
+    REDIS-->>API: availableSlots[]
+    API-->>S: 200 {availableSlots}
+
+    S->>API: POST /api/v1/staff/walkin-booking {patientSearch?, newPatientDetails?, slotId, createAccount?}
+    API->>STAFF_SVC: CreateWalkInBooking(staffId, payload)
+
+    alt Existing patient found
+        STAFF_SVC->>DB: SELECT User WHERE email = patientEmail OR name LIKE ?
+        DB-->>STAFF_SVC: existingPatient {userId}
+    else New patient — anonymous booking
+        STAFF_SVC->>DB: INSERT User {anonymousPatient = true} or proceed without User record
+        DB-->>STAFF_SVC: patientId (or null for anonymous)
+    end
+
+    STAFF_SVC->>BOOK: CreateAppointment(patientId, slotId, createdByStaffId)
+    BOOK->>DB: SELECT AppointmentSlot WHERE id = slotId FOR UPDATE
+    alt Slot unavailable
+        DB-->>BOOK: isBooked = true
+        BOOK-->>API: SlotConflict
+        API-->>S: 409 "Slot unavailable — place patient in same-day queue instead"
+    else Slot available
+        BOOK->>DB: INSERT Appointment {patientId, slotId, createdByStaffId, status: Booked}
+        BOOK->>DB: UPDATE AppointmentSlot SET isBooked = true
+        BOOK->>REDIS: INVALIDATE slot:available
+        opt Create patient account (FR-023)
+            STAFF_SVC->>DB: INSERT User {email, role: Patient, createdByStaff: true}
+            DB-->>STAFF_SVC: newUserId
+            STAFF_SVC->>DB: UPDATE Appointment SET patientId = newUserId
+        end
+        STAFF_SVC->>AUDIT: Log(actor: staffId, action: WALKIN_APPOINTMENT_BOOKED, target: Appointment)
+        STAFF_SVC-->>API: 201 {appointmentId}
+        API-->>S: 201 walk-in appointment created
+    end

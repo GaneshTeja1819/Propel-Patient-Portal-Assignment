@@ -1,0 +1,34 @@
+sequenceDiagram
+    participant S as Staff (Browser)
+    participant P as Patient (Browser — blocked)
+    participant API as StaffController
+    participant RBAC as RBAC Middleware
+    participant ARRIVE as ArrivalService
+    participant DB as PostgreSQL
+    participant AUDIT as AuditService
+
+    Note over S,AUDIT: UC-016 — Mark Patient Arrived
+
+    S->>API: POST /api/v1/staff/appointments/{appointmentId}/arrive
+    API->>RBAC: CheckRole(actor: Staff)
+    RBAC-->>API: authorised
+    API->>ARRIVE: MarkArrived(staffId, appointmentId)
+    ARRIVE->>DB: SELECT Appointment WHERE id = ? AND DATE(startDateTime) = today
+    alt Appointment not found
+        DB-->>ARRIVE: null
+        ARRIVE-->>API: NotFound
+        API-->>S: 404 — search by patient name/ID
+    else Appointment found
+        DB-->>ARRIVE: appointment {status}
+        ARRIVE->>DB: UPDATE Appointment SET status = Arrived, arrivedAt = now
+        DB-->>ARRIVE: ok
+        ARRIVE->>AUDIT: Log(actor: staffId, action: PATIENT_ARRIVED, target: Appointment, metadata: {arrivedAt})
+        ARRIVE-->>API: 200 ok
+        API-->>S: 200 patient marked as arrived
+    end
+
+    Note over P,RBAC: Patient attempts self-check-in (FR-026 — prohibited)
+    P->>API: POST /api/v1/appointments/{id}/arrive (patient role)
+    API->>RBAC: CheckRole(actor: Patient)
+    RBAC-->>API: 403 Forbidden (Patient role not permitted for this action)
+    API-->>P: 403 "Self check-in is not permitted"

@@ -1,0 +1,14 @@
+@startuml uc-manual-intake
+left to right direction
+actor "Patient" as P
+rectangle "Manual Intake Form" {
+  usecase "Manual Intake\n(UC-010)" as UC010
+  usecase "Validate Required Fields" as VRF
+  usecase "Persist Intake Record" as PIR
+  usecase "Write Audit Log" as AL
+}
+P --> UC010
+UC010 ..> VRF : <<include>>
+UC010 ..> PIR : <<include>>
+UC010 ..> AL : <<include>>
+@enduml

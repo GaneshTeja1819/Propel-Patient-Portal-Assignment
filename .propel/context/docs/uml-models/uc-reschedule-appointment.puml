@@ -1,0 +1,16 @@
+@startuml uc-reschedule-appointment
+left to right direction
+actor "Patient" as P
+rectangle "Reschedule Appointment" {
+  usecase "Reschedule Appointment\n(UC-006)" as UC006
+  usecase "Select New Slot" as SNS
+  usecase "Atomic Slot Swap" as ASS
+  usecase "Send Updated PDF\nConfirmation" as PDF
+  usecase "Write Audit Log" as AL
+}
+P --> UC006
+UC006 ..> SNS : <<include>>
+UC006 ..> ASS : <<include>>
+UC006 ..> PDF : <<include>>
+UC006 ..> AL : <<include>>
+@enduml

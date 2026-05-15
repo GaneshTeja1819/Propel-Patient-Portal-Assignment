@@ -1,0 +1,33 @@
+sequenceDiagram
+    participant P as Patient (Browser)
+    participant API as IntakeController
+    participant INTAKE as IntakeService
+    participant DB as PostgreSQL (IntakeRecord)
+    participant AUDIT as AuditService
+
+    Note over P,AUDIT: UC-010 — Manual Intake Form
+
+    P->>API: GET /api/v1/intake/form {appointmentId}
+    API->>INTAKE: GetIntakeSchema(appointmentId)
+    INTAKE-->>API: 200 {fields: [name, dob, allergies, medications, ...]}
+    API-->>P: render manual intake form
+
+    P->>API: POST /api/v1/intake/submit {appointmentId, method: "Manual", formData}
+    API->>INTAKE: SubmitManualIntake(appointmentId, patientId, formData)
+    INTAKE->>INTAKE: ValidateRequiredFields(formData)
+    alt Required fields missing
+        INTAKE-->>API: ValidationError {missingFields[]}
+        API-->>P: 422 {errors: ["Field X is required", ...]}
+        Note over P: form remains open — user corrects fields
+    else All required fields present
+        INTAKE->>DB: INSERT IntakeRecord {appointmentId, method: Manual, fields: encryptedJSON}
+        DB-->>INTAKE: intakeRecordId
+        INTAKE->>AUDIT: Log(actor: patientId, action: INTAKE_COMPLETED, target: IntakeRecord)
+        INTAKE-->>API: 201 {intakeRecordId}
+        API-->>P: 201 intake submitted successfully
+    end
+
+    opt Switch to AI intake
+        P->>API: POST /api/v1/intake/switch {appointmentId, method: "AI"}
+        API-->>P: AI intake prefilled with manual form data
+    end

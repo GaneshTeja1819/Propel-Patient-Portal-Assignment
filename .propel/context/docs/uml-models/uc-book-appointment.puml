@@ -1,0 +1,18 @@
+@startuml uc-book-appointment
+left to right direction
+actor "Patient" as P
+rectangle "Appointment Booking" {
+  usecase "Book Appointment\n(UC-004)" as UC004
+  usecase "View Real-Time Slots" as VRS
+  usecase "Calculate No-Show\nRisk Score" as NOSH
+  usecase "Register Preferred Slot\n(UC-007)" as UC007
+  usecase "Insurance Pre-Check\n(UC-018)" as UC018
+  usecase "Generate PDF Confirmation\n(UC-025)" as UC025
+}
+P --> UC004
+UC004 ..> VRS : <<include>>
+UC004 ..> NOSH : <<include>>
+UC004 ..> UC018 : <<include>>
+UC004 ..> UC025 : <<include>>
+UC004 ..> UC007 : <<extend>>
+@enduml

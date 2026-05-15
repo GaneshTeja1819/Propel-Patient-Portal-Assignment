@@ -1,0 +1,56 @@
+sequenceDiagram
+    participant P as Patient (Browser)
+    participant API as CalendarController
+    participant CAL as CalendarSyncService
+    participant DB as PostgreSQL (CalendarSync)
+    participant GCAL as Google Calendar API
+    participant OUTLOOK as Microsoft Graph API
+    participant AUDIT as AuditService
+
+    Note over P,AUDIT: UC-013 — Sync Appointment to Calendar
+
+    opt First-time OAuth consent (Google)
+        P->>API: GET /api/v1/calendar/connect?provider=google
+        API-->>P: redirect to Google OAuth consent screen
+        P->>GCAL: user grants calendar access
+        GCAL-->>API: OAuth callback {code}
+        API->>CAL: ExchangeCodeForTokens(provider: Google, code)
+        CAL->>DB: INSERT CalendarSync {patientId, provider: Google, accessToken_enc, refreshToken_enc, tokenExpiresAt}
+        CAL->>AUDIT: Log(actor: patientId, action: CALENDAR_CONNECTED, target: CalendarSync)
+        API-->>P: Google Calendar connected
+    end
+
+    Note over CAL: Triggered on appointment create / update / cancel (by BookingService)
+
+    CAL->>DB: SELECT CalendarSync WHERE patientId = ? AND provider IN (Google, Outlook)
+    DB-->>CAL: calendarSyncs[]
+
+    loop For each connected calendar provider
+        CAL->>CAL: RefreshTokenIfExpired(calendarSync)
+        alt appointment created
+            CAL->>GCAL: POST /calendars/primary/events {summary, start, end, description}
+            GCAL-->>CAL: {eventId}
+        else appointment rescheduled
+            CAL->>GCAL: PUT /calendars/primary/events/{eventId} {updated start/end}
+            GCAL-->>CAL: ok
+        else appointment cancelled
+            CAL->>GCAL: DELETE /calendars/primary/events/{eventId}
+            GCAL-->>CAL: ok
+        end
+        alt API call fails
+            GCAL-->>CAL: error
+            CAL->>DB: UPDATE CalendarSync SET syncStatus = Failed, errorMessage
+            CAL->>CAL: RetryOnce()
+            alt Retry also fails
+                CAL->>AUDIT: Log(actor: system, action: CALENDAR_SYNC_FAILED, target: CalendarSync)
+            end
+        else API call succeeds
+            CAL->>DB: UPDATE CalendarSync SET lastSyncAt, syncStatus = Success
+            CAL->>AUDIT: Log(actor: system, action: CALENDAR_SYNCED, target: CalendarSync)
+        end
+    end
+
+    opt Patient denies OAuth consent
+        Note over P,CAL: CalendarSync record not created
+        Note over CAL: Booking proceeds without calendar sync
+    end

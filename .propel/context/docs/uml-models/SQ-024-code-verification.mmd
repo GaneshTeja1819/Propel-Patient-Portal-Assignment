@@ -1,0 +1,46 @@
+sequenceDiagram
+    participant S as Staff (Browser)
+    participant API as CodingController
+    participant CODE as MedicalCodingService
+    participant DB as PostgreSQL (MedicalCodeSuggestion)
+    participant VALIDATE as CodesetValidator
+    participant AUDIT as AuditService
+
+    Note over S,AUDIT: UC-024 — Human Verification of Medical Codes
+
+    S->>API: GET /api/v1/coding/encounters/{encounterId}/suggestions
+    API->>DB: SELECT MedicalCodeSuggestion WHERE encounterId = ? AND status = Pending
+    DB-->>API: suggestions[] {icd10, cpt, confidenceScore, evidence}
+    API-->>S: render code verification screen
+
+    loop For each suggestion
+        S->>API: PUT /api/v1/coding/suggestions/{suggestionId} {action: "Accept" or "Modify" or "Reject", modifiedCode?}
+        API->>CODE: ProcessVerification(staffId, suggestionId, action, modifiedCode?)
+
+        alt Action: Accept
+            CODE->>DB: UPDATE MedicalCodeSuggestion SET status = Accepted, finalCode = suggestedCode, verifiedByStaffId, verifiedAt
+        else Action: Modify
+            CODE->>VALIDATE: ValidateCode(modifiedCode, codeType)
+            alt Modified code is invalid
+                VALIDATE-->>CODE: InvalidCode
+                CODE-->>API: 422 "Code not found in ICD-10/CPT codeset"
+                API-->>S: display validation error — re-enter code
+            else Modified code is valid
+                VALIDATE-->>CODE: valid
+                CODE->>DB: UPDATE MedicalCodeSuggestion SET status = Modified, finalCode = modifiedCode, verifiedByStaffId, verifiedAt
+            end
+        else Action: Reject
+            CODE->>DB: UPDATE MedicalCodeSuggestion SET status = Rejected, verifiedByStaffId, verifiedAt
+        end
+
+        CODE->>AUDIT: Log(actor: staffId, action: CODE_VERIFIED, target: MedicalCodeSuggestion, metadata: {action, suggestedCode, finalCode})
+        CODE-->>API: 200 ok
+        API-->>S: suggestion updated
+    end
+
+    opt Staff rejects all suggestions
+        S->>API: POST /api/v1/coding/encounters/{encounterId}/flag-manual
+        API->>DB: UPDATE Appointment SET codingStatus = ManualRequired
+        API->>AUDIT: Log(actor: staffId, action: ALL_CODES_REJECTED, target: encounterId)
+        API-->>S: encounter flagged for manual coding
+    end

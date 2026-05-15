@@ -1,0 +1,57 @@
+sequenceDiagram
+    participant HF as Hangfire Job Engine
+    participant DOC_SVC as DocumentService
+    participant BLOB as Supabase Storage
+    participant PDFPIG as PdfPig (Text Extractor)
+    participant AI as Google AI SDK
+    participant GEMINI as Gemini API (gemini-1.5-pro)
+    participant VALIDATE as Schema Validator
+    participant ENC as AES-256-GCM Encryption
+    participant DB as PostgreSQL
+    participant PROFILE as Profile360Service
+    participant AUDIT as AuditService
+
+    Note over HF,AUDIT: AI-021 — UC-021 AI Clinical Data Extraction (Tool Calling / Structured Output)
+
+    HF->>DOC_SVC: Execute ExtractionJob(documentId)
+    DOC_SVC->>DB: SELECT ClinicalDocument WHERE id = documentId AND status = Pending
+    DB-->>DOC_SVC: document {storagePath_encrypted, patientId}
+    DOC_SVC->>DB: UPDATE ClinicalDocument SET extractionStatus = Processing
+    DOC_SVC->>BLOB: GET encrypted PDF at storagePath
+    BLOB-->>DOC_SVC: encrypted PDF bytes
+    DOC_SVC->>PDFPIG: ExtractText(pdfBytes)
+    PDFPIG-->>DOC_SVC: rawText
+
+    DOC_SVC->>AI: BuildExtractionPrompt(rawText, ExtractionSchema)
+    AI->>GEMINI: function_calling {tools: [ExtractVitals, ExtractMedications, ExtractDiagnoses], text: rawText}
+
+    alt Gemini returns structured extraction
+        GEMINI-->>AI: JSON {vitals, medications, diagnoses, modelVersion, confidenceScores}
+        AI-->>DOC_SVC: extractedData
+        DOC_SVC->>VALIDATE: ValidateSchema(extractedData, ExtractionSchema)
+        alt Schema validation passes
+            VALIDATE-->>DOC_SVC: valid
+            DOC_SVC->>ENC: Encrypt(vitals, medications, diagnoses, rawResponse)
+            ENC-->>DOC_SVC: encryptedPayload
+            DOC_SVC->>DB: INSERT ExtractedClinicalData {documentId, patientId, ...encryptedPayload, modelVersion, promptHash}
+            DB-->>DOC_SVC: extractedDataId
+            DOC_SVC->>DB: UPDATE ClinicalDocument SET extractionStatus = Completed
+            DOC_SVC->>PROFILE: TriggerProfileUpdate(patientId)
+            PROFILE->>DB: UPSERT PatientProfile360 (de-duplicate + merge)
+            PROFILE->>DB: INSERT DataConflict records where conflicts detected
+            DB-->>PROFILE: ok
+            DOC_SVC->>AUDIT: Log(actor: system, action: EXTRACTION_COMPLETED, target: ExtractedClinicalData, metadata: {modelVersion, promptHash})
+        else Schema validation fails (AIR-007 fallback)
+            VALIDATE-->>DOC_SVC: invalid schema
+            DOC_SVC->>ENC: Encrypt(rawGeminiResponse)
+            DOC_SVC->>DB: INSERT ExtractedClinicalData {rawGeminiResponse_encrypted, validationFailed: true}
+            DOC_SVC->>DB: UPDATE ClinicalDocument SET extractionStatus = Failed, flaggedForReview = true
+            DOC_SVC->>AUDIT: Log(actor: system, action: EXTRACTION_SCHEMA_FAILED, target: documentId)
+        end
+    else Gemini API fails or times out (retry logic — AIR-007)
+        GEMINI-->>AI: error / timeout
+        AI-->>DOC_SVC: apiError
+        DOC_SVC->>HF: Reschedule job (attempt 2 of 3, exponential backoff)
+        Note over HF: After 3 failures: mark extractionStatus = Failed, notify Staff
+        DOC_SVC->>AUDIT: Log(actor: system, action: EXTRACTION_FAILED, target: documentId, metadata: {attempt, error})
+    end

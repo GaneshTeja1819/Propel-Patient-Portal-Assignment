@@ -1,0 +1,32 @@
+sequenceDiagram
+    participant U as User (Browser)
+    participant API as Session Middleware (.NET)
+    participant REDIS as Upstash Redis (Session)
+    participant AUDIT as AuditService
+
+    Note over U,AUDIT: UC-003 — Session Timeout
+
+    loop Every API Request
+        U->>API: Any authenticated request (JWT cookie)
+        API->>REDIS: GET session:{userId} - check lastActivity
+        alt Session active (< 15 min since last activity)
+            REDIS-->>API: session valid
+            API->>REDIS: SETEX session:{userId} 900 (reset TTL)
+            API-->>U: 200 normal response
+        else Session expired (>= 15 min inactivity)
+            REDIS-->>API: null (TTL expired)
+            API->>AUDIT: Log(actor: userId, action: SESSION_TIMEOUT, target: Session)
+            API-->>U: 401 {error: "Session expired"}
+            U->>U: redirect to /login?reason=timeout
+        end
+    end
+
+    opt User re-authenticates after timeout
+        U->>API: POST /api/v1/auth/login (new credentials)
+        Note over U,API: Follows UC-002 flow
+    end
+
+    opt Form state recovery (non-PHI only)
+        Note over U: Browser sessionStorage preserves non-PHI form state
+        Note over U: Restored on re-login for same session origin
+    end

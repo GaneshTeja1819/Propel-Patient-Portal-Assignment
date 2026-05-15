@@ -1,0 +1,1155 @@
+{
+  "meta": {
+    "generator": "PropelIQ generate-figma v1.0",
+    "generated": "2026-05-14",
+    "app": "Unified Patient Access & Clinical Intelligence Platform",
+    "app_id": "UPACIP",
+    "platform": "Web",
+    "version": "1.0",
+    "status": "Draft",
+    "source_figma_spec": ".propel/context/docs/figma_spec.md",
+    "source_design_system": ".propel/context/docs/designsystem.md"
+  },
+  "file": {
+    "name": "UPACIP — Design File v1.0",
+    "pages": [
+      {
+        "id": "00_Cover",
+        "name": "00_Cover",
+        "frames": [
+          {
+            "id": "cover_main",
+            "name": "Cover",
+            "width": 1440,
+            "height": 1024,
+            "auto_layout": { "direction": "vertical", "spacing": 32, "padding": 64 },
+            "content": {
+              "project_name": "Unified Patient Access & Clinical Intelligence Platform",
+              "project_id": "UPACIP",
+              "version": "v1.0",
+              "date": "2026-05-14",
+              "status": "Draft",
+              "platform": "Responsive Web (React 18 SPA)",
+              "primary_breakpoints": ["1280px desktop", "768px tablet", "375px mobile"],
+              "personas": ["Patient", "Staff", "Admin"],
+              "screens_count": 16,
+              "flows_count": 11,
+              "components_count": 28,
+              "design_system": "designsystem.md v1.0",
+              "accessibility_standard": "WCAG 2.2 Level AA"
+            }
+          }
+        ]
+      },
+      {
+        "id": "01_Foundations",
+        "name": "01_Foundations",
+        "frames": [
+          {
+            "id": "found_colors",
+            "name": "Colors — Primitives",
+            "auto_layout": { "direction": "vertical", "spacing": 24, "padding": 32 },
+            "content": {
+              "source": "designsystem.md §4.1",
+              "primitives": {
+                "blue-900": "#0C2F6F",
+                "blue-700": "#1A56DB",
+                "blue-600": "#1446BE",
+                "blue-100": "#DBEAFE",
+                "blue-050": "#EFF6FF",
+                "green-700": "#15803D",
+                "green-600": "#16A34A",
+                "green-100": "#DCFCE7",
+                "amber-700": "#B45309",
+                "amber-600": "#D97706",
+                "amber-100": "#FEF3C7",
+                "red-700": "#B91C1C",
+                "red-600": "#DC2626",
+                "red-100": "#FEE2E2",
+                "purple-700": "#6D28D9",
+                "purple-600": "#7C3AED",
+                "purple-100": "#EDE9FE",
+                "gray-950": "#0F172A",
+                "gray-800": "#1E293B",
+                "gray-700": "#334155",
+                "gray-600": "#475569",
+                "gray-400": "#94A3B8",
+                "gray-200": "#E2E8F0",
+                "gray-100": "#F1F5F9",
+                "gray-050": "#F8FAFC",
+                "white": "#FFFFFF",
+                "black": "#000000"
+              }
+            }
+          },
+          {
+            "id": "found_semantic",
+            "name": "Colors — Semantic Aliases",
+            "auto_layout": { "direction": "vertical", "spacing": 16, "padding": 32 },
+            "content": {
+              "source": "designsystem.md §4.1 — Semantic Aliases",
+              "aliases": {
+                "color-brand-primary":        { "ref": "blue-700",   "hex": "#1A56DB" },
+                "color-brand-primary-hover":  { "ref": "blue-600",   "hex": "#1446BE" },
+                "color-brand-primary-light":  { "ref": "blue-050",   "hex": "#EFF6FF" },
+                "color-surface-default":      { "ref": "white",      "hex": "#FFFFFF" },
+                "color-surface-muted":        { "ref": "gray-050",   "hex": "#F8FAFC" },
+                "color-surface-subtle":       { "ref": "gray-100",   "hex": "#F1F5F9" },
+                "color-surface-phi":          { "ref": "blue-050",   "hex": "#EFF6FF",   "note": "PHI field background (UXR-402)" },
+                "color-surface-ai":           { "ref": "purple-100", "hex": "#EDE9FE",   "note": "AI-content background (UXR-403)" },
+                "color-border-default":       { "ref": "gray-200",   "hex": "#E2E8F0" },
+                "color-border-focus":         { "ref": "blue-700",   "hex": "#1A56DB" },
+                "color-border-ai":            { "ref": "purple-600", "hex": "#7C3AED",   "note": "AI-generated content border (UXR-403)" },
+                "color-text-primary":         { "ref": "gray-950",   "hex": "#0F172A" },
+                "color-text-secondary":       { "ref": "gray-600",   "hex": "#475569" },
+                "color-text-disabled":        { "ref": "gray-400",   "hex": "#94A3B8" },
+                "color-text-on-primary":      { "ref": "white",      "hex": "#FFFFFF" },
+                "color-success":              { "ref": "green-600",  "hex": "#16A34A" },
+                "color-success-bg":           { "ref": "green-100",  "hex": "#DCFCE7" },
+                "color-warning":              { "ref": "amber-600",  "hex": "#D97706" },
+                "color-warning-bg":           { "ref": "amber-100",  "hex": "#FEF3C7" },
+                "color-danger":               { "ref": "red-600",    "hex": "#DC2626" },
+                "color-danger-bg":            { "ref": "red-100",    "hex": "#FEE2E2" },
+                "color-ai-accent":            { "ref": "purple-600", "hex": "#7C3AED",   "note": "AI-generated accent (UXR-403)" },
+                "color-ai-accent-bg":         { "ref": "purple-100", "hex": "#EDE9FE" },
+                "color-conflict-critical":    { "ref": "red-600",    "hex": "#DC2626" },
+                "color-conflict-high":        { "ref": "amber-600",  "hex": "#D97706" }
+              }
+            }
+          },
+          {
+            "id": "found_typography",
+            "name": "Typography",
+            "auto_layout": { "direction": "vertical", "spacing": 24, "padding": 32 },
+            "content": {
+              "source": "designsystem.md §4.2",
+              "font_family": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif",
+              "scale": {
+                "heading-xl": { "size": "24px", "line_height": "1.3", "weight": "600", "tracking": "-0.01em" },
+                "heading-lg": { "size": "20px", "line_height": "1.3", "weight": "600", "tracking": "-0.01em" },
+                "heading-md": { "size": "18px", "line_height": "1.4", "weight": "600", "tracking": "0" },
+                "heading-sm": { "size": "16px", "line_height": "1.4", "weight": "600", "tracking": "0" },
+                "body-md":    { "size": "14px", "line_height": "1.6", "weight": "400", "tracking": "0" },
+                "body-sm":    { "size": "13px", "line_height": "1.6", "weight": "400", "tracking": "0" },
+                "caption":    { "size": "12px", "line_height": "1.5", "weight": "400", "tracking": "0.01em" },
+                "label":      { "size": "12px", "line_height": "1.4", "weight": "600", "tracking": "0.05em", "text_transform": "uppercase" }
+              }
+            }
+          },
+          {
+            "id": "found_spacing",
+            "name": "Spacing",
+            "auto_layout": { "direction": "horizontal", "spacing": 16, "padding": 32 },
+            "content": {
+              "source": "designsystem.md §4.3",
+              "scale": {
+                "space-1":  "4px",
+                "space-2":  "8px",
+                "space-3":  "12px",
+                "space-4":  "16px",
+                "space-6":  "24px",
+                "space-8":  "32px",
+                "space-12": "48px",
+                "space-16": "64px"
+              }
+            }
+          },
+          {
+            "id": "found_radius",
+            "name": "Border Radius",
+            "content": {
+              "source": "designsystem.md §4.4",
+              "tokens": {
+                "radius-xs":   "2px",
+                "radius-sm":   "4px",
+                "radius-md":   "6px",
+                "radius-lg":   "8px",
+                "radius-full": "9999px"
+              }
+            }
+          },
+          {
+            "id": "found_elevation",
+            "name": "Elevation / Shadows",
+            "content": {
+              "source": "designsystem.md §4.5",
+              "tokens": {
+                "shadow-none": "none",
+                "shadow-sm":   "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                "shadow-md":   "0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05)",
+                "shadow-lg":   "0 10px 15px -3px rgba(0, 0, 0, 0.10), 0 4px 6px -4px rgba(0, 0, 0, 0.05)"
+              }
+            }
+          },
+          {
+            "id": "found_grid",
+            "name": "Grid & Breakpoints",
+            "content": {
+              "source": "designsystem.md §4.6",
+              "breakpoints": {
+                "xs":  "375px",
+                "sm":  "640px",
+                "md":  "768px",
+                "lg":  "1280px"
+              },
+              "grids": {
+                "desktop": { "columns": 12, "gutter": "24px", "margin": "32px", "max_width": "1280px" },
+                "tablet":  { "columns": 8,  "gutter": "16px", "margin": "24px" },
+                "mobile":  { "columns": 4,  "gutter": "12px", "margin": "16px" }
+              }
+            }
+          },
+          {
+            "id": "found_motion",
+            "name": "Motion / Transitions",
+            "content": {
+              "source": "designsystem.md §4.7",
+              "tokens": {
+                "duration-instant": "100ms",
+                "duration-fast":    "150ms",
+                "duration-normal":  "200ms",
+                "duration-slow":    "300ms",
+                "easing-default":   "cubic-bezier(0.4, 0, 0.2, 1)",
+                "easing-enter":     "cubic-bezier(0.0, 0, 0.2, 1)",
+                "easing-exit":      "cubic-bezier(0.4, 0, 1, 1)"
+              }
+            }
+          },
+          {
+            "id": "found_focus",
+            "name": "Focus Ring (A11y)",
+            "content": {
+              "source": "designsystem.md §4.8",
+              "spec": {
+                "outline_width":  "3px",
+                "outline_offset": "2px",
+                "outline_color":  "#1A56DB",
+                "outline_style":  "solid",
+                "wcag_criterion": "SC 2.4.11 Focus Appearance"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "02_Components",
+        "name": "02_Components",
+        "component_categories": [
+          {
+            "category": "Actions",
+            "components": [
+              {
+                "figma_name": "C/Actions/Button",
+                "variants": ["Primary", "Secondary", "Ghost", "Danger"],
+                "sizes": ["S (32px)", "M (40px)", "L (48px)"],
+                "states": ["Default", "Hover", "Focus", "Active", "Disabled", "Loading"],
+                "token_map": {
+                  "Primary/M/Default": {
+                    "bg": "color-brand-primary",
+                    "bg_hover": "color-brand-primary-hover",
+                    "text": "color-text-on-primary",
+                    "border": "transparent",
+                    "border_radius": "radius-sm",
+                    "padding_x": "space-4",
+                    "padding_y": "space-2",
+                    "font": "body-md / weight 600"
+                  },
+                  "Danger/M/Default": {
+                    "bg": "color-danger",
+                    "bg_hover": "red-700 (#B91C1C)",
+                    "text": "color-text-on-primary",
+                    "border": "transparent",
+                    "border_radius": "radius-sm"
+                  }
+                },
+                "screens_used": ["all"]
+              },
+              {
+                "figma_name": "C/Actions/Link",
+                "variants": ["Default", "Visited", "Disabled"],
+                "states": ["Default", "Hover", "Focus"],
+                "screens_used": ["SCR-001", "SCR-002"]
+              },
+              {
+                "figma_name": "C/Actions/IconButton",
+                "variants": ["Ghost", "Subtle"],
+                "sizes": ["S (32px)", "M (40px)"],
+                "states": ["Default", "Hover", "Focus", "Disabled"],
+                "screens_used": ["SCR-003", "SCR-011", "SCR-014"]
+              }
+            ]
+          },
+          {
+            "category": "Inputs",
+            "components": [
+              {
+                "figma_name": "C/Inputs/TextField",
+                "variants": ["Default", "Focused", "Error", "Disabled", "PHI"],
+                "states": ["Default", "Focused", "Error", "Disabled"],
+                "token_map": {
+                  "Default": {
+                    "bg": "color-surface-default",
+                    "border": "color-border-default",
+                    "border_focus": "color-border-focus",
+                    "border_error": "color-danger",
+                    "border_radius": "radius-sm",
+                    "text": "color-text-primary",
+                    "placeholder": "color-text-disabled",
+                    "label_font": "label",
+                    "input_font": "body-md",
+                    "height_M": "40px",
+                    "padding_x": "space-3"
+                  },
+                  "PHI": {
+                    "bg": "color-surface-phi",
+                    "border": "blue-100 (#DBEAFE)",
+                    "prefix_icon": "🔒",
+                    "prefix_color": "color-brand-primary",
+                    "note": "UXR-402 — PHI field distinction"
+                  }
+                },
+                "screens_used": ["SCR-001", "SCR-002", "SCR-004", "SCR-007", "SCR-008", "SCR-010", "SCR-012", "SCR-015"]
+              },
+              {
+                "figma_name": "C/Inputs/PasswordField",
+                "variants": ["Default", "Revealed", "Error"],
+                "states": ["Default", "Focused", "Error"],
+                "notes": "Includes show/hide toggle; strength indicator on Registration",
+                "screens_used": ["SCR-001", "SCR-002"]
+              },
+              {
+                "figma_name": "C/Inputs/SelectField",
+                "variants": ["Default", "Focused", "Error", "Disabled"],
+                "screens_used": ["SCR-002", "SCR-004", "SCR-008", "SCR-012", "SCR-015"]
+              },
+              {
+                "figma_name": "C/Inputs/DateTimePicker",
+                "variants": ["Default", "Focused", "Error"],
+                "screens_used": ["SCR-008", "SCR-012"]
+              },
+              {
+                "figma_name": "C/Inputs/FileUpload",
+                "variants": ["Idle", "Hover", "Uploading", "Success", "Error"],
+                "notes": "PDF only; drag-drop + browse; extraction status badge per doc (UXR-603)",
+                "screens_used": ["SCR-010"]
+              },
+              {
+                "figma_name": "C/Inputs/Checkbox",
+                "variants": ["Unchecked", "Checked", "Indeterminate", "Disabled"],
+                "screens_used": ["SCR-008"]
+              },
+              {
+                "figma_name": "C/Inputs/RadioGroup",
+                "variants": ["Default", "Selected", "Disabled"],
+                "screens_used": ["SCR-008"]
+              },
+              {
+                "figma_name": "C/Inputs/Toggle",
+                "variants": ["Off", "On"],
+                "notes": "AI ↔ Manual switch (UXR-103); data preserved across switch",
+                "screens_used": ["SCR-007", "SCR-008", "SCR-012"]
+              }
+            ]
+          },
+          {
+            "category": "Navigation",
+            "components": [
+              {
+                "figma_name": "C/Navigation/TopNav",
+                "variants": ["PatientPortal", "StaffPortal", "AdminPortal"],
+                "notes": "Role-specific: Patient=blue logo, Staff=green, Admin=red; role badge visible",
+                "screens_used": ["all"]
+              },
+              {
+                "figma_name": "C/Navigation/Sidebar",
+                "variants": ["Desktop (persistent)", "Tablet (collapsible)", "Mobile (hamburger)"],
+                "screens_used": ["SCR-003", "SCR-009", "SCR-011", "SCR-015"]
+              },
+              {
+                "figma_name": "C/Navigation/Tabs",
+                "variants": ["Horizontal", "Mobile (select)"],
+                "screens_used": ["SCR-005", "SCR-009"]
+              },
+              {
+                "figma_name": "C/Navigation/Breadcrumb",
+                "variants": ["Default"],
+                "notes": "Visible on all screens ≥2 levels deep; hidden on dashboard",
+                "screens_used": ["SCR-004", "SCR-005", "SCR-006", "SCR-007", "SCR-008", "SCR-009", "SCR-010", "SCR-012", "SCR-013", "SCR-014"]
+              }
+            ]
+          },
+          {
+            "category": "Content",
+            "components": [
+              {
+                "figma_name": "C/Content/AppointmentCard",
+                "variants": ["Default", "Compact", "Preview"],
+                "states": ["Default", "Loading", "Empty"],
+                "screens_used": ["SCR-003", "SCR-004", "SCR-005", "SCR-006"]
+              },
+              {
+                "figma_name": "C/Content/SlotGrid",
+                "variants": ["Available", "Selected", "Unavailable", "Preferred"],
+                "states": ["Default", "Loading", "Error", "Empty"],
+                "token_map": {
+                  "Cell/Available": {
+                    "bg": "color-surface-default",
+                    "border": "color-border-default",
+                    "border_radius": "radius-md",
+                    "text": "color-text-primary",
+                    "height": "48px",
+                    "font": "body-md"
+                  },
+                  "Cell/Selected": {
+                    "bg": "color-brand-primary",
+                    "border": "color-brand-primary",
+                    "text": "color-text-on-primary",
+                    "transition": "duration-normal (200ms)",
+                    "note": "Optimistic UI ≤200ms (UXR-501)"
+                  },
+                  "Cell/Unavailable": {
+                    "bg": "color-surface-subtle",
+                    "border": "color-border-default",
+                    "text": "color-text-disabled",
+                    "cursor": "not-allowed"
+                  },
+                  "Cell/Preferred": {
+                    "bg": "color-ai-accent-bg",
+                    "border": "color-border-ai (dashed)",
+                    "note": "Waitlist preferred slot indicator"
+                  }
+                },
+                "responsive": {
+                  "1280px+": "4 columns",
+                  "768px":   "2 columns",
+                  "< 640px": "1 column"
+                },
+                "uxr": "UXR-302, UXR-501",
+                "screens_used": ["SCR-004", "SCR-012"]
+              },
+              {
+                "figma_name": "C/Content/DataTable",
+                "variants": ["Default", "Loading", "Empty"],
+                "notes": "Semantic <table>; sortable columns; sticky header; pagination or virtualisation for >20 rows",
+                "screens_used": ["SCR-010", "SCR-011", "SCR-014", "SCR-015"]
+              },
+              {
+                "figma_name": "C/Content/ProfileSection",
+                "variants": ["Default", "AI-attributed", "Collapsed"],
+                "states": ["Default", "Expanded", "Collapsed", "Loading"],
+                "token_map": {
+                  "AI-attributed": {
+                    "border_left": "color-border-ai (#7C3AED)",
+                    "border_left_width": "4px",
+                    "header_bg": "color-ai-accent-bg (#EDE9FE)",
+                    "badge": "C/Content/Badge/AI",
+                    "note": "UXR-403"
+                  }
+                },
+                "screens_used": ["SCR-009", "SCR-013"]
+              },
+              {
+                "figma_name": "C/Content/ConflictAlert",
+                "variants": ["Critical", "High"],
+                "states": ["Default", "Resolved", "Reviewed"],
+                "token_map": {
+                  "Critical": {
+                    "bg": "color-danger-bg (#FEE2E2)",
+                    "border_left": "color-conflict-critical (#DC2626)",
+                    "border_left_width": "4px",
+                    "heading_text": "color-danger",
+                    "body_text": "color-text-primary",
+                    "border_radius": "radius-md",
+                    "padding": "space-4"
+                  },
+                  "High": {
+                    "bg": "color-warning-bg (#FEF3C7)",
+                    "border_left": "color-conflict-high (#D97706)",
+                    "border_left_width": "4px",
+                    "heading_text": "color-warning"
+                  }
+                },
+                "uxr": "UXR-404",
+                "screens_used": ["SCR-013"]
+              },
+              {
+                "figma_name": "C/Content/CodeSuggestionRow",
+                "variants": ["Pending", "Accepted", "Modified", "Rejected"],
+                "states": ["Default", "Hover", "Accepted", "Modified", "Rejected"],
+                "token_map": {
+                  "Pending/Default": {
+                    "bg": "color-surface-default",
+                    "border_bottom": "color-border-default",
+                    "ai_badge_bg": "color-ai-accent-bg (#EDE9FE)",
+                    "ai_badge_text": "color-ai-accent (#7C3AED)",
+                    "evidence_text": "color-text-secondary",
+                    "font": "body-md",
+                    "padding_y": "space-3"
+                  },
+                  "Accepted": {
+                    "bg": "color-success-bg (#DCFCE7)",
+                    "border_left": "color-success (#16A34A)",
+                    "border_left_width": "3px"
+                  },
+                  "Rejected": {
+                    "bg": "color-danger-bg (#FEE2E2)",
+                    "border_left": "color-danger (#DC2626)",
+                    "border_left_width": "3px",
+                    "text_decoration": "line-through",
+                    "opacity": "0.7"
+                  }
+                },
+                "uxr": "UXR-107, UXR-403",
+                "screens_used": ["SCR-014"]
+              },
+              {
+                "figma_name": "C/Content/Badge",
+                "variants": ["Primary", "Success", "Warning", "Danger", "AI", "Default"],
+                "sizes": ["S", "M"],
+                "token_map": {
+                  "AI":      { "bg": "color-ai-accent-bg (#EDE9FE)", "text": "color-ai-accent (#7C3AED)", "font": "label", "radius": "radius-full", "note": "UXR-403" },
+                  "Success": { "bg": "color-success-bg (#DCFCE7)",   "text": "color-success (#16A34A)" },
+                  "Warning": { "bg": "color-warning-bg (#FEF3C7)",   "text": "color-warning (#D97706)" },
+                  "Danger":  { "bg": "color-danger-bg (#FEE2E2)",    "text": "color-danger (#DC2626)" },
+                  "Primary": { "bg": "color-brand-primary (#1A56DB)","text": "color-text-on-primary (#FFFFFF)" }
+                },
+                "screens_used": ["all"]
+              }
+            ]
+          },
+          {
+            "category": "Feedback",
+            "components": [
+              {
+                "figma_name": "C/Feedback/Modal",
+                "variants": ["Confirmation", "Info", "Error", "SessionTimeout", "CodeEdit", "RoleChange", "DeactivateAccount"],
+                "states": ["Default", "Loading", "Error"],
+                "token_map": {
+                  "Confirmation": {
+                    "overlay_bg": "rgba(15, 23, 42, 0.50)",
+                    "bg": "color-surface-default",
+                    "border_radius": "radius-lg",
+                    "shadow": "shadow-lg",
+                    "max_width": "480px",
+                    "padding": "space-8",
+                    "heading_font": "heading-md",
+                    "body_font": "body-md",
+                    "footer_gap": "space-3"
+                  },
+                  "SessionTimeout": {
+                    "aria_live": "assertive",
+                    "countdown_font": "heading-xl / color-danger",
+                    "stay_cta": "Button/Primary/M",
+                    "logout_cta": "Button/Ghost/M",
+                    "note": "UXR-205, UXR-503 — announced to screen readers immediately"
+                  }
+                },
+                "screens_used": ["SCR-005", "SCR-013", "SCR-014", "SCR-015", "all-authenticated"]
+              },
+              {
+                "figma_name": "C/Feedback/Drawer",
+                "variants": ["Reschedule", "ConflictDetail", "DocumentPreview"],
+                "notes": "Slide from right edge; animation: duration-slow (300ms) easing-enter; z-index above content",
+                "screens_used": ["SCR-005", "SCR-010", "SCR-013"]
+              },
+              {
+                "figma_name": "C/Feedback/Toast",
+                "variants": ["Success", "Warning", "Error", "Info"],
+                "states": ["Default", "Dismissed"],
+                "token_map": {
+                  "Success": {
+                    "bg": "color-success-bg (#DCFCE7)",
+                    "border_left": "color-success (#16A34A)",
+                    "border_left_width": "4px",
+                    "position": "top-right / 16px margin",
+                    "shadow": "shadow-md",
+                    "border_radius": "radius-md",
+                    "padding": "space-4"
+                  }
+                },
+                "notes": "Auto-dismiss 5s (non-error); error toasts persist until dismissed; UXR-601, UXR-604",
+                "screens_used": ["SCR-003", "SCR-004", "SCR-016"]
+              },
+              {
+                "figma_name": "C/Feedback/Alert",
+                "variants": ["Success", "Warning", "Error", "Info"],
+                "token_map": {
+                  "Error": {
+                    "bg": "color-danger-bg (#FEE2E2)",
+                    "border": "color-danger (#DC2626)",
+                    "text": "color-text-primary",
+                    "icon_color": "color-danger",
+                    "border_radius": "radius-sm",
+                    "padding": "space-3 space-4"
+                  }
+                },
+                "notes": "Non-dismissible inline feedback; ARIA role=alert; UXR-204",
+                "screens_used": ["SCR-001", "SCR-002", "SCR-004", "SCR-006", "SCR-008", "SCR-012", "SCR-013", "SCR-015"]
+              },
+              {
+                "figma_name": "C/Feedback/SkeletonLoader",
+                "variants": ["Card", "Row", "Text"],
+                "token_map": {
+                  "default": {
+                    "base_bg": "color-surface-subtle (#F1F5F9)",
+                    "shimmer": "linear-gradient(90deg, gray-100 0%, gray-050 50%, gray-100 100%)",
+                    "animation": "shimmer 1.5s infinite",
+                    "border_radius": "radius-md",
+                    "aria": "aria-hidden=true on skeleton; content element retains aria-label"
+                  }
+                },
+                "screens_used": ["SCR-003", "SCR-009", "SCR-010", "SCR-013"]
+              },
+              {
+                "figma_name": "C/Feedback/Spinner",
+                "variants": ["Default", "Small", "Inline"],
+                "notes": "Inline loading state for buttons and slot confirmation (UXR-501)",
+                "screens_used": ["SCR-004", "SCR-007"]
+              },
+              {
+                "figma_name": "C/Feedback/ProgressBar",
+                "variants": ["Linear", "Step"],
+                "notes": "Step variant for AI intake questions (UXR-502); shows 'Question N of 8'",
+                "screens_used": ["SCR-007", "SCR-008"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "03_Patterns",
+        "name": "03_Patterns",
+        "patterns": [
+          {
+            "name": "Auth Form Pattern",
+            "components": ["C/Inputs/TextField", "C/Inputs/PasswordField", "C/Actions/Button/Primary", "C/Actions/Button/Ghost", "C/Feedback/Alert/Error"],
+            "screens": ["SCR-001", "SCR-002"],
+            "variants": ["Login", "Registration"]
+          },
+          {
+            "name": "Slot Picker Pattern",
+            "components": ["C/Content/SlotGrid", "C/Content/AppointmentCard", "C/Feedback/Toast/Error"],
+            "screens": ["SCR-004", "SCR-012"],
+            "states": ["Default", "Selected", "Conflict"],
+            "uxr": "UXR-302, UXR-501, UXR-601"
+          },
+          {
+            "name": "Chat/Intake Pattern",
+            "components": ["C/Inputs/TextField", "C/Actions/Button/Primary", "C/Feedback/ProgressBar/Step", "C/Inputs/Toggle"],
+            "screens": ["SCR-007"],
+            "notes": "ChatBubble composition for AI conversation; question-step UI (UXR-502)"
+          },
+          {
+            "name": "Clinical Profile Pattern",
+            "components": ["C/Content/ProfileSection", "C/Content/Badge/AI", "C/Content/Badge/Success", "C/Content/ConflictAlert"],
+            "screens": ["SCR-009", "SCR-013"],
+            "notes": "PHI + AI attribution layering (UXR-402, UXR-403, UXR-404)"
+          },
+          {
+            "name": "Empty State Pattern",
+            "variants": ["No Appointments", "No Documents", "No Queue Entries", "No Users", "No Suggestions"],
+            "components": ["C/Actions/Button/Primary"],
+            "notes": "All empty states provide guiding CTA per content guidelines",
+            "screens": ["SCR-003", "SCR-006", "SCR-009", "SCR-011", "SCR-014"]
+          },
+          {
+            "name": "Loading / Skeleton Pattern",
+            "components": ["C/Feedback/SkeletonLoader/Card", "C/Feedback/SkeletonLoader/Row"],
+            "screens": ["SCR-003", "SCR-009", "SCR-010", "SCR-013"]
+          },
+          {
+            "name": "Session Timeout Pattern",
+            "components": ["C/Feedback/Modal/SessionTimeout"],
+            "screens": ["all-authenticated"],
+            "uxr": "UXR-205, UXR-503",
+            "notes": "aria-live=assertive; countdown in color-danger; appears at 13-min inactivity"
+          }
+        ]
+      },
+      {
+        "id": "04_Screens",
+        "name": "04_Screens",
+        "frame_size": { "width": 1440, "height": 1024, "platform": "Web" },
+        "screens": [
+          {
+            "id": "SCR-001",
+            "name": "Login",
+            "derived_from": ["UC-002", "UC-003"],
+            "personas": ["Patient", "Staff", "Admin"],
+            "states": [
+              { "name": "Default",    "frame": "Login/Default",    "notes": "Email + password form; role-selector implied by credentials" },
+              { "name": "Loading",    "frame": "Login/Loading",    "notes": "Submit button spinner; form disabled" },
+              { "name": "Error",      "frame": "Login/Error",      "notes": "Generic error toast (no field-level disclosure — OWASP A07)" },
+              { "name": "Validation", "frame": "Login/Validation", "notes": "Required-field inline errors before submit" }
+            ],
+            "uxr": [],
+            "key_frs": ["FR-001", "FR-002", "FR-003"]
+          },
+          {
+            "id": "SCR-002",
+            "name": "Registration",
+            "derived_from": ["UC-001"],
+            "personas": ["Patient"],
+            "states": [
+              { "name": "Default",    "frame": "Registration/Default",    "notes": "Full registration form" },
+              { "name": "Loading",    "frame": "Registration/Loading",    "notes": "Submit spinner; async email check" },
+              { "name": "Error",      "frame": "Registration/Error",      "notes": "Server-side error inline" },
+              { "name": "Validation", "frame": "Registration/Validation", "notes": "Password strength; email format; required fields" }
+            ],
+            "key_frs": ["FR-001", "FR-040"]
+          },
+          {
+            "id": "SCR-003",
+            "name": "PatientDashboard",
+            "derived_from": ["UC-004", "UC-005", "UC-006", "UC-025"],
+            "personas": ["Patient"],
+            "states": [
+              { "name": "Default", "frame": "PatientDashboard/Default", "notes": "Appointment cards; intake alert; PDF badge; calendar advisory" },
+              { "name": "Loading", "frame": "PatientDashboard/Loading", "notes": "SkeletonLoader/Card for appointment list" },
+              { "name": "Empty",   "frame": "PatientDashboard/Empty",   "notes": "Guided onboarding strip; Book appointment CTA" }
+            ],
+            "uxr": ["UXR-504", "UXR-503"]
+          },
+          {
+            "id": "SCR-004",
+            "name": "AppointmentBooking",
+            "derived_from": ["UC-004", "UC-007", "UC-018", "UC-025"],
+            "personas": ["Patient"],
+            "states": [
+              { "name": "Default",    "frame": "AppointmentBooking/Default",    "notes": "SlotGrid + insurance form; soft validation badge" },
+              { "name": "Loading",    "frame": "AppointmentBooking/Loading",    "notes": "SlotGrid skeleton; spinner on submit" },
+              { "name": "Error",      "frame": "AppointmentBooking/Error",      "notes": "Slot conflict toast (UXR-601); grid auto-refresh" },
+              { "name": "Validation", "frame": "AppointmentBooking/Validation", "notes": "Insurance inline badge (UXR-602); required fields" }
+            ],
+            "uxr": ["UXR-102", "UXR-302", "UXR-402", "UXR-501", "UXR-504", "UXR-601", "UXR-602"]
+          },
+          {
+            "id": "SCR-005",
+            "name": "AppointmentDetail",
+            "derived_from": ["UC-005", "UC-006"],
+            "personas": ["Patient"],
+            "states": [
+              { "name": "Default", "frame": "AppointmentDetail/Default", "notes": "Detail view + Cancel/Reschedule CTAs" },
+              { "name": "Loading", "frame": "AppointmentDetail/Loading", "notes": "Skeleton for detail data" },
+              { "name": "Error",   "frame": "AppointmentDetail/Error",   "notes": "Reschedule conflict inline in drawer" }
+            ],
+            "overlays": ["Cancel Confirmation Modal", "Reschedule Slot Drawer"]
+          },
+          {
+            "id": "SCR-006",
+            "name": "PreferredSlotConfirm",
+            "derived_from": ["UC-007"],
+            "personas": ["Patient"],
+            "states": [
+              { "name": "Default", "frame": "PreferredSlotConfirm/Default", "notes": "Waitlist position + preferred slot display" },
+              { "name": "Empty",   "frame": "PreferredSlotConfirm/Empty",   "notes": "No preferred slot registered" }
+            ]
+          },
+          {
+            "id": "SCR-007",
+            "name": "AIIntake",
+            "derived_from": ["UC-009", "UC-011"],
+            "personas": ["Patient"],
+            "states": [
+              { "name": "Default", "frame": "AIIntake/Default", "notes": "Chat bubble UI; step progress bar; AI/Manual toggle" },
+              { "name": "Loading", "frame": "AIIntake/Loading", "notes": "Typing indicator while Gemini responds" },
+              { "name": "Error",   "frame": "AIIntake/Error",   "notes": "Gemini unavailable; auto-redirect to manual path" }
+            ],
+            "uxr": ["UXR-103", "UXR-402", "UXR-502"]
+          },
+          {
+            "id": "SCR-008",
+            "name": "ManualIntake",
+            "derived_from": ["UC-010", "UC-011"],
+            "personas": ["Patient"],
+            "states": [
+              { "name": "Default",    "frame": "ManualIntake/Default",    "notes": "Structured intake form; PHI annotations; AI/Manual toggle" },
+              { "name": "Loading",    "frame": "ManualIntake/Loading",    "notes": "Submit spinner" },
+              { "name": "Error",      "frame": "ManualIntake/Error",      "notes": "Server-side error inline" },
+              { "name": "Validation", "frame": "ManualIntake/Validation", "notes": "Required fields; aria-describedby errors (UXR-204)" }
+            ],
+            "uxr": ["UXR-103", "UXR-204", "UXR-402", "UXR-502"]
+          },
+          {
+            "id": "SCR-009",
+            "name": "PatientProfile",
+            "derived_from": ["UC-020"],
+            "personas": ["Patient"],
+            "states": [
+              { "name": "Default", "frame": "PatientProfile/Default", "notes": "Collapsible ProfileSections; AI/Verified badges; PHI annotations; read-only" },
+              { "name": "Loading", "frame": "PatientProfile/Loading", "notes": "SkeletonLoader; 'Profile generation in progress'" },
+              { "name": "Empty",   "frame": "PatientProfile/Empty",   "notes": "Upload first document CTA" }
+            ],
+            "uxr": ["UXR-106", "UXR-402", "UXR-403"]
+          },
+          {
+            "id": "SCR-010",
+            "name": "DocumentUpload",
+            "derived_from": ["UC-019"],
+            "personas": ["Patient"],
+            "states": [
+              { "name": "Default", "frame": "DocumentUpload/Default", "notes": "FileUpload zone + document DataTable with extraction status" },
+              { "name": "Loading", "frame": "DocumentUpload/Loading", "notes": "Upload progress indicator per file" },
+              { "name": "Error",   "frame": "DocumentUpload/Error",   "notes": "Extraction failed; 'Retry extraction' CTA (UXR-603)" }
+            ],
+            "uxr": ["UXR-603"]
+          },
+          {
+            "id": "SCR-011",
+            "name": "StaffQueue",
+            "derived_from": ["UC-014", "UC-015", "UC-016"],
+            "personas": ["Staff"],
+            "states": [
+              { "name": "Default", "frame": "StaffQueue/Default", "notes": "Same-day queue DataTable; Mark Arrived; status badges; RBAC enforced" },
+              { "name": "Loading", "frame": "StaffQueue/Loading", "notes": "Table skeleton" },
+              { "name": "Empty",   "frame": "StaffQueue/Empty",   "notes": "'No appointments today. Add a walk-in.' CTA" }
+            ],
+            "uxr": ["UXR-104"]
+          },
+          {
+            "id": "SCR-012",
+            "name": "WalkinBooking",
+            "derived_from": ["UC-014"],
+            "personas": ["Staff"],
+            "states": [
+              { "name": "Default",    "frame": "WalkinBooking/Default",    "notes": "Search or create patient; SlotGrid; RBAC" },
+              { "name": "Loading",    "frame": "WalkinBooking/Loading",    "notes": "Patient search + slot loading" },
+              { "name": "Error",      "frame": "WalkinBooking/Error",      "notes": "No slots advisory; 'Add to queue without slot'" },
+              { "name": "Validation", "frame": "WalkinBooking/Validation", "notes": "Required patient fields; inline errors" }
+            ]
+          },
+          {
+            "id": "SCR-013",
+            "name": "StaffProfile",
+            "derived_from": ["UC-020", "UC-022"],
+            "personas": ["Staff"],
+            "states": [
+              { "name": "Default", "frame": "StaffProfile/Default", "notes": "Full clinical profile; ConflictAlerts; AI/Verified badges; PHI annotations" },
+              { "name": "Loading", "frame": "StaffProfile/Loading", "notes": "ProfileSection skeletons" },
+              { "name": "Empty",   "frame": "StaffProfile/Empty",   "notes": "No documents; no conflicts" },
+              { "name": "Error",   "frame": "StaffProfile/Error",   "notes": "Extraction failure CTA (UXR-603)" }
+            ],
+            "uxr": ["UXR-106", "UXR-402", "UXR-403", "UXR-404", "UXR-603"],
+            "overlays": ["Conflict Detail Drawer", "Document Preview Drawer"]
+          },
+          {
+            "id": "SCR-014",
+            "name": "CodeVerification",
+            "derived_from": ["UC-023", "UC-024"],
+            "personas": ["Staff"],
+            "states": [
+              { "name": "Default", "frame": "CodeVerification/Default", "notes": "CodeSuggestionRow list; Accept/Modify/Reject per row; audit logged" },
+              { "name": "Loading", "frame": "CodeVerification/Loading", "notes": "Row skeletons while Gemini generates" },
+              { "name": "Empty",   "frame": "CodeVerification/Empty",   "notes": "'No AI suggestions — please code manually'" },
+              { "name": "Error",   "frame": "CodeVerification/Error",   "notes": "Gemini error; manual entry CTA" }
+            ],
+            "uxr": ["UXR-107", "UXR-403"],
+            "overlays": ["Code Modification Modal"]
+          },
+          {
+            "id": "SCR-015",
+            "name": "AdminUsers",
+            "derived_from": ["UC-017"],
+            "personas": ["Admin"],
+            "states": [
+              { "name": "Default",    "frame": "AdminUsers/Default",    "notes": "User DataTable; inline search/filter; expand-row actions" },
+              { "name": "Loading",    "frame": "AdminUsers/Loading",    "notes": "Table skeleton" },
+              { "name": "Empty",      "frame": "AdminUsers/Empty",      "notes": "No users found (search result)" },
+              { "name": "Error",      "frame": "AdminUsers/Error",      "notes": "Server error on action" },
+              { "name": "Validation", "frame": "AdminUsers/Validation", "notes": "Self-deactivation blocked; inline error inside modal" }
+            ],
+            "uxr": ["UXR-105"]
+          },
+          {
+            "id": "SCR-016",
+            "name": "CalendarOAuth",
+            "derived_from": ["UC-013"],
+            "personas": ["Patient"],
+            "states": [
+              { "name": "Default", "frame": "CalendarOAuth/Default", "notes": "Provider selector (Google/Outlook); consent CTA" },
+              { "name": "Loading", "frame": "CalendarOAuth/Loading", "notes": "OAuth redirect spinner" },
+              { "name": "Error",   "frame": "CalendarOAuth/Error",   "notes": "Amber advisory toast; retry link (UXR-604)" }
+            ],
+            "uxr": ["UXR-604"]
+          }
+        ]
+      },
+      {
+        "id": "05_Prototype",
+        "name": "05_Prototype",
+        "flows": [
+          {
+            "id": "FL-001",
+            "name": "Registration & Login",
+            "derived_from": ["UC-001", "UC-002", "UC-003"],
+            "personas": ["Patient", "Staff", "Admin"],
+            "screens_count": 4,
+            "entry": "SCR-001/Default",
+            "steps": [
+              { "screen": "SCR-001/Default", "action": "Click 'Create account'", "next": "SCR-002/Default" },
+              { "screen": "SCR-002/Default", "action": "Submit registration form (valid)", "next": "SCR-001/Default (success toast)" },
+              { "screen": "SCR-002/Validation", "action": "Submit with errors", "next": "SCR-002/Validation (inline errors)" },
+              { "screen": "SCR-001/Default", "action": "Submit credentials (valid — Patient role)", "next": "SCR-003/Default" },
+              { "screen": "SCR-001/Default", "action": "Submit credentials (valid — Staff role)", "next": "SCR-011/Default" },
+              { "screen": "SCR-001/Default", "action": "Submit credentials (valid — Admin role)", "next": "SCR-015/Default" },
+              { "screen": "SCR-001/Error", "action": "Invalid credentials", "next": "SCR-001/Default (generic error)" }
+            ],
+            "exit_conditions": ["SCR-003/Default", "SCR-011/Default", "SCR-015/Default"]
+          },
+          {
+            "id": "FL-002",
+            "name": "Appointment Booking with Preferred Slot",
+            "derived_from": ["UC-004", "UC-007", "UC-018", "UC-025"],
+            "personas": ["Patient"],
+            "screens_count": 3,
+            "entry": "SCR-003/Default",
+            "steps": [
+              { "screen": "SCR-003/Default", "action": "Click 'Book appointment'", "next": "SCR-004/Default" },
+              { "screen": "SCR-004/Default", "action": "Select slot (optimistic 200ms)", "next": "SCR-004/Default (slot selected)" },
+              { "screen": "SCR-004/Default", "action": "Enter insurance + confirm", "next": "SCR-003/Default (confirmation toast)" },
+              { "screen": "SCR-004/Error", "action": "Slot taken (race condition)", "next": "SCR-004/Error (toast + grid refresh)" },
+              { "screen": "SCR-004/Default", "action": "Select preferred slot + confirm", "next": "SCR-006/Default" }
+            ],
+            "exit_conditions": ["SCR-003/Default", "SCR-006/Default"],
+            "overlay_interactions": ["Insurance soft-validation badge (inline)", "PDF progress strip (UXR-504)"]
+          },
+          {
+            "id": "FL-003",
+            "name": "Cancel / Reschedule",
+            "derived_from": ["UC-005", "UC-006"],
+            "personas": ["Patient"],
+            "screens_count": 2,
+            "entry": "SCR-003/Default",
+            "steps": [
+              { "screen": "SCR-003/Default", "action": "Click appointment card 'Manage'", "next": "SCR-005/Default" },
+              { "screen": "SCR-005/Default", "action": "Click 'Cancel appointment'", "next": "Cancel Confirmation Modal" },
+              { "screen": "Cancel Confirmation Modal", "action": "Confirm cancel", "next": "SCR-003/Default (cancellation toast)" },
+              { "screen": "SCR-005/Default", "action": "Click 'Reschedule'", "next": "Reschedule Drawer" },
+              { "screen": "Reschedule Drawer", "action": "Select new slot + confirm", "next": "SCR-003/Default (reschedule toast)" }
+            ],
+            "exit_conditions": ["SCR-003/Default"]
+          },
+          {
+            "id": "FL-004",
+            "name": "AI Intake",
+            "derived_from": ["UC-009", "UC-011"],
+            "personas": ["Patient"],
+            "screens_count": 2,
+            "entry": "SCR-003/Default",
+            "steps": [
+              { "screen": "SCR-003/Default", "action": "Click 'Complete intake'", "next": "SCR-007/Default" },
+              { "screen": "SCR-007/Default", "action": "Answer questions (step-by-step)", "next": "SCR-007/Default (progress advances)" },
+              { "screen": "SCR-007/Default", "action": "All answered → confirm", "next": "SCR-003/Default (intake complete)" },
+              { "screen": "SCR-007/Default", "action": "Click 'Switch to manual form'", "next": "SCR-008/Default (pre-populated)" },
+              { "screen": "SCR-007/Error", "action": "Gemini unavailable", "next": "SCR-008/Default (empty fallback)" }
+            ],
+            "exit_conditions": ["SCR-003/Default", "SCR-008/Default"]
+          },
+          {
+            "id": "FL-005",
+            "name": "Manual Intake",
+            "derived_from": ["UC-010", "UC-011"],
+            "personas": ["Patient"],
+            "screens_count": 2,
+            "entry": "SCR-003/Default",
+            "steps": [
+              { "screen": "SCR-003/Default", "action": "Click 'Manual form'", "next": "SCR-008/Default" },
+              { "screen": "SCR-008/Default", "action": "Fill + submit (valid)", "next": "SCR-003/Default (intake complete)" },
+              { "screen": "SCR-008/Validation", "action": "Submit with missing required fields", "next": "SCR-008/Validation (inline errors)" },
+              { "screen": "SCR-008/Default", "action": "Click 'Switch to AI'", "next": "SCR-007/Default (pre-populated)" }
+            ],
+            "exit_conditions": ["SCR-003/Default"]
+          },
+          {
+            "id": "FL-006",
+            "name": "Calendar Sync OAuth",
+            "derived_from": ["UC-013"],
+            "personas": ["Patient"],
+            "screens_count": 2,
+            "entry": "SCR-003/Default",
+            "steps": [
+              { "screen": "SCR-003/Default", "action": "Click 'Connect calendar'", "next": "SCR-016/Default" },
+              { "screen": "SCR-016/Default", "action": "Select Google/Outlook + authorize", "next": "SCR-016/Default (connected badge)" },
+              { "screen": "SCR-016/Error", "action": "OAuth API error", "next": "SCR-016/Error (amber advisory — UXR-604)" }
+            ],
+            "exit_conditions": ["SCR-016/Default (connected)", "SCR-016/Default (declined)"]
+          },
+          {
+            "id": "FL-007",
+            "name": "Staff Walk-in & Queue",
+            "derived_from": ["UC-014", "UC-015", "UC-016"],
+            "personas": ["Staff"],
+            "screens_count": 2,
+            "entry": "SCR-011/Default",
+            "steps": [
+              { "screen": "SCR-011/Default", "action": "Click 'New walk-in'", "next": "SCR-012/Default" },
+              { "screen": "SCR-012/Default", "action": "Confirm booking (slot available)", "next": "SCR-011/Default (queue updated)" },
+              { "screen": "SCR-012/Error", "action": "No slots", "next": "SCR-012/Error (advisory — add without slot)" },
+              { "screen": "SCR-011/Default", "action": "Click 'Mark Arrived' on row", "next": "SCR-011/Default (status: Arrived)" }
+            ],
+            "exit_conditions": ["SCR-011/Default"]
+          },
+          {
+            "id": "FL-008",
+            "name": "Admin User Management",
+            "derived_from": ["UC-017"],
+            "personas": ["Admin"],
+            "screens_count": 1,
+            "entry": "SCR-015/Default",
+            "steps": [
+              { "screen": "SCR-015/Default", "action": "Search user → expand row → Change role", "next": "Role Change Modal" },
+              { "screen": "Role Change Modal", "action": "Confirm", "next": "SCR-015/Default (role updated)" },
+              { "screen": "SCR-015/Default", "action": "Deactivate self", "next": "SCR-015/Validation (error — blocked)" },
+              { "screen": "SCR-015/Default", "action": "Deactivate other user → confirm", "next": "SCR-015/Default (user deactivated)" }
+            ],
+            "exit_conditions": ["SCR-015/Default"]
+          },
+          {
+            "id": "FL-009",
+            "name": "Document Upload & AI Extraction",
+            "derived_from": ["UC-019", "UC-021"],
+            "personas": ["Patient"],
+            "screens_count": 1,
+            "entry": "SCR-010/Default",
+            "steps": [
+              { "screen": "SCR-010/Default", "action": "Upload PDF (valid)", "next": "SCR-010/Loading (progress bar per file)" },
+              { "screen": "SCR-010/Loading", "action": "Upload complete", "next": "SCR-010/Default (status: Extracting…)" },
+              { "screen": "SCR-010/Default", "action": "Extraction failure → 'Retry extraction'", "next": "SCR-010/Default (retry attempt)" },
+              { "screen": "SCR-010/Error", "action": "Invalid file type", "next": "SCR-010/Error (inline error)" }
+            ],
+            "exit_conditions": ["SCR-010/Default (extraction complete)"]
+          },
+          {
+            "id": "FL-010",
+            "name": "360° Profile & Conflict Resolution",
+            "derived_from": ["UC-020", "UC-022"],
+            "personas": ["Staff", "Patient"],
+            "screens_count": 2,
+            "entry": "SCR-013/Default (Staff) or SCR-009/Default (Patient)",
+            "steps": [
+              { "screen": "SCR-013/Default", "action": "Click conflict card", "next": "Conflict Detail Drawer" },
+              { "screen": "Conflict Detail Drawer", "action": "Select authoritative value + resolve", "next": "SCR-013/Default (ConflictAlert → Resolved)" }
+            ],
+            "exit_conditions": ["SCR-013/Default (conflict resolved)"]
+          },
+          {
+            "id": "FL-011",
+            "name": "Code Suggestion & Verification",
+            "derived_from": ["UC-023", "UC-024"],
+            "personas": ["Staff"],
+            "screens_count": 2,
+            "entry": "SCR-011/Default",
+            "steps": [
+              { "screen": "SCR-011/Default", "action": "Click 'Verify codes' on encounter row", "next": "SCR-014/Default" },
+              { "screen": "SCR-014/Default", "action": "Accept code row", "next": "SCR-014/Default (row: Accepted)" },
+              { "screen": "SCR-014/Default", "action": "Modify code row", "next": "Code Modification Modal" },
+              { "screen": "Code Modification Modal", "action": "Enter corrected code + save", "next": "SCR-014/Default (row: Modified)" },
+              { "screen": "SCR-014/Default", "action": "Reject code row", "next": "SCR-014/Default (row: Rejected)" },
+              { "screen": "SCR-014/Empty", "action": "All codes rejected", "next": "SCR-014/Empty ('Manual coding required')" }
+            ],
+            "exit_conditions": ["SCR-011/Default (encounter coded)"]
+          }
+        ]
+      },
+      {
+        "id": "06_Handoff",
+        "name": "06_Handoff",
+        "sections": [
+          {
+            "name": "Token Usage Rules",
+            "source": "designsystem.md — all tokens",
+            "rules": [
+              "All colors MUST use semantic aliases (color-*), not primitive values directly in components",
+              "All spacing MUST use space-* tokens; no raw px values in component stylesheets",
+              "PHI fields MUST apply color-surface-phi background and 🔒 prefix icon (UXR-402)",
+              "AI-generated content MUST apply color-border-ai left border + Badge/AI (UXR-403)",
+              "Disabled states MUST use 40% opacity; no pointer events",
+              "Focus ring MUST be 3px solid color-border-focus (#1A56DB), 2px offset (WCAG 2.2 SC 2.4.11)"
+            ]
+          },
+          {
+            "name": "PHI Field Guidelines",
+            "rule": "UXR-402",
+            "fields_requiring_phi": [
+              "Insurance name + ID (SCR-004)",
+              "Symptoms / intake answers (SCR-007, SCR-008)",
+              "DOB, phone (SCR-008)",
+              "Vitals, medications (SCR-009, SCR-013)"
+            ],
+            "implementation": {
+              "bg": "color-surface-phi (#EFF6FF)",
+              "border": "blue-100 (#DBEAFE)",
+              "prefix_icon": "🔒 (outlined, 20×20px, 1.5px stroke)",
+              "aria": "aria-label includes 'Protected health information'"
+            }
+          },
+          {
+            "name": "AI Attribution Guidelines",
+            "rule": "UXR-403",
+            "implementation": {
+              "ai_border": "4px left border color-border-ai (#7C3AED) on ProfileSection",
+              "ai_badge": "C/Content/Badge/AI — purple pill",
+              "verified_badge": "C/Content/Badge/Success — green pill",
+              "mutual_exclusion": "Never show AI + Verified badges simultaneously on same field",
+              "confidence_display": "CodeSuggestionRow shows % + evidence snippet (UXR-107)"
+            }
+          },
+          {
+            "name": "Responsive Behavior",
+            "breakpoints": {
+              "1280px": "12-col grid; sidebar persistent; SlotGrid 4-col",
+              "768px":  "8-col grid; sidebar collapsible; SlotGrid 2-col",
+              "375px":  "4-col grid; hamburger menu; SlotGrid 1-col; touch targets ≥44×44px"
+            }
+          },
+          {
+            "name": "Accessibility Notes",
+            "wcag": "WCAG 2.2 Level AA",
+            "requirements": [
+              "Text contrast ≥4.5:1; UI component contrast ≥3:1",
+              "Focus ring: 3px solid #1A56DB, 2px offset — all interactive elements",
+              "Touch targets: ≥44×44px at 375px breakpoint",
+              "Session timeout modal: aria-live=assertive (UXR-205)",
+              "All form fields: htmlFor/id association; aria-describedby for errors (UXR-203, UXR-204)",
+              "Slot conflict toast: aria-live=assertive (UXR-601)",
+              "Screen reader must announce code verification decision changes (SCR-014)"
+            ]
+          },
+          {
+            "name": "Edge Cases",
+            "cases": [
+              { "case": "Long patient name",         "screens": ["SCR-011", "SCR-013"], "solution": "Truncate at 30 chars; full name in tooltip on hover/focus" },
+              { "case": "Slot race condition",        "screens": ["SCR-004"],            "solution": "409 response → error toast + grid refresh (UXR-601)" },
+              { "case": "Gemini AI unavailable",      "screens": ["SCR-007"],            "solution": "Auto-redirect to SCR-008/Default (empty)" },
+              { "case": "Calendar OAuth token expired","screens": ["SCR-016", "SCR-003"],"solution": "Amber badge + re-auth link (UXR-604)" },
+              { "case": "Zero AI code suggestions",   "screens": ["SCR-014"],            "solution": "Empty state: manual entry CTA" },
+              { "case": "Session timeout mid-booking","screens": ["SCR-004"],            "solution": "Non-PHI form state saved to sessionStorage; restored post-login" }
+            ]
+          },
+          {
+            "name": "Screen-to-Code Mapping",
+            "note": "Maps SCR-XXX IDs to React component file paths (to be completed during implementation phase)",
+            "mappings": [
+              { "screen_id": "SCR-001", "component_path": "src/pages/auth/Login.tsx" },
+              { "screen_id": "SCR-002", "component_path": "src/pages/auth/Register.tsx" },
+              { "screen_id": "SCR-003", "component_path": "src/pages/patient/Dashboard.tsx" },
+              { "screen_id": "SCR-004", "component_path": "src/pages/patient/BookAppointment.tsx" },
+              { "screen_id": "SCR-005", "component_path": "src/pages/patient/AppointmentDetail.tsx" },
+              { "screen_id": "SCR-006", "component_path": "src/pages/patient/PreferredSlotConfirm.tsx" },
+              { "screen_id": "SCR-007", "component_path": "src/pages/patient/AIIntake.tsx" },
+              { "screen_id": "SCR-008", "component_path": "src/pages/patient/ManualIntake.tsx" },
+              { "screen_id": "SCR-009", "component_path": "src/pages/patient/Profile.tsx" },
+              { "screen_id": "SCR-010", "component_path": "src/pages/patient/DocumentUpload.tsx" },
+              { "screen_id": "SCR-011", "component_path": "src/pages/staff/Queue.tsx" },
+              { "screen_id": "SCR-012", "component_path": "src/pages/staff/WalkinBooking.tsx" },
+              { "screen_id": "SCR-013", "component_path": "src/pages/staff/PatientProfile.tsx" },
+              { "screen_id": "SCR-014", "component_path": "src/pages/staff/CodeVerification.tsx" },
+              { "screen_id": "SCR-015", "component_path": "src/pages/admin/UserManagement.tsx" },
+              { "screen_id": "SCR-016", "component_path": "src/pages/patient/CalendarOAuth.tsx" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

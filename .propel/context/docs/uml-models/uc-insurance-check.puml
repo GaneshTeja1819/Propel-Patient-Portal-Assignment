@@ -1,0 +1,12 @@
+@startuml uc-insurance-check
+left to right direction
+actor "Patient" as P
+rectangle "Insurance Pre-Check" {
+  usecase "Insurance Soft Validation\n(UC-018)" as UC018
+  usecase "Lookup Dummy\nInsurance Records" as LOOKUP
+  usecase "Display Validation Result" as DVR
+}
+P --> UC018
+UC018 ..> LOOKUP : <<include>>
+UC018 ..> DVR : <<include>>
+@enduml

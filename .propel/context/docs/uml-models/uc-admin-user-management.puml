@@ -1,0 +1,20 @@
+@startuml uc-admin-user-management
+left to right direction
+actor "Admin" as A
+rectangle "User Management" {
+  usecase "Manage Users & Roles\n(UC-017)" as UC017
+  usecase "Create User Account" as CUA
+  usecase "Update User Profile" as UUP
+  usecase "Deactivate Account" as DA
+  usecase "Change User Role" as CUR
+  usecase "Invalidate Active Sessions" as IAS
+  usecase "Write Audit Log" as AL
+}
+A --> UC017
+UC017 ..> CUA : <<extend>>
+UC017 ..> UUP : <<extend>>
+UC017 ..> DA : <<extend>>
+UC017 ..> CUR : <<extend>>
+UC017 ..> IAS : <<include>>
+UC017 ..> AL : <<include>>
+@enduml

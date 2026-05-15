@@ -1,0 +1,18 @@
+@startuml uc-code-suggestion
+left to right direction
+actor "Hangfire\n(System)" as HF
+actor "Gemini AI\nEngine" as AI
+rectangle "Medical Code Suggestion" {
+  usecase "AI Code Suggestion\n(UC-023)" as UC023
+  usecase "Invoke Gemini\nfor Coding" as IGC
+  usecase "Store Suggestions" as SS
+  usecase "Present to Staff\n(UC-024)" as UC024
+  usecase "Write Audit Log" as AL
+}
+HF --> UC023
+UC023 ..> IGC : <<include>>
+IGC --> AI
+UC023 ..> SS : <<include>>
+UC023 ..> UC024 : <<include>>
+UC023 ..> AL : <<include>>
+@enduml

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-016 | Calendar OAuth Consent | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-016 Calendar OAuth Consent
+  | Element                  | Action | Target Screen                                   |
+  |--------------------------|--------|--------------------------------------------------|
+  | #btn-connect-google      | click  | (OAuth flow simulation — same page)             |
+  | #btn-connect-outlook     | click  | (OAuth flow simulation — same page)             |
+  | #btn-disconnect          | click  | (connection removed — same page)                |
+  | #nav-back                | click  | wireframe-SCR-003-patient-dashboard.html        |
+
+  Source UC: UC-013 (Calendar OAuth Sync)
+  UXR: UXR-604 (non-intrusive sync failure advisory), UXR-301
+  FL: FL-006 (dashboard ↔ calendar)
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;--c-err:#DC2626;--c-err-bg:#FEE2E2;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--s12:48px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);--nav-h:64px;--max-w:1280px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}a:hover{text-decoration:underline}
+    .topnav{height:var(--nav-h);background:var(--cs);border-bottom:1px solid var(--cbord);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topnav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--s8);height:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--s4)}
+    .nav-logo{display:flex;align-items:center;gap:var(--s2);font-weight:700;color:var(--ct);font-size:var(--t-md)}
+    .nav-logo-mark{width:32px;height:32px;background:var(--cb);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-weight:700;font-size:var(--t-base)}
+    .nav-links{display:flex;align-items:center;gap:var(--s1)}
+    .nav-link{padding:var(--s2) var(--s3);border-radius:var(--r-sm);font-size:var(--t-base);color:var(--ct-s);font-weight:500;text-decoration:none;transition:background .1s}
+    .nav-link:hover{background:var(--cs-s);color:var(--ct);text-decoration:none}
+    .nav-link.active{background:var(--cb-l);color:var(--cb);font-weight:600}
+    .user-avatar{width:32px;height:32px;border-radius:var(--r-full);background:var(--cb);color:var(--ct-on);display:flex;align-items:center;justify-content:center;font-size:var(--t-sm);font-weight:700}
+    .main-content{max-width:var(--max-w);margin:0 auto;padding:var(--s8)}
+    .breadcrumb{display:flex;align-items:center;gap:var(--s2);font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s6)}
+    .breadcrumb a{color:var(--ct-s)}
+    .breadcrumb a:hover{color:var(--cb)}
+    .breadcrumb-sep{color:var(--ct-d)}
+    .page-layout{display:grid;grid-template-columns:1fr 360px;gap:var(--s8);align-items:flex-start}
+    .page-title{font-size:var(--t-2xl);font-weight:600;margin-bottom:var(--s1)}
+    .page-subtitle{font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s8)}
+    .card{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);box-shadow:var(--sh-sm);margin-bottom:var(--s6)}
+    .card-header{padding:var(--s4) var(--s6);border-bottom:1px solid var(--cbord);display:flex;align-items:center;gap:var(--s3)}
+    .card-title{font-size:var(--t-md);font-weight:600}
+    .card-body{padding:var(--s6)}
+    /* Current connection status */
+    .connection-status{border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s4);display:flex;align-items:center;justify-content:space-between;gap:var(--s4);flex-wrap:wrap;margin-bottom:var(--s6)}
+    .connection-status.connected{border-color:var(--c-ok);background:var(--c-ok-bg)}
+    .connection-status.disconnected{border-color:var(--cbord);background:var(--cs-s)}
+    .connection-status.syncing{border-color:var(--cb);background:var(--cb-l)}
+    .conn-left{display:flex;align-items:center;gap:var(--s3)}
+    .provider-icon{width:40px;height:40px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--cs);border:1px solid var(--cbord)}
+    .conn-info-label{font-size:var(--t-xs);color:var(--ct-s)}
+    .conn-info-value{font-weight:600}
+    /* Provider select cards */
+    .provider-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4);margin-bottom:var(--s6)}
+    .provider-card{border:1.5px solid var(--cbord);border-radius:var(--r-md);padding:var(--s4);text-align:center;cursor:pointer;transition:border-color .15s,background .15s;background:var(--cs)}
+    .provider-card:hover{border-color:var(--cb);background:var(--cb-l)}
+    .provider-card.selected{border-color:var(--cb);background:var(--cb-l)}
+    .provider-card-icon{font-size:32px;margin-bottom:var(--s2)}
+    .provider-card-name{font-weight:600;font-size:var(--t-base)}
+    .provider-card-meta{font-size:var(--t-xs);color:var(--ct-s);margin-top:var(--s1)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s4);height:44px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s;text-decoration:none;white-space:nowrap}
+    .btn-sm{height:36px;padding:0 var(--s3);font-size:var(--t-sm)}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h);text-decoration:none}
+    .btn-primary:disabled{background:var(--ct-d);border-color:var(--ct-d);cursor:not-allowed}
+    .btn-secondary{background:var(--cs);color:var(--ct);border-color:var(--cbord)}
+    .btn-secondary:hover{background:var(--cs-s);text-decoration:none}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l);text-decoration:none}
+    .btn-danger-outline{background:transparent;color:var(--c-err);border-color:var(--c-err)}
+    .btn-danger-outline:hover{background:var(--c-err-bg)}
+    .btn-w100{width:100%}
+    .badge{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s2);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;white-space:nowrap}
+    .badge-connected{background:var(--c-ok-bg);color:var(--c-ok)}
+    .badge-disconnected{background:var(--cs-s);color:var(--ct-d)}
+    /* Sync failure advisory (UXR-604 — non-intrusive, amber) */
+    .sync-advisory{background:var(--c-warn-bg);border:1px solid var(--c-warn);border-radius:var(--r-md);padding:var(--s3) var(--s4);font-size:var(--t-sm);display:flex;gap:var(--s3);align-items:flex-start;margin-bottom:var(--s4)}
+    .sync-advisory.hidden{display:none}
+    .sync-advisory-close{background:none;border:none;cursor:pointer;color:var(--ct-s);font-size:var(--t-md);flex-shrink:0;padding:0;margin-left:auto}
+    /* Info panel */
+    .info-card{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s6)}
+    .info-title{font-size:var(--t-md);font-weight:600;margin-bottom:var(--s4)}
+    .info-list{list-style:none}
+    .info-list li{display:flex;gap:var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--cbord);font-size:var(--t-sm)}
+    .info-list li:last-child{border-bottom:none}
+    .info-icon{flex-shrink:0;font-size:var(--t-md)}
+    /* Permissions checklist */
+    .perm-list{list-style:none;font-size:var(--t-sm)}
+    .perm-list li{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) 0;border-bottom:1px solid var(--cbord)}
+    .perm-list li:last-child{border-bottom:none}
+    .perm-icon{color:var(--c-ok);flex-shrink:0}
+    /* Spinner */
+    .spinner{width:18px;height:18px;border:2px solid rgba(26,86,219,.3);border-top-color:var(--cb);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:1024px){.page-layout{grid-template-columns:1fr}}
+    @media(max-width:640px){.provider-grid{grid-template-columns:1fr}.main-content{padding:var(--s4)}.topnav-inner{padding:0 var(--s4)}.nav-links{display:none}}
+  </style>
+</head>
+<body>
+  <nav class="topnav" aria-label="Main navigation">
+    <div class="topnav-inner">
+      <a href="wireframe-SCR-003-patient-dashboard.html" class="nav-logo" aria-label="Patient Portal home" id="nav-back">
+        <div class="nav-logo-mark" aria-hidden="true">P</div>
+        <span>Patient Portal</span>
+      </a>
+      <div class="nav-links">
+        <a href="wireframe-SCR-003-patient-dashboard.html" class="nav-link">🏠 Dashboard</a>
+        <a href="wireframe-SCR-004-appointment-booking.html" class="nav-link">📅 Book</a>
+        <a href="wireframe-SCR-009-patient-profile.html" class="nav-link">👤 My Profile</a>
+        <a href="wireframe-SCR-010-document-upload.html" class="nav-link">📄 Documents</a>
+        <a href="wireframe-SCR-016-calendar-oauth.html" class="nav-link active" aria-current="page">🗓 Calendar</a>
+      </div>
+      <div class="user-avatar" aria-label="Sarah Johnson" style="cursor:default">SJ</div>
+    </div>
+  </nav>
+
+  <main class="main-content" role="main">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="wireframe-SCR-003-patient-dashboard.html">Dashboard</a>
+      <span class="breadcrumb-sep" aria-hidden="true">/</span>
+      <span style="color:var(--ct);font-weight:600" aria-current="page">Calendar Sync</span>
+    </nav>
+    <h1 class="page-title">Calendar Sync</h1>
+    <p class="page-subtitle">Connect your calendar so your appointments automatically appear alongside your personal events.</p>
+
+    <div class="page-layout">
+      <!-- LEFT: Sync management -->
+      <div>
+        <!-- Sync failure advisory (UXR-604 — amber, non-modal, dismissable) -->
+        <div class="sync-advisory" id="sync-advisory" role="alert" aria-live="polite">
+          <span aria-hidden="true" style="flex-shrink:0;font-size:var(--t-md)">⚠</span>
+          <div>
+            <strong>Last sync failed</strong> — May 18, 2026 at 3:41 PM. Your upcoming appointments may not be up to date in Google Calendar. <button style="background:none;border:none;color:var(--c-warn);font-weight:700;cursor:pointer;font-family:var(--ff);font-size:var(--t-sm);padding:0;text-decoration:underline" onclick="retrySync()">Retry sync now</button>
+          </div>
+          <button class="sync-advisory-close" aria-label="Dismiss sync failure notice" onclick="this.closest('.sync-advisory').classList.add('hidden')">✕</button>
+        </div>
+
+        <!-- Current connection -->
+        <div class="connection-status connected" id="connection-status" aria-label="Current calendar connection status" role="status">
+          <div class="conn-left">
+            <div class="provider-icon" aria-hidden="true">📅</div>
+            <div>
+              <div class="conn-info-label">Connected calendar</div>
+              <div class="conn-info-value" id="conn-name">Google Calendar</div>
+              <div class="conn-info-label" style="margin-top:2px" id="conn-account">sarah.johnson@gmail.com</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--s3)">
+            <span class="badge badge-connected" id="conn-badge">● Connected</span>
+            <button class="btn btn-sm btn-danger-outline" id="btn-disconnect" onclick="disconnect()" aria-label="Disconnect Google Calendar">Disconnect</button>
+          </div>
+        </div>
+
+        <!-- Sync stats (when connected) -->
+        <div id="sync-stats" style="display:flex;gap:var(--s4);margin-bottom:var(--s6);flex-wrap:wrap">
+          <div style="background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s3) var(--s4);flex:1;min-width:140px">
+            <div style="font-size:var(--t-xl);font-weight:700;color:var(--cb)">3</div>
+            <div style="font-size:var(--t-xs);color:var(--ct-s)">Appointments synced</div>
+          </div>
+          <div style="background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s3) var(--s4);flex:1;min-width:140px">
+            <div style="font-size:var(--t-xl);font-weight:700;color:var(--c-warn)">⚠ Failed</div>
+            <div style="font-size:var(--t-xs);color:var(--ct-s)">Last sync: May 18</div>
+          </div>
+          <div style="background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s3) var(--s4);flex:1;min-width:140px">
+            <div style="font-size:var(--t-xl);font-weight:700;color:var(--c-ok)">Auto</div>
+            <div style="font-size:var(--t-xs);color:var(--ct-s)">Sync mode</div>
+          </div>
+        </div>
+
+        <!-- Provider selection (shown when disconnected) -->
+        <div id="provider-select-panel" style="display:none">
+          <p style="font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s4)">Choose your calendar provider to connect:</p>
+          <div class="provider-grid">
+            <div class="provider-card" id="provider-google" role="button" tabindex="0" aria-label="Connect Google Calendar"
+              onclick="selectProvider('google')"
+              onkeydown="if(event.key==='Enter'||event.key===' ')selectProvider('google')">
+              <div class="provider-card-icon" aria-hidden="true">📅</div>
+              <div class="provider-card-name">Google Calendar</div>
+              <div class="provider-card-meta">Connect via Google OAuth 2.0</div>
+            </div>
+            <div class="provider-card" id="provider-outlook" role="button" tabindex="0" aria-label="Connect Microsoft Outlook Calendar"
+              onclick="selectProvider('outlook')"
+              onkeydown="if(event.key==='Enter'||event.key===' ')selectProvider('outlook')">
+              <div class="provider-card-icon" aria-hidden="true">📆</div>
+              <div class="provider-card-name">Outlook Calendar</div>
+              <div class="provider-card-meta">Connect via Microsoft OAuth 2.0</div>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-w100" id="btn-connect" disabled onclick="connectOAuth()" aria-label="Connect selected calendar provider">
+            Connect calendar
+          </button>
+          <div id="connect-progress" style="display:none;align-items:center;gap:var(--s3);margin-top:var(--s4);font-size:var(--t-sm);color:var(--ct-s)">
+            <div class="spinner" aria-hidden="true"></div>
+            <span id="connect-progress-msg">Redirecting to OAuth consent screen…</span>
+          </div>
+        </div>
+
+        <!-- Sync settings (when connected) -->
+        <div id="sync-settings" class="card">
+          <div class="card-header"><span aria-hidden="true">⚙</span><h2 class="card-title">Sync settings</h2></div>
+          <div class="card-body">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--s2) 0;border-bottom:1px solid var(--cbord)">
+              <span style="font-size:var(--t-base)">Auto-sync new appointments</span>
+              <label style="display:flex;align-items:center;gap:var(--s2);cursor:pointer">
+                <input type="checkbox" checked id="toggle-autosync" style="accent-color:var(--cb);width:16px;height:16px" aria-label="Toggle auto-sync" onchange="toggleSyncSetting(this)">
+                <span style="font-size:var(--t-sm);color:var(--ct-s)" id="autosync-label">On</span>
+              </label>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--s2) 0;border-bottom:1px solid var(--cbord)">
+              <span style="font-size:var(--t-base)">Include reminders</span>
+              <label style="display:flex;align-items:center;gap:var(--s2);cursor:pointer">
+                <input type="checkbox" checked id="toggle-reminders" style="accent-color:var(--cb);width:16px;height:16px" aria-label="Toggle reminders" onchange="toggleSyncSetting(this)">
+                <span style="font-size:var(--t-sm);color:var(--ct-s)" id="reminders-label">On</span>
+              </label>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--s2) 0">
+              <span style="font-size:var(--t-base)">Sync past appointments</span>
+              <label style="display:flex;align-items:center;gap:var(--s2);cursor:pointer">
+                <input type="checkbox" id="toggle-past" style="accent-color:var(--cb);width:16px;height:16px" aria-label="Sync past appointments">
+                <span style="font-size:var(--t-sm);color:var(--ct-s)" id="past-label">Off</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Info panel -->
+      <div>
+        <div class="info-card">
+          <div class="info-title">🔒 Privacy &amp; Permissions</div>
+          <p style="font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s4)">We request only the minimum permissions needed to sync your appointment data.</p>
+          <ul class="perm-list" aria-label="Permissions requested">
+            <li><span class="perm-icon" aria-hidden="true">✓</span>Create calendar events for your appointments</li>
+            <li><span class="perm-icon" aria-hidden="true">✓</span>Update or remove events when appointments change</li>
+            <li><span class="perm-icon" aria-label="Not requested">✗</span> <span style="color:var(--ct-d)">Read your existing events (not requested)</span></li>
+            <li><span class="perm-icon" aria-label="Not requested">✗</span> <span style="color:var(--ct-d)">Access contacts or emails</span></li>
+          </ul>
+          <div style="margin-top:var(--s4);padding:var(--s3);background:var(--cs-m);border-radius:var(--r-sm);font-size:var(--t-xs);color:var(--ct-d)">
+            You can disconnect at any time. Disconnecting will not delete events already added to your calendar.
+          </div>
+        </div>
+
+        <div class="info-card" style="margin-top:var(--s4)">
+          <div class="info-title">ℹ What gets synced</div>
+          <ul class="info-list">
+            <li><span class="info-icon" aria-hidden="true">📅</span><span>Appointment date and time</span></li>
+            <li><span class="info-icon" aria-hidden="true">🏥</span><span>Provider name and clinic</span></li>
+            <li><span class="info-icon" aria-hidden="true">🔔</span><span>Reminders (1 day and 1 hour before)</span></li>
+            <li><span class="info-icon" aria-hidden="true">🔒</span><span>No clinical or PHI details are shared with the calendar provider</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let selectedProvider = null;
+    let isConnected = true;
+
+    function selectProvider(provider) {
+      selectedProvider = provider;
+      document.getElementById('provider-google').classList.toggle('selected', provider === 'google');
+      document.getElementById('provider-outlook').classList.toggle('selected', provider === 'outlook');
+      document.getElementById('btn-connect').disabled = false;
+    }
+
+    function disconnect() {
+      const btn = document.getElementById('btn-disconnect');
+      btn.disabled = true;
+      btn.textContent = 'Disconnecting…';
+      setTimeout(() => {
+        isConnected = false;
+        document.getElementById('connection-status').className = 'connection-status disconnected';
+        document.getElementById('conn-name').textContent = 'No calendar connected';
+        document.getElementById('conn-account').textContent = 'Connect a calendar to get started';
+        document.getElementById('conn-badge').className = 'badge badge-disconnected';
+        document.getElementById('conn-badge').textContent = '○ Disconnected';
+        document.getElementById('sync-stats').style.display = 'none';
+        document.getElementById('sync-settings').style.display = 'none';
+        document.getElementById('provider-select-panel').style.display = '';
+        document.getElementById('sync-advisory').classList.add('hidden');
+        btn.remove();
+      }, 600);
+    }
+
+    function connectOAuth() {
+      if (!selectedProvider) return;
+      const btn = document.getElementById('btn-connect');
+      btn.disabled = true;
+      btn.innerHTML = '<span style="width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block;flex-shrink:0"></span> Connecting…';
+      document.getElementById('connect-progress').style.display = 'flex';
+      setTimeout(() => {
+        document.getElementById('connect-progress-msg').textContent = 'Authorizing…';
+        setTimeout(() => {
+          // Restore connected state
+          isConnected = true;
+          document.getElementById('provider-select-panel').style.display = 'none';
+          document.getElementById('sync-stats').style.display = 'flex';
+          document.getElementById('sync-settings').style.display = '';
+          const cs = document.getElementById('connection-status');
+          cs.className = 'connection-status connected';
+          document.getElementById('conn-name').textContent = selectedProvider === 'google' ? 'Google Calendar' : 'Outlook Calendar';
+          document.getElementById('conn-account').textContent = selectedProvider === 'google' ? 'sarah.johnson@gmail.com' : 'sarah.johnson@outlook.com';
+          document.getElementById('conn-badge').className = 'badge badge-connected';
+          document.getElementById('conn-badge').textContent = '● Connected';
+          cs.insertAdjacentHTML('beforeend', '<button class="btn btn-sm btn-danger-outline" id="btn-disconnect" onclick="disconnect()" aria-label="Disconnect calendar">Disconnect</button>');
+        }, 800);
+      }, 900);
+    }
+
+    function retrySync() {
+      document.getElementById('sync-advisory').innerHTML = `<div class="spinner" aria-hidden="true"></div><span>Retrying sync…</span>`;
+      setTimeout(() => {
+        document.getElementById('sync-advisory').classList.add('hidden');
+      }, 1500);
+    }
+
+    function toggleSyncSetting(checkbox) {
+      const label = checkbox.parentElement.querySelector('span');
+      label.textContent = checkbox.checked ? 'On' : 'Off';
+    }
+  </script>
+</body>
+</html>

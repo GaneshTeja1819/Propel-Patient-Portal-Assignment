@@ -1,0 +1,104 @@
+graph TB
+    subgraph Client["Client Layer — InfinityFree (React 18 SPA)"]
+        UI_BOOKING["Booking & Scheduling UI"]
+        UI_INTAKE["Intake UI (AI / Manual)"]
+        UI_PROFILE["360° Profile UI"]
+        UI_CODING["Medical Coding UI"]
+        UI_ADMIN["Admin Dashboard"]
+        UI_STAFF["Staff Operations UI"]
+    end
+
+    subgraph API["API Layer — MonsterASP / IIS (.NET 8)"]
+        CTRL_AUTH["AuthController"]
+        CTRL_APPT["AppointmentController"]
+        CTRL_INTAKE["IntakeController"]
+        CTRL_DOC["DocumentController"]
+        CTRL_PROFILE["ProfileController"]
+        CTRL_CODING["CodingController"]
+        CTRL_ADMIN["AdminController"]
+        CTRL_STAFF["StaffController"]
+        MW_RBAC["RBAC Middleware"]
+        MW_SESSION["Session / JWT Middleware"]
+        MW_AUDIT["Audit Middleware"]
+    end
+
+    subgraph APP["Application Layer"]
+        SVC_AUTH["AuthService"]
+        SVC_BOOKING["BookingService"]
+        SVC_SWAP["SlotSwapService"]
+        SVC_INTAKE["IntakeService"]
+        SVC_REMINDER["ReminderService"]
+        SVC_CALENDAR["CalendarSyncService"]
+        SVC_DOC["DocumentService"]
+        SVC_EXTRACTION["ExtractionService"]
+        SVC_PROFILE["Profile360Service"]
+        SVC_CODING["MedicalCodingService"]
+        SVC_AUDIT["AuditService"]
+        SVC_NOTIFY["NotificationService"]
+    end
+
+    subgraph DOMAIN["Domain Layer"]
+        ENT_USER["User"]
+        ENT_APPT["Appointment"]
+        ENT_SLOT["AppointmentSlot"]
+        ENT_WAITLIST["WaitlistEntry"]
+        ENT_INTAKE["IntakeRecord"]
+        ENT_DOC["ClinicalDocument"]
+        ENT_EXTRACT["ExtractedClinicalData"]
+        ENT_PROFILE["PatientProfile360"]
+        ENT_CONFLICT["DataConflict"]
+        ENT_CODE["MedicalCodeSuggestion"]
+        ENT_AUDIT["AuditLog"]
+        ENT_NOTIFY["Notification"]
+        ENT_INS["InsuranceRecord"]
+        ENT_CAL["CalendarSync"]
+    end
+
+    subgraph INFRA["Infrastructure Layer"]
+        REPO_PG["PostgreSQL Repositories (Supabase)"]
+        CACHE_REDIS["Upstash Redis Cache (Slot availability)"]
+        JOB_HF["Hangfire Job Engine (PostgreSQL storage)"]
+        ENC_AES["AES-256-GCM PHI Encryption"]
+        PDF_GEN["QuestPDF PDF Generation"]
+        PDF_PARSE["PdfPig PDF Text Extraction"]
+        AI_CLIENT["Google AI .NET SDK (Gemini 1.5 Pro)"]
+        EMAIL_SVC["SMTP Email Service"]
+        SMS_SVC["SMS Gateway Adapter"]
+        CAL_GOOGLE["Google Calendar API Client"]
+        CAL_OUTLOOK["Microsoft Graph API Client"]
+    end
+
+    subgraph EXT["External Systems"]
+        GEMINI["Gemini API (gemini-1.5-pro)"]
+        SUPABASE["Supabase / PostgreSQL + pgvector"]
+        REDIS["Upstash Redis"]
+        GCAL_EXT["Google Calendar API"]
+        OUTLOOK_EXT["Microsoft Graph API"]
+        EMAIL_GW["Email Gateway"]
+        SMS_GW["SMS Gateway"]
+    end
+
+    Client --> API
+    API --> APP
+    APP --> DOMAIN
+    APP --> INFRA
+    INFRA --> EXT
+
+    MW_RBAC --> CTRL_AUTH
+    MW_SESSION --> CTRL_AUTH
+    MW_AUDIT --> APP
+
+    JOB_HF --> SVC_SWAP
+    JOB_HF --> SVC_REMINDER
+    JOB_HF --> SVC_EXTRACTION
+    JOB_HF --> SVC_CODING
+    JOB_HF --> PDF_GEN
+    JOB_HF --> SVC_CALENDAR
+
+    AI_CLIENT --> GEMINI
+    REPO_PG --> SUPABASE
+    CACHE_REDIS --> REDIS
+    CAL_GOOGLE --> GCAL_EXT
+    CAL_OUTLOOK --> OUTLOOK_EXT
+    EMAIL_SVC --> EMAIL_GW
+    SMS_SVC --> SMS_GW

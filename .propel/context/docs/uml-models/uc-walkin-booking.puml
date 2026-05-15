@@ -1,0 +1,18 @@
+@startuml uc-walkin-booking
+left to right direction
+actor "Staff" as S
+rectangle "Walk-in Booking" {
+  usecase "Walk-in Booking\n(UC-014)" as UC014
+  usecase "Search / Enter\nPatient Details" as SEARCH
+  usecase "Select Available Slot" as SAS
+  usecase "Create Appointment" as CA
+  usecase "Create Patient Account\n(Optional)" as CPA
+  usecase "Write Audit Log" as AL
+}
+S --> UC014
+UC014 ..> SEARCH : <<include>>
+UC014 ..> SAS : <<include>>
+UC014 ..> CA : <<include>>
+UC014 ..> CPA : <<extend>>
+UC014 ..> AL : <<include>>
+@enduml

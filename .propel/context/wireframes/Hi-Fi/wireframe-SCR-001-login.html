@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-001 | Login | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-001 Login
+  | Element              | Action | Target Screen                                  |
+  |----------------------|--------|------------------------------------------------|
+  | #btn-login           | click  | wireframe-SCR-003-patient-dashboard.html       |
+  | #link-register       | click  | wireframe-SCR-002-registration.html            |
+  | #link-staff-login    | click  | wireframe-SCR-011-staff-queue.html             |
+  | [Demo] Staff login   | click  | wireframe-SCR-011-staff-queue.html             |
+  | [Demo] Admin login   | click  | wireframe-SCR-015-admin-user-management.html   |
+
+  Source UCs: UC-002 (Login), UC-003 (Session Timeout)
+  UXR: UXR-201, UXR-202, UXR-203, UXR-204, UXR-301
+  FL: FL-001 (entry point)
+  -->
+  <style>
+    /* ─── DESIGN TOKENS ─────────────────────────── */
+    :root {
+      --cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;
+      --cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;
+      --c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;
+      --c-err:#DC2626;--c-err-h:#B91C1C;--c-err-bg:#FEE2E2;
+      --ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+      --t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;
+      --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--s12:48px;--s16:64px;
+      --r-xs:2px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;
+      --sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}a:hover{text-decoration:underline}
+
+    /* ─── PAGE LAYOUT ────────────────────────────── */
+    .auth-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:var(--s8) var(--s4);background:linear-gradient(135deg,#f0f5ff 0%,var(--cs-m) 60%)}
+    .auth-card{width:100%;max-width:420px;background:var(--cs);border-radius:var(--r-lg);box-shadow:var(--sh-lg);padding:var(--s8);border:1px solid var(--cbord)}
+    .auth-logo{display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s8)}
+    .auth-logo-mark{width:36px;height:36px;background:var(--cb);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-size:var(--t-md);font-weight:700}
+    .auth-logo-text{font-size:var(--t-md);font-weight:600;color:var(--ct)}
+    .auth-logo-sub{font-size:var(--t-sm);color:var(--ct-s);margin-top:2px}
+    h1.auth-heading{font-size:var(--t-xl);font-weight:600;color:var(--ct);margin-bottom:var(--s1)}
+    .auth-subheading{font-size:var(--t-base);color:var(--ct-s);margin-bottom:var(--s6)}
+
+    /* ─── FORM COMPONENTS ───────────────────────── */
+    .field{display:flex;flex-direction:column;gap:var(--s1);margin-bottom:var(--s4)}
+    .field label{font-size:var(--t-sm);font-weight:600;color:var(--ct-s);text-transform:uppercase;letter-spacing:.05em}
+    .field input{width:100%;height:44px;padding:0 var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs);transition:border-color .15s}
+    .field input:focus{border-color:var(--cbord-f);outline:3px solid rgba(26,86,219,.2);outline-offset:0}
+    .field input.error{border-color:var(--c-err)}
+    .field input:disabled{background:var(--cs-s);color:var(--ct-d);cursor:not-allowed}
+    .field .hint{font-size:var(--t-sm);color:var(--ct-s)}
+    .field .err-msg{font-size:var(--t-sm);color:var(--c-err);display:flex;align-items:center;gap:var(--s1)}
+    .field .err-msg::before{content:"⚠";font-size:var(--t-sm)}
+    .password-wrapper{position:relative}
+    .password-wrapper input{padding-right:44px}
+    .pw-toggle{position:absolute;right:0;top:0;height:44px;width:44px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;color:var(--ct-s);font-size:var(--t-base)}
+    .pw-toggle:hover{color:var(--ct)}
+
+    /* ─── BUTTONS ────────────────────────────────── */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s4);height:44px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s,border-color .15s,opacity .15s;text-decoration:none;white-space:nowrap}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h);border-color:var(--cb-h)}
+    .btn-primary:active{opacity:.9}
+    .btn-primary:disabled{background:var(--ct-d);border-color:var(--ct-d);cursor:not-allowed}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l);border-color:var(--cb)}
+    .btn-w100{width:100%}
+    .btn .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ─── ALERTS ─────────────────────────────────── */
+    .alert{padding:var(--s3) var(--s4);border-radius:var(--r-sm);font-size:var(--t-base);display:flex;align-items:flex-start;gap:var(--s2);margin-bottom:var(--s4)}
+    .alert-error{background:var(--c-err-bg);border:1px solid var(--c-err);color:var(--ct)}
+    .alert-icon{font-size:var(--t-md);line-height:1.4;flex-shrink:0}
+    .alert.hidden{display:none}
+
+    /* ─── CHECKBOX ───────────────────────────────── */
+    .checkbox-row{display:flex;align-items:center;gap:var(--s2);font-size:var(--t-base)}
+    .checkbox-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--cb);cursor:pointer;flex-shrink:0}
+
+    /* ─── DIVIDER ────────────────────────────────── */
+    .divider{display:flex;align-items:center;gap:var(--s3);margin:var(--s6) 0;color:var(--ct-s);font-size:var(--t-sm)}
+    .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--cbord)}
+
+    /* ─── DEMO SHORTCUTS ─────────────────────────── */
+    .demo-shortcuts{background:var(--cs-s);border:1px dashed var(--cbord);border-radius:var(--r-md);padding:var(--s3) var(--s4);margin-top:var(--s6)}
+    .demo-label{font-size:var(--t-xs);font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ct-d);margin-bottom:var(--s2)}
+    .demo-row{display:flex;gap:var(--s2);flex-wrap:wrap}
+    .demo-btn{font-size:var(--t-sm);padding:var(--s1) var(--s3);background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-sm);cursor:pointer;color:var(--ct-s);font-family:var(--ff);transition:background .1s}
+    .demo-btn:hover{background:var(--cbord);color:var(--ct)}
+
+    /* ─── FOOTER ─────────────────────────────────── */
+    .auth-footer{margin-top:var(--s6);text-align:center;font-size:var(--t-sm);color:var(--ct-s)}
+    .auth-footer a{color:var(--cb);font-weight:600}
+
+    /* ─── STATE: LOADING ─────────────────────────── */
+    body.loading .btn-primary{pointer-events:none}
+
+    /* ─── RESPONSIVE ─────────────────────────────── */
+    @media(max-width:640px){
+      .auth-card{padding:var(--s6);border-radius:var(--r-md);box-shadow:none;border:none;background:transparent}
+      .auth-page{padding:var(--s4);background:var(--cs)}
+    }
+  </style>
+</head>
+<body>
+  <!-- SCR-001: Login — States: Default / Error / Loading -->
+  <main class="auth-page" role="main">
+    <div class="auth-card">
+      <!-- Logo -->
+      <div class="auth-logo" aria-label="Unified Patient Access Platform">
+        <div class="auth-logo-mark" aria-hidden="true">P</div>
+        <div>
+          <div class="auth-logo-text">Propel Patient Portal</div>
+          <div class="auth-logo-sub">Unified Patient Access & Clinical Intelligence</div>
+        </div>
+      </div>
+
+      <!-- Heading -->
+      <h1 class="auth-heading">Sign in to your account</h1>
+      <p class="auth-subheading">Welcome back. Enter your credentials to continue.</p>
+
+      <!-- Error alert (State: Error — generic, OWASP: no field-level credential disclosure) -->
+      <div id="alert-error" class="alert alert-error hidden" role="alert" aria-live="assertive">
+        <span class="alert-icon" aria-hidden="true">⚠</span>
+        <span>Your email or password is incorrect. Please try again.</span>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label for="email">Email address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            autocomplete="email"
+            placeholder="e.g. sarah.johnson@email.com"
+            value="sarah.johnson@email.com"
+            aria-required="true"
+            aria-describedby="email-err"
+          >
+          <span id="email-err" class="err-msg" aria-live="polite" style="display:none">Please enter a valid email address.</span>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="password-wrapper">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              autocomplete="current-password"
+              placeholder="Enter your password"
+              value="••••••••"
+              aria-required="true"
+              aria-describedby="password-err"
+            >
+            <button type="button" class="pw-toggle" id="pw-toggle" aria-label="Show password" aria-pressed="false">
+              👁
+            </button>
+          </div>
+          <span id="password-err" class="err-msg" aria-live="polite" style="display:none">Password is required.</span>
+        </div>
+
+        <div class="checkbox-row" style="margin-bottom:var(--s6)">
+          <input type="checkbox" id="remember-me" name="remember-me" aria-label="Keep me signed in for 30 days">
+          <label for="remember-me">Keep me signed in</label>
+        </div>
+
+        <button type="submit" id="btn-login" class="btn btn-primary btn-w100" aria-label="Sign in">
+          <span id="btn-login-label">Sign in</span>
+          <span id="btn-login-spinner" class="spinner" aria-hidden="true" style="display:none"></span>
+        </button>
+      </form>
+
+      <div class="divider">or</div>
+
+      <a href="wireframe-SCR-002-registration.html" class="btn btn-ghost btn-w100" id="link-register">
+        Create an account
+      </a>
+
+      <!-- Demo navigation shortcuts (wireframe-only) -->
+      <div class="demo-shortcuts" aria-label="Wireframe demo navigation — not for production">
+        <div class="demo-label">Wireframe shortcuts</div>
+        <div class="demo-row">
+          <button class="demo-btn" onclick="window.location.href='wireframe-SCR-003-patient-dashboard.html'" aria-label="Demo: Login as patient Sarah Johnson">Patient (Sarah J.)</button>
+          <button class="demo-btn" onclick="window.location.href='wireframe-SCR-011-staff-queue.html'" aria-label="Demo: Login as staff">Staff (Alex T.)</button>
+          <button class="demo-btn" onclick="window.location.href='wireframe-SCR-015-admin-user-management.html'" aria-label="Demo: Login as admin">Admin (Jennifer P.)</button>
+          <button class="demo-btn" id="btn-show-error" aria-label="Demo: Show login error state">Show error state</button>
+        </div>
+      </div>
+
+      <div class="auth-footer">
+        <p>Don't have an account? <a href="wireframe-SCR-002-registration.html">Create one here</a></p>
+        <p style="margin-top:var(--s2)"><a href="#" aria-label="Reset your password">Forgot your password?</a></p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ─── State: Show/Hide Password ──────────────────
+    const pwToggle = document.getElementById('pw-toggle');
+    const pwInput = document.getElementById('password');
+    pwToggle.addEventListener('click', () => {
+      const isPassword = pwInput.type === 'password';
+      pwInput.type = isPassword ? 'text' : 'password';
+      pwToggle.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
+      pwToggle.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+      pwToggle.textContent = isPassword ? '🙈' : '👁';
+    });
+
+    // ─── Demo: Show Error State ─────────────────────
+    document.getElementById('btn-show-error').addEventListener('click', () => {
+      const alert = document.getElementById('alert-error');
+      alert.classList.toggle('hidden');
+    });
+
+    // ─── Form: Login Submit ─────────────────────────
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btn-login');
+      const label = document.getElementById('btn-login-label');
+      const spinner = document.getElementById('btn-login-spinner');
+      // Show loading state
+      btn.disabled = true;
+      label.textContent = 'Signing in…';
+      spinner.style.display = 'inline-block';
+      // Simulate async auth — redirect after 800ms (UC-002 success path → FL-001)
+      setTimeout(() => {
+        window.location.href = 'wireframe-SCR-003-patient-dashboard.html';
+      }, 800);
+    });
+  </script>
+</body>
+</html>

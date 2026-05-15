@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-006 | Preferred Slot Confirmation | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-006 Preferred Slot Confirmation
+  | Element            | Action | Target Screen                                   |
+  |--------------------|--------|--------------------------------------------------|
+  | #btn-dashboard     | click  | wireframe-SCR-003-patient-dashboard.html         |
+  | #nav-back          | click  | wireframe-SCR-003-patient-dashboard.html         |
+
+  Source UC: UC-007 (Preferred Slot Waitlist)
+  UXR: UXR-101, UXR-201, UXR-301
+  FL: FL-002 (waitlist path exit)
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;--c-ai:#7C3AED;--c-ai-bg:#EDE9FE;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--s12:48px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);--nav-h:64px;--max-w:1280px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}a:hover{text-decoration:underline}
+    .topnav{height:var(--nav-h);background:var(--cs);border-bottom:1px solid var(--cbord);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topnav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--s8);height:100%;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{display:flex;align-items:center;gap:var(--s2);font-weight:700;color:var(--ct);font-size:var(--t-md)}
+    .nav-logo-mark{width:32px;height:32px;background:var(--cb);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-weight:700;font-size:var(--t-base)}
+    .user-avatar{width:32px;height:32px;border-radius:var(--r-full);background:var(--cb);color:var(--ct-on);display:flex;align-items:center;justify-content:center;font-size:var(--t-sm);font-weight:700}
+    .main-content{max-width:var(--max-w);margin:0 auto;padding:var(--s8);display:flex;justify-content:center}
+    .confirm-card{max-width:560px;width:100%;background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-lg);box-shadow:var(--sh-lg);padding:var(--s12) var(--s8);text-align:center}
+    .confirm-icon{font-size:56px;margin-bottom:var(--s4)}
+    .confirm-title{font-size:var(--t-2xl);font-weight:600;color:var(--ct);margin-bottom:var(--s2)}
+    .confirm-subtitle{font-size:var(--t-base);color:var(--ct-s);margin-bottom:var(--s8);line-height:1.6}
+    .summary-box{background:var(--cs-m);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s6);text-align:left;margin-bottom:var(--s8)}
+    .summary-row{display:flex;justify-content:space-between;padding:var(--s2) 0;border-bottom:1px solid var(--cbord);font-size:var(--t-base)}
+    .summary-row:last-of-type{border-bottom:none}
+    .summary-label{color:var(--ct-s)}
+    .summary-value{font-weight:600}
+    .badge{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s3);border-radius:var(--r-full);font-size:var(--t-sm);font-weight:600}
+    .badge-ai{background:var(--c-ai-bg);color:var(--c-ai)}
+    .waitlist-badge{display:inline-flex;align-items:center;gap:var(--s2);background:var(--c-ai-bg);border:1px solid var(--c-ai);border-radius:var(--r-full);padding:var(--s2) var(--s4);font-size:var(--t-base);font-weight:600;color:var(--c-ai);margin-bottom:var(--s6)}
+    .notif-pref{background:var(--cb-l);border:1px solid #BFDBFE;border-radius:var(--r-md);padding:var(--s4);text-align:left;margin-bottom:var(--s6);font-size:var(--t-sm)}
+    .notif-pref-title{font-weight:600;margin-bottom:var(--s2);color:var(--ct)}
+    .notif-option{display:flex;align-items:center;gap:var(--s2);padding:var(--s1) 0}
+    .notif-option input{accent-color:var(--cb);width:16px;height:16px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s8);height:44px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s;text-decoration:none;white-space:nowrap}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h);text-decoration:none}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l);text-decoration:none}
+    @media(max-width:640px){.main-content{padding:var(--s4)}.confirm-card{padding:var(--s6) var(--s4)}.topnav-inner{padding:0 var(--s4)}}
+  </style>
+</head>
+<body>
+  <nav class="topnav" aria-label="Main navigation">
+    <div class="topnav-inner">
+      <a href="wireframe-SCR-003-patient-dashboard.html" class="nav-logo" aria-label="Patient Portal home" id="nav-back">
+        <div class="nav-logo-mark" aria-hidden="true">P</div>
+        <span>Patient Portal</span>
+      </a>
+      <div class="user-avatar" aria-label="Sarah Johnson — patient" style="cursor:default">SJ</div>
+    </div>
+  </nav>
+
+  <main class="main-content" role="main">
+    <div class="confirm-card">
+      <!-- Success icon -->
+      <div class="confirm-icon" aria-hidden="true">🎯</div>
+
+      <!-- Waitlist position badge -->
+      <div class="waitlist-badge" role="status" aria-live="polite">
+        <span>⏳</span> You are #2 on the waitlist
+      </div>
+
+      <h1 class="confirm-title">Preferred slot registered</h1>
+      <p class="confirm-subtitle">
+        Your preferred slot has been added to the waitlist. You'll be automatically booked into this slot when it becomes available — no action required from you.
+      </p>
+
+      <!-- Booking summary -->
+      <div class="summary-box" aria-label="Waitlist registration details">
+        <div class="summary-row">
+          <span class="summary-label">Preferred slot</span>
+          <span class="summary-value">11:00 AM, May 20, 2026</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Provider</span>
+          <span class="summary-value">Dr. M. Okafor</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Appointment type</span>
+          <span class="summary-value">Annual Physical</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Confirmed booking</span>
+          <span class="summary-value">10:00 AM, May 20, 2026 <span class="badge badge-ai">Backup</span></span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Waitlist position</span>
+          <span class="summary-value" style="color:var(--c-ai);font-weight:700">#2 of 3</span>
+        </div>
+      </div>
+
+      <!-- Notification preferences -->
+      <div class="notif-pref" role="group" aria-labelledby="notif-pref-label">
+        <div class="notif-pref-title" id="notif-pref-label">📣 Notify me when the slot opens via:</div>
+        <div class="notif-option">
+          <input type="checkbox" id="notif-email" checked aria-checked="true">
+          <label for="notif-email">Email (sarah.johnson@email.com)</label>
+        </div>
+        <div class="notif-option">
+          <input type="checkbox" id="notif-sms" checked aria-checked="true">
+          <label for="notif-sms">SMS ((555) 214-8832)</label>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:var(--s3);align-items:center">
+        <a href="wireframe-SCR-003-patient-dashboard.html" class="btn btn-primary" id="btn-dashboard" style="min-width:200px">
+          Back to dashboard
+        </a>
+        <a href="wireframe-SCR-004-appointment-booking.html" class="btn btn-ghost" style="min-width:200px">
+          Book another appointment
+        </a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

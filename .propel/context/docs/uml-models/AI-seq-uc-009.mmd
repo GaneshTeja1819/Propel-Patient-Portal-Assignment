@@ -1,0 +1,55 @@
+sequenceDiagram
+    participant P as Patient (Browser)
+    participant API as IntakeController (.NET API)
+    participant INTAKE as IntakeService
+    participant AI as Google AI SDK
+    participant GEMINI as Gemini API (gemini-1.5-pro)
+    participant ENC as AES-256-GCM Encryption
+    participant DB as PostgreSQL (IntakeRecord)
+    participant AUDIT as AuditService
+
+    Note over P,AUDIT: AI-009 — UC-009 AI Conversational Intake (Tool Calling / Structured Output)
+
+    P->>API: POST /api/v1/intake/start {appointmentId, method: "AI"}
+    API->>INTAKE: StartAIIntake(appointmentId, patientId)
+    INTAKE->>AI: BuildIntakePrompt(structuredFields schema)
+    AI->>GEMINI: function_calling request {tools: [IntakeField schema], prompt: "Collect patient intake"}
+    GEMINI-->>AI: first question in conversational language
+    AI-->>INTAKE: question text
+    INTAKE-->>API: 200 {sessionId, question}
+    API-->>P: display first intake question
+
+    loop Conversational Turn (repeat per intake field)
+        P->>API: POST /api/v1/intake/respond {sessionId, answer}
+        API->>INTAKE: ProcessResponse(sessionId, answer)
+        INTAKE->>AI: AppendTurn(answer) to next function call
+        AI->>GEMINI: function_calling request {previous context + answer}
+        alt Gemini parses response successfully
+            GEMINI-->>AI: structured JSON {field: value} + next question
+            AI-->>INTAKE: fieldValue + nextQuestion
+            INTAKE-->>API: 200 {fieldMapped: true, nextQuestion}
+            API-->>P: display next question
+        else Gemini cannot parse response (AIR-007 fallback)
+            GEMINI-->>AI: low-confidence or null extraction
+            AI-->>INTAKE: parseFailure: true
+            INTAKE-->>API: 200 {fieldMapped: false, fallbackPrompt: manual input}
+            API-->>P: display manual input field for unresolved field
+        end
+    end
+
+    P->>API: POST /api/v1/intake/confirm {sessionId}
+    API->>INTAKE: ConfirmIntake(sessionId)
+    INTAKE->>ENC: EncryptFields(intakeJSON)
+    ENC-->>INTAKE: encryptedPayload
+    INTAKE->>DB: INSERT IntakeRecord {appointmentId, method: AI, fields: encryptedPayload}
+    DB-->>INTAKE: recordId
+    INTAKE->>AUDIT: Log(actor: patientId, action: INTAKE_COMPLETED, target: IntakeRecord)
+    INTAKE-->>API: 201 {intakeRecordId}
+    API-->>P: intake complete — show summary
+
+    opt Patient switches to Manual (UC-011)
+        P->>API: POST /api/v1/intake/switch {sessionId, targetMethod: "Manual"}
+        API->>INTAKE: SwitchMethod(sessionId, "Manual")
+        INTAKE-->>API: 200 {prefilled fields from AI session}
+        API-->>P: manual form pre-populated with AI-captured fields
+    end

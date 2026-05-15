@@ -1,0 +1,39 @@
+sequenceDiagram
+    participant P as Patient (Browser)
+    participant API as AppointmentController
+    participant BOOK as BookingService
+    participant DB as PostgreSQL
+    participant AUDIT as AuditService
+
+    Note over P,AUDIT: UC-007 — Register Preferred Slot (called within UC-004 booking flow)
+
+    Note over P,DB: Patient has already selected an available slot (UC-004 in progress)
+
+    P->>API: Includes preferredSlotId in POST /api/v1/appointments payload
+    API->>BOOK: CreateAppointment(..., preferredSlotId)
+    BOOK->>DB: SELECT AppointmentSlot WHERE id = preferredSlotId AND isBooked = true
+    alt Preferred slot is now available (no longer unavailable)
+        DB-->>BOOK: isBooked = false
+        BOOK-->>API: PreferredSlotNowAvailable
+        API-->>P: 200 {message: "Your preferred slot is now available — booking it directly"}
+        Note over P,BOOK: Redirect to book preferred slot as primary booking
+    else Preferred slot still unavailable (expected case)
+        DB-->>BOOK: isBooked = true
+        BOOK->>DB: SELECT WaitlistEntry WHERE patientId = ? AND preferredSlotId = ?
+        alt Existing waitlist entry for same slot
+            DB-->>BOOK: existingEntry
+            BOOK->>DB: UPDATE WaitlistEntry SET appointmentId = newApptId, registeredAt = now
+        else No existing entry
+            DB-->>BOOK: null
+            BOOK->>DB: INSERT WaitlistEntry {patientId, appointmentId, preferredSlotId, registeredAt}
+        end
+        DB-->>BOOK: waitlistEntryId
+        BOOK->>AUDIT: Log(actor: patientId, action: PREFERRED_SLOT_REGISTERED, target: WaitlistEntry)
+        BOOK-->>API: waitlistEntryId
+        API-->>P: 201 preferred slot registered — you will be notified if it becomes available
+    end
+
+    opt Patient skips preferred slot selection
+        Note over P: preferredSlotId not included in payload
+        Note over BOOK: WaitlistEntry not created — booking proceeds without preference
+    end

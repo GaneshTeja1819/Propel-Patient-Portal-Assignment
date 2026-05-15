@@ -1,0 +1,16 @@
+@startuml uc-patient-registration
+left to right direction
+actor "Patient" as P
+rectangle "Patient Registration" {
+  usecase "Self-Register\n(UC-001)" as UC001
+  usecase "Validate Email Uniqueness" as VE
+  usecase "Hash & Store Password" as HP
+  usecase "Assign Patient Role" as AR
+  usecase "Write Audit Log" as AL
+}
+P --> UC001
+UC001 ..> VE : <<include>>
+UC001 ..> HP : <<include>>
+UC001 ..> AR : <<include>>
+UC001 ..> AL : <<include>>
+@enduml

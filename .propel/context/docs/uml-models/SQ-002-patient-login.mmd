@@ -1,0 +1,44 @@
+sequenceDiagram
+    participant U as User (Patient/Staff/Admin)
+    participant API as AuthController
+    participant AUTH as AuthService
+    participant REDIS as Upstash Redis (Session)
+    participant DB as PostgreSQL (User)
+    participant AUDIT as AuditService
+
+    Note over U,AUDIT: UC-002 — Patient Login
+
+    U->>API: POST /api/v1/auth/login {email, password}
+    API->>AUTH: Login(email, password)
+    AUTH->>DB: SELECT User WHERE email = ?
+    alt User not found or deactivated
+        DB-->>AUTH: null or inactive
+        AUTH->>DB: IncrementFailedAttempt(email) if user exists
+        AUTH-->>API: InvalidCredentials (generic)
+        API-->>U: 401 "Invalid email or password"
+    else User found and active
+        DB-->>AUTH: user {passwordHash, role, failedLoginCount}
+        AUTH->>AUTH: VerifyPassword(password, passwordHash)
+        alt Password incorrect
+            AUTH->>DB: IncrementFailedAttempt(userId)
+            DB-->>AUTH: updatedCount
+            alt Failed attempts exceed threshold
+                AUTH->>DB: LockAccount(userId, lockUntil)
+                AUTH->>AUTH: SendLockNotification(email)
+                AUTH-->>API: AccountLocked
+                API-->>U: 403 "Account locked — check your email"
+            else Under threshold
+                AUTH-->>API: InvalidCredentials
+                API-->>U: 401 "Invalid email or password"
+            end
+        else Password correct
+            AUTH->>DB: ResetFailedAttempts(userId)
+            AUTH->>AUTH: GenerateJWT(userId, role)
+            AUTH->>REDIS: SET session:{userId} = {jwtId, expiresAt = now+15min}
+            REDIS-->>AUTH: ok
+            AUTH->>AUDIT: Log(actor: userId, action: USER_LOGIN, target: User)
+            AUTH-->>API: 200 {jwt, role}
+            API-->>U: 200 Set-Cookie: jwt=...; HttpOnly; Secure; SameSite=Strict
+            Note over U: redirect to role-specific dashboard
+        end
+    end

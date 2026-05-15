@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-009 | 360° Patient Profile | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-009 Patient 360° Profile (Patient View)
+  | Element                  | Action | Target Screen                                  |
+  |--------------------------|--------|------------------------------------------------|
+  | #btn-upload              | click  | wireframe-SCR-010-document-upload.html         |
+  | #nav-back                | click  | wireframe-SCR-003-patient-dashboard.html       |
+  | #nav-book                | click  | wireframe-SCR-004-appointment-booking.html     |
+
+  Source UC: UC-020 (View Unified Patient Profile — patient self-view)
+  UXR: UXR-103, UXR-402 (PHI lock icons), UXR-403 (AI badge + Verified badge), UXR-404 (conflict alerts — shown in staff view SCR-013)
+  FL: FL-009 (upload → profile link)
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;--c-err:#DC2626;--c-err-bg:#FEE2E2;--c-ai:#7C3AED;--c-ai-bg:#EDE9FE;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);--nav-h:64px;--max-w:1280px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}a:hover{text-decoration:underline}
+    .topnav{height:var(--nav-h);background:var(--cs);border-bottom:1px solid var(--cbord);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topnav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--s8);height:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--s4)}
+    .nav-logo{display:flex;align-items:center;gap:var(--s2);font-weight:700;color:var(--ct);font-size:var(--t-md)}
+    .nav-logo-mark{width:32px;height:32px;background:var(--cb);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-weight:700;font-size:var(--t-base)}
+    .nav-links{display:flex;align-items:center;gap:var(--s1)}
+    .nav-link{padding:var(--s2) var(--s3);border-radius:var(--r-sm);font-size:var(--t-base);color:var(--ct-s);font-weight:500;text-decoration:none;transition:background .1s}
+    .nav-link:hover{background:var(--cs-s);color:var(--ct);text-decoration:none}
+    .nav-link.active{background:var(--cb-l);color:var(--cb);font-weight:600}
+    .user-avatar-lg{width:64px;height:64px;border-radius:var(--r-full);background:var(--cb);color:var(--ct-on);display:flex;align-items:center;justify-content:center;font-size:var(--t-xl);font-weight:700;flex-shrink:0}
+    .user-avatar-sm{width:32px;height:32px;border-radius:var(--r-full);background:var(--cb);color:var(--ct-on);display:flex;align-items:center;justify-content:center;font-size:var(--t-sm);font-weight:700}
+    .main-content{max-width:var(--max-w);margin:0 auto;padding:var(--s8)}
+    .breadcrumb{display:flex;align-items:center;gap:var(--s2);font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s6)}
+    .breadcrumb a{color:var(--ct-s)}
+    .breadcrumb a:hover{color:var(--cb)}
+    .breadcrumb-sep{color:var(--ct-d)}
+    .profile-header{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s6);margin-bottom:var(--s6);display:flex;align-items:center;justify-content:space-between;gap:var(--s6);flex-wrap:wrap}
+    .profile-identity{display:flex;align-items:center;gap:var(--s4)}
+    .profile-name{font-size:var(--t-xl);font-weight:600;margin-bottom:var(--s1)}
+    .profile-meta{font-size:var(--t-sm);color:var(--ct-s)}
+    .profile-actions{display:flex;gap:var(--s3);flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s4);height:44px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s;text-decoration:none;white-space:nowrap}
+    .btn-sm{height:36px;padding:0 var(--s3);font-size:var(--t-sm)}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h);text-decoration:none}
+    .btn-secondary{background:var(--cs);color:var(--ct);border-color:var(--cbord)}
+    .btn-secondary:hover{background:var(--cs-s);text-decoration:none}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l);text-decoration:none}
+    .badge{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s2);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+    .badge-ai{background:var(--c-ai-bg);color:var(--c-ai);border:1px solid #DDD6FE}
+    .badge-verified{background:var(--c-ok-bg);color:var(--c-ok)}
+    .badge-phi{background:var(--cb-l);color:var(--cb)}
+    /* Profile sections */
+    .profile-section{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);margin-bottom:var(--s4);overflow:hidden}
+    .ps-header{padding:var(--s4) var(--s6);display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:none;border:none;width:100%;text-align:left;font-family:var(--ff)}
+    .ps-header:hover{background:var(--cs-s)}
+    .ps-title-row{display:flex;align-items:center;gap:var(--s3)}
+    .ps-icon{font-size:var(--t-md)}
+    .ps-title{font-size:var(--t-md);font-weight:600;color:var(--ct)}
+    .ps-badge-row{display:flex;gap:var(--s2);align-items:center}
+    .ps-chevron{color:var(--ct-d);font-size:var(--t-sm);transition:transform .2s}
+    .ps-header[aria-expanded="true"] .ps-chevron{transform:rotate(90deg)}
+    .ps-body{padding:var(--s6);border-top:1px solid var(--cbord)}
+    .ps-body.hidden{display:none}
+    .data-row{display:flex;align-items:flex-start;justify-content:space-between;padding:var(--s2) 0;border-bottom:1px solid var(--cbord);gap:var(--s4);flex-wrap:wrap}
+    .data-row:last-of-type{border-bottom:none}
+    .data-label{color:var(--ct-s);font-size:var(--t-sm);min-width:160px;flex-shrink:0;display:flex;align-items:center;gap:var(--s1)}
+    .data-value{font-size:var(--t-base);font-weight:600;text-align:right;display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap;justify-content:flex-end}
+    .phi-icon{font-size:var(--t-xs);color:var(--cb)}
+    /* AI left border accent (UXR-403) */
+    .ai-accent-row{border-left:3px solid var(--c-ai);padding-left:var(--s3)}
+    /* Skeleton loader */
+    .skeleton{display:inline-block;background:linear-gradient(90deg,var(--cbord) 25%,var(--cs-s) 50%,var(--cbord) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--r-sm);color:transparent;user-select:none}
+    @keyframes shimmer{to{background-position:-200% 0}}
+    .docs-table{width:100%;border-collapse:collapse}
+    .docs-table th{text-align:left;font-size:var(--t-xs);font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ct-s);padding:var(--s2) var(--s3);border-bottom:2px solid var(--cbord);background:var(--cs-s)}
+    .docs-table td{padding:var(--s3);border-bottom:1px solid var(--cbord);font-size:var(--t-sm);vertical-align:middle}
+    .docs-table tr:last-child td{border-bottom:none}
+    @media(max-width:768px){.profile-header{flex-direction:column;align-items:flex-start}.main-content{padding:var(--s4)}.topnav-inner{padding:0 var(--s4)}.nav-links{display:none}.data-row{flex-direction:column}.data-value{text-align:left;justify-content:flex-start}}
+  </style>
+</head>
+<body>
+  <nav class="topnav" aria-label="Main navigation">
+    <div class="topnav-inner">
+      <a href="wireframe-SCR-003-patient-dashboard.html" class="nav-logo" aria-label="Patient Portal home" id="nav-back">
+        <div class="nav-logo-mark" aria-hidden="true">P</div>
+        <span>Patient Portal</span>
+      </a>
+      <div class="nav-links">
+        <a href="wireframe-SCR-003-patient-dashboard.html" class="nav-link">🏠 Dashboard</a>
+        <a href="wireframe-SCR-004-appointment-booking.html" class="nav-link" id="nav-book">📅 Book</a>
+        <a href="wireframe-SCR-009-patient-profile.html" class="nav-link active" aria-current="page">👤 My Profile</a>
+        <a href="wireframe-SCR-010-document-upload.html" class="nav-link">📄 Documents</a>
+        <a href="wireframe-SCR-016-calendar-oauth.html" class="nav-link">🗓 Calendar</a>
+      </div>
+      <div class="user-avatar-sm" aria-label="Sarah Johnson" style="cursor:default">SJ</div>
+    </div>
+  </nav>
+
+  <main class="main-content" role="main">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="wireframe-SCR-003-patient-dashboard.html">Dashboard</a>
+      <span class="breadcrumb-sep" aria-hidden="true">/</span>
+      <span style="color:var(--ct);font-weight:600" aria-current="page">My Profile</span>
+    </nav>
+
+    <!-- Profile header -->
+    <div class="profile-header">
+      <div class="profile-identity">
+        <div class="user-avatar-lg" aria-hidden="true">SJ</div>
+        <div>
+          <div class="profile-name">Sarah J. Johnson</div>
+          <div class="profile-meta">DOB: Mar 12, 1989 · F · (555) 214-8832 · sarah.johnson@email.com</div>
+          <div style="margin-top:var(--s2);display:flex;gap:var(--s2);flex-wrap:wrap">
+            <span class="badge badge-phi"><span aria-hidden="true">🔒</span> PHI Protected</span>
+            <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI-enriched</span>
+          </div>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <a href="wireframe-SCR-010-document-upload.html" class="btn btn-primary" id="btn-upload">📄 Upload documents</a>
+        <a href="wireframe-SCR-007-ai-intake.html" class="btn btn-secondary">📋 Update intake</a>
+      </div>
+    </div>
+
+    <!-- Section: Vitals -->
+    <div class="profile-section" id="ps-vitals">
+      <button class="ps-header" onclick="togglePS('ps-vitals-body',this)" aria-expanded="true" aria-controls="ps-vitals-body">
+        <div class="ps-title-row"><span class="ps-icon" aria-hidden="true">❤</span><span class="ps-title">Vitals</span></div>
+        <div class="ps-badge-row">
+          <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span>
+          <span class="ps-chevron" aria-hidden="true">›</span>
+        </div>
+      </button>
+      <div class="ps-body" id="ps-vitals-body">
+        <div class="data-row ai-accent-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Blood pressure</span>
+          <span class="data-value">128/82 mmHg <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span></span>
+        </div>
+        <div class="data-row ai-accent-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Heart rate</span>
+          <span class="data-value">74 bpm <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span></span>
+        </div>
+        <div class="data-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Height / Weight</span>
+          <span class="data-value">5′6″ · 145 lbs <span class="badge badge-verified">✓ Verified</span></span>
+        </div>
+        <div class="data-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>BMI</span>
+          <span class="data-value">23.4 (Normal)</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">Last updated</span>
+          <span class="data-value" style="color:var(--ct-s);font-weight:400">Apr 15, 2026 — Dr. S. Patel</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Medications -->
+    <div class="profile-section" id="ps-meds">
+      <button class="ps-header" onclick="togglePS('ps-meds-body',this)" aria-expanded="false" aria-controls="ps-meds-body">
+        <div class="ps-title-row"><span class="ps-icon" aria-hidden="true">💊</span><span class="ps-title">Medications</span></div>
+        <div class="ps-badge-row">
+          <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span>
+          <span class="ps-chevron" aria-hidden="true">›</span>
+        </div>
+      </button>
+      <div class="ps-body hidden" id="ps-meds-body">
+        <div class="data-row ai-accent-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Ibuprofen</span>
+          <span class="data-value">400mg · PRN (back pain) <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span></span>
+        </div>
+        <div class="data-row ai-accent-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Vitamin D</span>
+          <span class="data-value">2000 IU · Daily <span class="badge badge-verified">✓ Verified</span></span>
+        </div>
+        <p style="font-size:var(--t-sm);color:var(--ct-s);margin-top:var(--s4)">Extracted from intake form and uploaded documents. <a href="wireframe-SCR-010-document-upload.html">Upload more documents</a> to enrich this section.</p>
+      </div>
+    </div>
+
+    <!-- Section: Conditions & Diagnoses -->
+    <div class="profile-section" id="ps-conditions">
+      <button class="ps-header" onclick="togglePS('ps-cond-body',this)" aria-expanded="false" aria-controls="ps-cond-body">
+        <div class="ps-title-row"><span class="ps-icon" aria-hidden="true">🏥</span><span class="ps-title">Conditions &amp; Diagnoses</span></div>
+        <div class="ps-badge-row">
+          <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span>
+          <span class="ps-chevron" aria-hidden="true">›</span>
+        </div>
+      </button>
+      <div class="ps-body hidden" id="ps-cond-body">
+        <div class="data-row ai-accent-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Lower back pain</span>
+          <span class="data-value">M54.5 · Active <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span></span>
+        </div>
+        <div class="data-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Penicillin allergy</span>
+          <span class="data-value">Z88.0 · Moderate severity <span class="badge badge-verified">✓ Verified</span></span>
+        </div>
+        <!-- Skeleton for in-progress extraction -->
+        <div class="data-row" id="skeleton-row" aria-label="Extracting additional conditions from uploaded documents">
+          <span class="data-label" style="color:var(--ct-d)">Extracting…</span>
+          <span class="data-value"><span class="skeleton" style="width:200px;height:1.2em;display:inline-block">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
+        </div>
+        <p style="font-size:var(--t-sm);color:var(--c-ai);margin-top:var(--s4)"><span aria-hidden="true">🤖</span> AI is extracting conditions from your Mar 2026 lab report. This may take a moment.</p>
+      </div>
+    </div>
+
+    <!-- Section: Documents -->
+    <div class="profile-section" id="ps-docs">
+      <button class="ps-header" onclick="togglePS('ps-docs-body',this)" aria-expanded="false" aria-controls="ps-docs-body">
+        <div class="ps-title-row"><span class="ps-icon" aria-hidden="true">📄</span><span class="ps-title">Documents</span></div>
+        <div class="ps-badge-row">
+          <span style="font-size:var(--t-sm);color:var(--ct-s)">4 files</span>
+          <span class="ps-chevron" aria-hidden="true">›</span>
+        </div>
+      </button>
+      <div class="ps-body hidden" id="ps-docs-body">
+        <table class="docs-table" aria-label="Clinical documents">
+          <thead><tr><th>Name</th><th>Type</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody>
+            <tr><td>2024 Annual Physical Summary</td><td>Historical</td><td><span class="badge badge-verified">✓ Extracted</span></td><td style="color:var(--ct-s)">Jan 2024</td></tr>
+            <tr><td>Mar 2026 Lab Results</td><td>Historical</td><td><span class="badge" style="background:var(--c-warn-bg);color:var(--c-warn)">⏳ Extracting</span></td><td style="color:var(--ct-s)">Mar 2026</td></tr>
+            <tr><td>Apr 15 Dermatology Post-Visit</td><td>Post-visit</td><td><span class="badge badge-verified">✓ Extracted</span></td><td style="color:var(--ct-s)">Apr 2026</td></tr>
+            <tr><td>Insurance EOB — Mar 2026</td><td>Insurance</td><td><span class="badge badge-verified">✓ Extracted</span></td><td style="color:var(--ct-s)">Mar 2026</td></tr>
+          </tbody>
+        </table>
+        <a href="wireframe-SCR-010-document-upload.html" class="btn btn-ghost btn-sm" style="margin-top:var(--s4)">+ Upload more documents</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function togglePS(bodyId, btn) {
+      const body = document.getElementById(bodyId);
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      body.classList.toggle('hidden', expanded);
+      btn.setAttribute('aria-expanded', String(!expanded));
+    }
+  </script>
+</body>
+</html>

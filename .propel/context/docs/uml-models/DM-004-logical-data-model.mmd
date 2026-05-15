@@ -1,0 +1,162 @@
+erDiagram
+    USER {
+        uuid id PK
+        string email UK
+        string passwordHash
+        enum role "Patient|Staff|Admin"
+        enum status "Active|Inactive"
+        timestamp createdAt
+        timestamp lastLoginAt
+        int failedLoginCount
+    }
+
+    APPOINTMENT_SLOT {
+        uuid id PK
+        timestamp startDateTime
+        timestamp endDateTime
+        boolean isBooked
+        int rowVersion
+    }
+
+    APPOINTMENT {
+        uuid id PK
+        uuid patientId FK
+        uuid slotId FK
+        uuid createdByStaffId FK
+        enum status "Booked|Cancelled|Rescheduled|Arrived"
+        decimal noShowRiskScore
+        string insuranceValidationResult
+        timestamp createdAt
+        int rowVersion
+    }
+
+    WAITLIST_ENTRY {
+        uuid id PK
+        uuid patientId FK
+        uuid appointmentId FK
+        uuid preferredSlotId FK
+        timestamp registeredAt
+    }
+
+    INTAKE_RECORD {
+        uuid id PK
+        uuid appointmentId FK
+        enum method "AI|Manual"
+        json fields_encrypted
+        timestamp completedAt
+    }
+
+    CLINICAL_DOCUMENT {
+        uuid id PK
+        uuid patientId FK
+        enum documentType "Historical|PostVisit"
+        string storagePath_encrypted
+        timestamp uploadedAt
+        enum extractionStatus "Pending|Processing|Completed|Failed"
+        string mimeType
+    }
+
+    EXTRACTED_CLINICAL_DATA {
+        uuid id PK
+        uuid documentId FK
+        uuid patientId FK
+        json vitals_encrypted
+        json medications_encrypted
+        json diagnoses_encrypted
+        text rawGeminiResponse_encrypted
+        string modelVersion
+        string promptHash
+        timestamp extractedAt
+    }
+
+    PATIENT_PROFILE_360 {
+        uuid id PK
+        uuid patientId FK
+        json unifiedVitals_encrypted
+        json unifiedMedications_encrypted
+        json unifiedHistory_encrypted
+        int conflictCount
+        timestamp lastUpdatedAt
+    }
+
+    DATA_CONFLICT {
+        uuid id PK
+        uuid patientId FK
+        string conflictType
+        json conflictedFields
+        enum severity "Low|Medium|High|Critical"
+        enum status "Open|Resolved|ReviewedUnresolved"
+        uuid resolvedByStaffId FK
+        timestamp resolvedAt
+    }
+
+    MEDICAL_CODE_SUGGESTION {
+        uuid id PK
+        uuid encounterId FK
+        enum codeType "ICD10|CPT"
+        string suggestedCode
+        decimal confidenceScore
+        enum status "Pending|Accepted|Modified|Rejected"
+        string finalCode
+        uuid verifiedByStaffId FK
+        timestamp verifiedAt
+        string modelVersion
+        string promptHash
+    }
+
+    AUDIT_LOG {
+        uuid id PK
+        uuid actorId
+        string actorRole
+        string actionType
+        string targetEntity
+        uuid targetId
+        timestamp timestamp
+        json metadata_encrypted
+    }
+
+    NOTIFICATION {
+        uuid id PK
+        uuid recipientId FK
+        enum channel "Email|SMS"
+        string notificationType
+        json payload_encrypted
+        enum status "Queued|Sent|Failed"
+        timestamp sentAt
+        int retryCount
+        timestamp lastAttemptAt
+    }
+
+    INSURANCE_RECORD {
+        uuid id PK
+        string providerName
+        string insuranceIdPattern
+    }
+
+    CALENDAR_SYNC {
+        uuid id PK
+        uuid patientId FK
+        enum provider "Google|Outlook"
+        string accessToken_encrypted
+        string refreshToken_encrypted
+        timestamp tokenExpiresAt
+        timestamp lastSyncAt
+        string syncStatus
+        string errorMessage
+    }
+
+    USER ||--o{ APPOINTMENT : "books (as patient)"
+    USER ||--o{ APPOINTMENT : "creates (as staff)"
+    USER ||--|| PATIENT_PROFILE_360 : "has profile"
+    USER ||--o{ CLINICAL_DOCUMENT : "uploads"
+    USER ||--o{ CALENDAR_SYNC : "authorises"
+    USER ||--o{ NOTIFICATION : "receives"
+    APPOINTMENT_SLOT ||--o{ APPOINTMENT : "reserves"
+    APPOINTMENT_SLOT ||--o{ WAITLIST_ENTRY : "waitlisted for"
+    APPOINTMENT ||--o| INTAKE_RECORD : "has intake"
+    APPOINTMENT ||--o{ WAITLIST_ENTRY : "linked to"
+    APPOINTMENT ||--o{ MEDICAL_CODE_SUGGESTION : "has suggestions"
+    CLINICAL_DOCUMENT ||--o{ EXTRACTED_CLINICAL_DATA : "produces"
+    EXTRACTED_CLINICAL_DATA ||--o{ DATA_CONFLICT : "may create"
+    DATA_CONFLICT }o--|| USER : "resolved by (staff)"
+    MEDICAL_CODE_SUGGESTION }o--|| USER : "verified by (staff)"

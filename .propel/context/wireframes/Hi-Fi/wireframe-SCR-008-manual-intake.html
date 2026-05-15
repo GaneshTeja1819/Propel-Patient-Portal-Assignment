@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-008 | Manual Intake Form | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-008 Manual Intake Form
+  | Element              | Action | Target Screen                                   |
+  |----------------------|--------|--------------------------------------------------|
+  | #btn-switch-ai       | click  | wireframe-SCR-007-ai-intake.html                |
+  | #btn-submit          | click  | wireframe-SCR-003-patient-dashboard.html        |
+  | #nav-back            | click  | wireframe-SCR-003-patient-dashboard.html        |
+
+  Source UCs: UC-010 (Manual Intake), UC-011 (Switch Intake Method)
+  UXR: UXR-103 (data preserved on switch), UXR-201–205 (form validation), UXR-402 (PHI fields), UXR-502 (step progress)
+  FL: FL-005
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;--c-err:#DC2626;--c-err-bg:#FEE2E2;--c-ai:#7C3AED;--c-ai-bg:#EDE9FE;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);--nav-h:64px;--max-w:1280px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}a:hover{text-decoration:underline}
+    .topnav{height:var(--nav-h);background:var(--cs);border-bottom:1px solid var(--cbord);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topnav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--s8);height:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--s4)}
+    .nav-logo{display:flex;align-items:center;gap:var(--s2);font-weight:700;color:var(--ct);font-size:var(--t-md)}
+    .nav-logo-mark{width:32px;height:32px;background:var(--cb);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-weight:700;font-size:var(--t-base)}
+    .user-avatar{width:32px;height:32px;border-radius:var(--r-full);background:var(--cb);color:var(--ct-on);display:flex;align-items:center;justify-content:center;font-size:var(--t-sm);font-weight:700}
+    .method-switch{display:flex;align-items:center;gap:var(--s3);background:var(--cs-s);border:1px solid var(--cbord);border-radius:var(--r-full);padding:var(--s1) var(--s2)}
+    .method-switch-label{font-size:var(--t-sm);color:var(--ct-s)}
+    .method-btn{padding:var(--s1) var(--s3);border-radius:var(--r-full);border:none;font-family:var(--ff);font-size:var(--t-sm);font-weight:600;cursor:pointer;transition:background .15s;background:transparent;color:var(--ct-s);text-decoration:none;display:inline-block;line-height:1.6}
+    .method-btn.active{background:var(--cb);color:var(--ct-on)}
+    .method-btn:hover:not(.active){background:var(--cbord);text-decoration:none}
+    /* Progress */
+    .intake-progress{background:var(--cs);border-bottom:1px solid var(--cbord);padding:var(--s3) var(--s8)}
+    .progress-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s2)}
+    .progress-bar-wrap{height:6px;background:var(--cbord);border-radius:var(--r-full);overflow:hidden}
+    .progress-bar-fill{height:100%;background:var(--cb);border-radius:var(--r-full);transition:width .4s}
+    .main-content{max-width:760px;margin:0 auto;padding:var(--s8)}
+    .page-title{font-size:var(--t-xl);font-weight:600;color:var(--ct);margin-bottom:var(--s1)}
+    .page-subtitle{font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s8)}
+    .section-card{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);margin-bottom:var(--s6);overflow:hidden}
+    .section-header{padding:var(--s4) var(--s6);border-bottom:1px solid var(--cbord);display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:var(--cs);border:none;width:100%;text-align:left;font-family:var(--ff)}
+    .section-header:hover{background:var(--cs-s)}
+    .section-title-row{display:flex;align-items:center;gap:var(--s3)}
+    .section-icon{font-size:var(--t-md)}
+    .section-title{font-size:var(--t-md);font-weight:600;color:var(--ct)}
+    .section-complete{display:flex;align-items:center;gap:var(--s1);font-size:var(--t-sm);font-weight:600;color:var(--c-ok)}
+    .section-incomplete{font-size:var(--t-sm);color:var(--ct-d)}
+    .section-body{padding:var(--s6);border-top:1px solid var(--cbord)}
+    .section-body.hidden{display:none}
+    .field{display:flex;flex-direction:column;gap:var(--s1);margin-bottom:var(--s4)}
+    .field:last-child{margin-bottom:0}
+    .field label{font-size:var(--t-sm);font-weight:600;color:var(--ct-s);text-transform:uppercase;letter-spacing:.05em}
+    .field label .req{color:var(--c-err);margin-left:2px}
+    .field input,.field select,.field textarea{width:100%;padding:var(--s2) var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs);transition:border-color .15s}
+    .field input,.field select{height:44px}
+    .field textarea{min-height:80px;resize:vertical;line-height:1.5}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--cbord-f);outline:3px solid rgba(26,86,219,.2);outline-offset:0}
+    .field input.valid{border-color:var(--c-ok)}
+    .field input.invalid{border-color:var(--c-err)}
+    .field-error{font-size:var(--t-xs);color:var(--c-err);margin-top:var(--s1);display:none}
+    .field-error.visible{display:block}
+    /* PHI field */
+    .field.phi input,.field.phi textarea,.field.phi select{background:var(--cb-l);border-color:#BFDBFE}
+    .phi-note{font-size:var(--t-xs);color:var(--cb);display:flex;align-items:center;gap:var(--s1);margin-bottom:var(--s3)}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
+    .radio-group{display:flex;flex-wrap:wrap;gap:var(--s3)}
+    .radio-opt{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);cursor:pointer;font-size:var(--t-base);background:var(--cs);transition:background .15s,border-color .15s;min-height:44px}
+    .radio-opt:has(input:checked){border-color:var(--cb);background:var(--cb-l)}
+    .radio-opt input{accent-color:var(--cb);width:16px;height:16px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s6);height:44px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s;text-decoration:none;white-space:nowrap}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h)}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l)}
+    .form-footer{display:flex;align-items:center;justify-content:space-between;margin-top:var(--s8);flex-wrap:wrap;gap:var(--s4)}
+    .badge{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s2);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:600}
+    .badge-ai{background:var(--c-ai-bg);color:var(--c-ai)}
+    @media(max-width:640px){.field-row{grid-template-columns:1fr}.main-content{padding:var(--s4)}.topnav-inner{padding:0 var(--s4)}.intake-progress{padding:var(--s3) var(--s4)}}
+  </style>
+</head>
+<body>
+  <nav class="topnav" aria-label="Main navigation">
+    <div class="topnav-inner">
+      <a href="wireframe-SCR-003-patient-dashboard.html" class="nav-logo" aria-label="Back to dashboard" id="nav-back">
+        <div class="nav-logo-mark" aria-hidden="true">P</div>
+        <span>Intake Form</span>
+      </a>
+      <div class="method-switch" role="group" aria-label="Intake method">
+        <span class="method-switch-label">Method:</span>
+        <a href="wireframe-SCR-007-ai-intake.html" class="method-btn" id="btn-switch-ai" aria-label="Switch to AI-assisted intake (your answers will be carried over)">🤖 AI</a>
+        <button class="method-btn active" aria-pressed="true" aria-label="Manual form (current)">📝 Manual</button>
+      </div>
+      <div class="user-avatar" aria-label="Sarah Johnson" style="cursor:default">SJ</div>
+    </div>
+  </nav>
+
+  <!-- Progress (UXR-502) -->
+  <div class="intake-progress" role="region" aria-label="Form progress">
+    <div class="progress-header">
+      <span style="font-size:var(--t-sm);font-weight:600;color:var(--ct)">Annual Physical · Dr. M. Okafor · May 20</span>
+      <span style="font-size:var(--t-sm);color:var(--ct-s)" id="progress-label">Section 1 of 5</span>
+    </div>
+    <div class="progress-bar-wrap" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" aria-label="20% complete" id="progress-bar">
+      <div class="progress-bar-fill" id="progress-fill" style="width:20%"></div>
+    </div>
+  </div>
+
+  <main class="main-content" role="main">
+    <h1 class="page-title">Pre-appointment intake</h1>
+    <p class="page-subtitle">Complete all sections. Required fields are marked <span style="color:var(--c-err)">*</span>. Your information is encrypted.</p>
+
+    <!-- Section 1: Chief Complaint -->
+    <div class="section-card" id="sec-1">
+      <button class="section-header" onclick="toggleSection('sec-1-body', this)" aria-expanded="true" aria-controls="sec-1-body">
+        <div class="section-title-row"><span class="section-icon" aria-hidden="true">🩺</span><span class="section-title">Chief Complaint</span></div>
+        <span class="section-complete" id="sec-1-status" style="display:none">✓ Complete</span>
+      </button>
+      <div class="section-body" id="sec-1-body">
+        <div class="phi-note" aria-label="PHI — protected health information"><span aria-hidden="true">🔒</span> This section contains protected health information.</div>
+        <div class="field phi">
+          <label for="chief-complaint">Chief complaint <span class="req">*</span></label>
+          <textarea id="chief-complaint" aria-required="true" placeholder="Describe your main reason for visiting…" aria-describedby="chief-complaint-err">I've been having persistent lower back pain for about 3 weeks. It's worse in the morning.</textarea>
+          <span id="chief-complaint-err" class="field-error" role="alert"></span>
+        </div>
+        <div class="field phi">
+          <label for="symptom-duration">How long have you had this symptom? <span class="req">*</span></label>
+          <select id="symptom-duration" aria-required="true">
+            <option value="">— select —</option>
+            <option value="days">A few days</option>
+            <option value="1-2w" selected>1–2 weeks</option>
+            <option value="3-4w">3–4 weeks</option>
+            <option value="1-3m">1–3 months</option>
+            <option value="3m+">More than 3 months</option>
+          </select>
+        </div>
+        <div class="field phi">
+          <label for="pain-scale">Pain / severity (0–10)</label>
+          <input type="range" id="pain-scale" min="0" max="10" value="5" style="height:auto;padding:var(--s2) 0;accent-color:var(--cb)" aria-valuemin="0" aria-valuemax="10" aria-valuenow="5">
+          <span style="font-size:var(--t-sm);color:var(--ct-s)">Current: <strong id="pain-val">5</strong> / 10</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Medications -->
+    <div class="section-card" id="sec-2">
+      <button class="section-header" onclick="toggleSection('sec-2-body', this)" aria-expanded="false" aria-controls="sec-2-body">
+        <div class="section-title-row"><span class="section-icon" aria-hidden="true">💊</span><span class="section-title">Medications</span></div>
+        <span class="section-complete" id="sec-2-status" style="display:none">✓ Complete</span>
+      </button>
+      <div class="section-body hidden" id="sec-2-body">
+        <div class="phi-note" aria-label="PHI"><span aria-hidden="true">🔒</span> Protected health information</div>
+        <div class="field phi">
+          <label for="medications">Current medications <span class="req">*</span></label>
+          <textarea id="medications" aria-required="true" placeholder="List name, dose, and frequency for each…">Ibuprofen 400mg as needed for back pain&#10;Vitamin D 2000 IU daily</textarea>
+        </div>
+        <div class="field">
+          <label>Are you taking any of the following?</label>
+          <div class="radio-group" role="group" aria-label="Medication categories">
+            <label class="radio-opt"><input type="checkbox" name="med-type" value="blood-thinners"> Blood thinners</label>
+            <label class="radio-opt"><input type="checkbox" name="med-type" value="insulin"> Insulin / diabetes meds</label>
+            <label class="radio-opt"><input type="checkbox" name="med-type" value="heart"> Heart medications</label>
+            <label class="radio-opt"><input type="checkbox" name="med-type" value="none" checked> None of the above</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Allergies -->
+    <div class="section-card" id="sec-3">
+      <button class="section-header" onclick="toggleSection('sec-3-body', this)" aria-expanded="false" aria-controls="sec-3-body">
+        <div class="section-title-row"><span class="section-icon" aria-hidden="true">⚠</span><span class="section-title">Allergies</span></div>
+        <span class="section-complete" id="sec-3-status" style="display:none">✓ Complete</span>
+      </button>
+      <div class="section-body hidden" id="sec-3-body">
+        <div class="phi-note" aria-label="PHI"><span aria-hidden="true">🔒</span> Protected health information</div>
+        <div class="field phi">
+          <label for="allergies">Known allergies <span class="req">*</span></label>
+          <textarea id="allergies" placeholder="List medications, foods, or environmental allergies and the reaction type…" aria-required="true">Penicillin — rash and hives</textarea>
+        </div>
+        <div class="field">
+          <label>Severity of worst reaction</label>
+          <div class="radio-group" role="group">
+            <label class="radio-opt"><input type="radio" name="allergy-sev" value="mild"> Mild (rash, itching)</label>
+            <label class="radio-opt" style="border-color:var(--cb);background:var(--cb-l)"><input type="radio" name="allergy-sev" value="moderate" checked> Moderate (swelling)</label>
+            <label class="radio-opt"><input type="radio" name="allergy-sev" value="severe"> Severe (anaphylaxis)</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Lifestyle -->
+    <div class="section-card" id="sec-4">
+      <button class="section-header" onclick="toggleSection('sec-4-body', this)" aria-expanded="false" aria-controls="sec-4-body">
+        <div class="section-title-row"><span class="section-icon" aria-hidden="true">🏃</span><span class="section-title">Lifestyle</span></div>
+        <span class="section-complete" id="sec-4-status" style="display:none">✓ Complete</span>
+      </button>
+      <div class="section-body hidden" id="sec-4-body">
+        <div class="field">
+          <label>Smoking / tobacco use</label>
+          <div class="radio-group" role="group">
+            <label class="radio-opt" style="border-color:var(--cb);background:var(--cb-l)"><input type="radio" name="smoking" value="never" checked> Never</label>
+            <label class="radio-opt"><input type="radio" name="smoking" value="former"> Former smoker</label>
+            <label class="radio-opt"><input type="radio" name="smoking" value="current"> Current smoker</label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="alcohol">Alcohol consumption</label>
+          <select id="alcohol">
+            <option value="none" selected>None</option>
+            <option value="occasional">Occasional (1–2 drinks/week)</option>
+            <option value="moderate">Moderate (3–7 drinks/week)</option>
+            <option value="heavy">Heavy (8+ drinks/week)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="exercise">Exercise frequency</label>
+          <select id="exercise">
+            <option value="none">Sedentary</option>
+            <option value="1-2">1–2 days/week</option>
+            <option value="3-4" selected>3–4 days/week</option>
+            <option value="5+">5+ days/week</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Additional notes -->
+    <div class="section-card" id="sec-5">
+      <button class="section-header" onclick="toggleSection('sec-5-body', this)" aria-expanded="false" aria-controls="sec-5-body">
+        <div class="section-title-row"><span class="section-icon" aria-hidden="true">📝</span><span class="section-title">Additional notes</span></div>
+        <span class="section-complete" id="sec-5-status" style="display:none">✓ Complete</span>
+      </button>
+      <div class="section-body hidden" id="sec-5-body">
+        <div class="field phi">
+          <label for="notes">Anything else Dr. Okafor should know?</label>
+          <textarea id="notes" placeholder="Optional — any other health concerns, recent procedures, or questions you have for the doctor…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form footer -->
+    <div class="form-footer">
+      <a href="wireframe-SCR-003-patient-dashboard.html" class="btn btn-ghost">Save &amp; continue later</a>
+      <button class="btn btn-primary" id="btn-submit" onclick="submitForm()">Submit intake ➤</button>
+    </div>
+  </main>
+
+  <script>
+    // Pain scale live value
+    document.getElementById('pain-scale').addEventListener('input', function() {
+      document.getElementById('pain-val').textContent = this.value;
+    });
+
+    function toggleSection(bodyId, btn) {
+      const body = document.getElementById(bodyId);
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      body.classList.toggle('hidden', expanded);
+      btn.setAttribute('aria-expanded', String(!expanded));
+      // Update progress
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const sections = ['sec-1-body','sec-2-body','sec-3-body','sec-4-body','sec-5-body'];
+      let open = sections.filter(id => !document.getElementById(id).classList.contains('hidden')).length;
+      const pct = Math.min(20 + open * 16, 100);
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('progress-label').textContent = `Section completed: ${Math.min(open,5)} of 5`;
+    }
+
+    function submitForm() {
+      const complaint = document.getElementById('chief-complaint').value.trim();
+      if (!complaint) {
+        const err = document.getElementById('chief-complaint-err');
+        err.textContent = 'Chief complaint is required.';
+        err.classList.add('visible');
+        document.getElementById('chief-complaint').classList.add('invalid');
+        document.getElementById('chief-complaint').focus();
+        return;
+      }
+      document.getElementById('btn-submit').disabled = true;
+      document.getElementById('btn-submit').textContent = 'Submitting…';
+      setTimeout(() => { window.location.href = 'wireframe-SCR-003-patient-dashboard.html'; }, 900);
+    }
+
+    // Mark sec-1 as complete initially
+    document.getElementById('sec-1-status').style.display = 'inline-flex';
+  </script>
+</body>
+</html>

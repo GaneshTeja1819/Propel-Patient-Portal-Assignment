@@ -1,0 +1,18 @@
+@startuml uc-code-verification
+left to right direction
+actor "Staff" as S
+rectangle "Medical Code Verification" {
+  usecase "Verify Medical Codes\n(UC-024)" as UC024
+  usecase "Accept Code" as ACC
+  usecase "Modify Code" as MOD
+  usecase "Reject Code" as REJ
+  usecase "Validate Modified Code\nAgainst Codeset" as VMC
+  usecase "Write Immutable\nAudit Entry" as AUD
+}
+S --> UC024
+UC024 ..> ACC : <<extend>>
+UC024 ..> MOD : <<extend>>
+UC024 ..> REJ : <<extend>>
+MOD ..> VMC : <<include>>
+UC024 ..> AUD : <<include>>
+@enduml

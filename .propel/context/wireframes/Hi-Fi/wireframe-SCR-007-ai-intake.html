@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-007 | AI Conversational Intake | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-007 AI Intake
+  | Element                  | Action | Target Screen                                   |
+  |--------------------------|--------|--------------------------------------------------|
+  | #btn-switch-manual       | click  | wireframe-SCR-008-manual-intake.html             |
+  | #btn-submit-intake       | click  | wireframe-SCR-003-patient-dashboard.html         |
+  | #nav-back                | click  | wireframe-SCR-003-patient-dashboard.html         |
+
+  Source UCs: UC-009 (AI Intake), UC-011 (Switch Intake Method)
+  UXR: UXR-103 (data preserved on switch), UXR-201–205, UXR-301, UXR-402 (PHI fields), UXR-502 (step progress), UXR-603 (AI failure fallback)
+  FL: FL-004 (AI intake path)
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;--c-err:#DC2626;--c-err-bg:#FEE2E2;--c-ai:#7C3AED;--c-ai-bg:#EDE9FE;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--s12:48px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);--nav-h:64px;--max-w:1280px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}
+    .topnav{height:var(--nav-h);background:var(--cs);border-bottom:1px solid var(--cbord);z-index:100;box-shadow:var(--sh-sm);flex-shrink:0}
+    .topnav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--s8);height:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--s4)}
+    .nav-logo{display:flex;align-items:center;gap:var(--s2);font-weight:700;color:var(--ct);font-size:var(--t-md)}
+    .nav-logo-mark{width:32px;height:32px;background:var(--cb);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-weight:700;font-size:var(--t-base)}
+    .user-avatar{width:32px;height:32px;border-radius:var(--r-full);background:var(--cb);color:var(--ct-on);display:flex;align-items:center;justify-content:center;font-size:var(--t-sm);font-weight:700}
+    /* Method switch (UXR-103) */
+    .method-switch{display:flex;align-items:center;gap:var(--s3);background:var(--cs-s);border:1px solid var(--cbord);border-radius:var(--r-full);padding:var(--s1) var(--s2)}
+    .method-switch-label{font-size:var(--t-sm);color:var(--ct-s)}
+    .method-btn{padding:var(--s1) var(--s3);border-radius:var(--r-full);border:none;font-family:var(--ff);font-size:var(--t-sm);font-weight:600;cursor:pointer;transition:background .15s;background:transparent;color:var(--ct-s)}
+    .method-btn.active{background:var(--cb);color:var(--ct-on)}
+    .method-btn:hover:not(.active){background:var(--cbord)}
+    /* Progress bar (UXR-502) */
+    .intake-progress{flex-shrink:0;background:var(--cs);border-bottom:1px solid var(--cbord);padding:var(--s3) var(--s8)}
+    .progress-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s2);max-width:760px;margin:0 auto var(--s2)}
+    .progress-label{font-size:var(--t-sm);font-weight:600;color:var(--ct)}
+    .progress-count{font-size:var(--t-sm);color:var(--ct-s)}
+    .progress-bar-wrap{height:6px;background:var(--cbord);border-radius:var(--r-full);max-width:760px;margin:0 auto;overflow:hidden}
+    .progress-bar-fill{height:100%;background:var(--cb);border-radius:var(--r-full);transition:width .4s ease}
+    /* Chat layout */
+    .intake-body{flex:1;overflow:hidden;display:flex;flex-direction:column;max-width:760px;margin:0 auto;width:100%;padding:0 var(--s8)}
+    .chat-scroll{flex:1;overflow-y:auto;padding:var(--s6) 0;display:flex;flex-direction:column;gap:var(--s4)}
+    /* Chat bubbles */
+    .bubble{max-width:80%;padding:var(--s3) var(--s4);border-radius:var(--r-lg);font-size:var(--t-base);line-height:1.6}
+    .bubble-ai{background:var(--c-ai-bg);color:var(--ct);border-radius:var(--r-lg) var(--r-lg) var(--r-lg) var(--r-xs);align-self:flex-start;border:1px solid #DDD6FE}
+    .bubble-user{background:var(--cb);color:var(--ct-on);border-radius:var(--r-lg) var(--r-lg) var(--r-xs) var(--r-lg);align-self:flex-end}
+    .bubble-ai-header{display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s2);font-size:var(--t-xs);font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--c-ai)}
+    .bubble-typing{display:flex;align-items:center;gap:var(--s1);padding:var(--s3) var(--s4);background:var(--c-ai-bg);border-radius:var(--r-lg) var(--r-lg) var(--r-lg) var(--r-xs);border:1px solid #DDD6FE;align-self:flex-start}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--c-ai);animation:bounce 1.2s infinite}
+    .dot:nth-child(2){animation-delay:.2s}
+    .dot:nth-child(3){animation-delay:.4s}
+    @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+    /* PHI field annotation (UXR-402) */
+    .phi-note{font-size:var(--t-xs);color:var(--cb);display:flex;align-items:center;gap:var(--s1);background:var(--cb-l);padding:var(--s1) var(--s2);border-radius:var(--r-xs);margin-bottom:var(--s2)}
+    /* Input area */
+    .intake-input{flex-shrink:0;padding:var(--s4) var(--s8) var(--s6);background:var(--cs);border-top:1px solid var(--cbord)}
+    .input-wrapper{max-width:760px;margin:0 auto;display:flex;gap:var(--s3);align-items:flex-end}
+    .chat-input{flex:1;padding:var(--s3) var(--s4);border:1.5px solid var(--cbord);border-radius:var(--r-lg);font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs);resize:none;min-height:52px;max-height:120px;line-height:1.5;transition:border-color .15s}
+    .chat-input:focus{border-color:var(--cbord-f);outline:3px solid rgba(26,86,219,.2);outline-offset:0}
+    .chat-input.phi-input{background:var(--cb-l);border-color:#BFDBFE}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s4);height:44px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s;text-decoration:none;white-space:nowrap;flex-shrink:0}
+    .btn-sm{height:36px;padding:0 var(--s3);font-size:var(--t-sm)}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h)}
+    .btn-primary:disabled{background:var(--ct-d);border-color:var(--ct-d);cursor:not-allowed}
+    .btn-send{background:var(--cb);color:var(--ct-on);border:none;width:52px;height:52px;border-radius:var(--r-full);flex-shrink:0;font-size:var(--t-md)}
+    .btn-send:hover{background:var(--cb-h)}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l)}
+    .step-actions{display:flex;gap:var(--s3);flex-wrap:wrap;align-self:flex-start;margin-top:var(--s2)}
+    .step-option{padding:var(--s2) var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-full);background:var(--cs);font-size:var(--t-sm);cursor:pointer;font-family:var(--ff);color:var(--ct);transition:background .15s,border-color .15s}
+    .step-option:hover{background:var(--cb-l);border-color:var(--cb)}
+    .step-option.selected{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    @media(max-width:768px){.intake-body,.intake-progress .progress-header,.intake-progress .progress-bar-wrap,.input-wrapper{padding-left:var(--s4);padding-right:var(--s4)}.topnav-inner{padding:0 var(--s4)}.bubble{max-width:90%}}
+  </style>
+</head>
+<body>
+  <!-- Top nav with method switch (UXR-103) -->
+  <nav class="topnav" aria-label="Main navigation">
+    <div class="topnav-inner">
+      <a href="wireframe-SCR-003-patient-dashboard.html" class="nav-logo" aria-label="Patient Portal — back to dashboard" id="nav-back">
+        <div class="nav-logo-mark" aria-hidden="true">P</div>
+        <span>Intake Form</span>
+      </a>
+      <!-- Method switch (UXR-103: switch without data loss) -->
+      <div class="method-switch" role="group" aria-label="Intake method">
+        <span class="method-switch-label">Method:</span>
+        <button class="method-btn active" id="btn-method-ai" aria-pressed="true" aria-label="AI-assisted intake (current)">🤖 AI</button>
+        <a href="wireframe-SCR-008-manual-intake.html" class="method-btn" id="btn-switch-manual" aria-pressed="false" aria-label="Switch to manual form (your answers will be carried over)">📝 Manual</a>
+      </div>
+      <div class="user-avatar" aria-label="Sarah Johnson" style="cursor:default">SJ</div>
+    </div>
+  </nav>
+
+  <!-- Progress bar (UXR-502) -->
+  <div class="intake-progress" role="region" aria-label="Intake progress">
+    <div class="progress-header">
+      <span class="progress-label">Intake — Annual Physical · Dr. M. Okafor · May 20</span>
+      <span class="progress-count" aria-label="Question 3 of 8">Question 3 of 8</span>
+    </div>
+    <div class="progress-bar-wrap" role="progressbar" aria-valuenow="37" aria-valuemin="0" aria-valuemax="100" aria-label="37% complete">
+      <div class="progress-bar-fill" id="progress-fill" style="width:37%"></div>
+    </div>
+  </div>
+
+  <!-- Chat area -->
+  <div class="intake-body" role="main">
+    <div class="chat-scroll" id="chat-scroll" aria-label="Intake conversation" aria-live="polite">
+
+      <!-- Message 1: AI greeting -->
+      <div class="bubble bubble-ai">
+        <div class="bubble-ai-header"><span aria-hidden="true">🤖</span> AI Health Assistant · Powered by Gemini</div>
+        Hi Sarah! I'm here to help you complete your pre-appointment intake for your <strong>Annual Physical on May 20</strong>. This usually takes about 5 minutes. I'll ask you a few questions about your health — you can switch to the manual form any time.
+      </div>
+
+      <!-- Message 2: Chief complaint question -->
+      <div class="bubble bubble-ai">
+        <div class="bubble-ai-header"><span aria-hidden="true">🤖</span> AI Health Assistant</div>
+        <div class="phi-note" aria-label="This field contains protected health information">🔒 Your responses are encrypted and HIPAA-protected.</div>
+        <strong>Question 1 of 8:</strong> What is your main reason for visiting today? Please describe any symptoms or concerns you have.
+      </div>
+
+      <!-- Message 2: Patient response -->
+      <div class="bubble bubble-user" aria-label="Your response">
+        I've been having persistent lower back pain for about 3 weeks. It's worse in the morning and gets better as the day goes on.
+      </div>
+
+      <!-- Message 3: Medications question -->
+      <div class="bubble bubble-ai">
+        <div class="bubble-ai-header"><span aria-hidden="true">🤖</span> AI Health Assistant</div>
+        Thank you for sharing that. Lower back pain that eases through the day is a helpful detail for Dr. Okafor.<br><br>
+        <strong>Question 2 of 8:</strong> Are you currently taking any prescription medications, supplements, or over-the-counter drugs?
+      </div>
+
+      <!-- Message 3: Patient response -->
+      <div class="bubble bubble-user">
+        Yes — Ibuprofen 400mg as needed for the back pain, and Vitamin D 2000 IU daily.
+      </div>
+
+      <!-- Message 4: Current question (allergies) -->
+      <div class="bubble bubble-ai" id="current-question">
+        <div class="bubble-ai-header"><span aria-hidden="true">🤖</span> AI Health Assistant</div>
+        Got it, I've noted those medications. 💊<br><br>
+        <strong>Question 3 of 8:</strong> Do you have any known allergies to medications, foods, or environmental factors? Please list any and describe the reaction type if you know it.
+      </div>
+
+      <!-- Quick-select options for common answers -->
+      <div class="step-actions" id="step-options" aria-label="Quick answer options">
+        <button class="step-option" onclick="selectOption(this)">No known allergies</button>
+        <button class="step-option" onclick="selectOption(this)">Penicillin</button>
+        <button class="step-option" onclick="selectOption(this)">Sulfa drugs</button>
+        <button class="step-option" onclick="selectOption(this)">NSAIDs</button>
+        <button class="step-option" onclick="selectOption(this)">Latex</button>
+        <button class="step-option" onclick="selectOption(this)">Let me type my own</button>
+      </div>
+
+      <!-- Typing indicator (loading state) -->
+      <div class="bubble-typing" id="typing-indicator" style="display:none" aria-label="AI is responding" role="status">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input area -->
+  <div class="intake-input" role="region" aria-label="Your response">
+    <div class="input-wrapper">
+      <div style="flex:1">
+        <div class="phi-note" aria-label="PHI field — protected health information"><span aria-hidden="true">🔒</span> Health information — encrypted</div>
+        <textarea
+          class="chat-input phi-input"
+          id="chat-input"
+          placeholder="Type your answer or select an option above…"
+          aria-label="Your response to the AI health assistant"
+          aria-required="true"
+          rows="2"
+        ></textarea>
+      </div>
+      <button class="btn-send" id="btn-send" aria-label="Send response" onclick="sendMessage()">➤</button>
+    </div>
+    <div style="max-width:760px;margin:var(--s3) auto 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--s3)">
+      <span style="font-size:var(--t-sm);color:var(--ct-s)">Your data is encrypted and only shared with your care team.</span>
+      <div style="display:flex;gap:var(--s2)">
+        <button class="btn btn-sm btn-ghost" onclick="window.location.href='wireframe-SCR-003-patient-dashboard.html'" aria-label="Save progress and continue later">Save &amp; continue later</button>
+        <button class="btn btn-sm btn-primary" id="btn-submit-intake" onclick="window.location.href='wireframe-SCR-003-patient-dashboard.html'" style="display:none">Submit intake</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      "Thank you! I've noted your allergy to Penicillin — rash and hives is an important reaction to document.\n\n**Question 4 of 8:** Do you smoke, vape, or use tobacco products?",
+      "Understood — noted as never smoked. \n\n**Question 5 of 8:** How would you describe your alcohol consumption? (e.g., none, occasional, regularly)",
+      "Got it. \n\n**Question 6 of 8:** How often do you exercise per week, and what type of activity?",
+      "Great! Almost done. \n\n**Question 7 of 8:** Are you currently experiencing any other symptoms besides back pain — such as fatigue, shortness of breath, or changes in sleep?",
+      "Thank you Sarah — your intake is now complete! I've captured all the information Dr. Okafor needs for your Annual Physical on May 20. You can review your answers below or submit now."
+    ];
+    let qIdx = 0;
+    const progressVals = [37, 50, 62, 74, 86, 100];
+
+    function selectOption(btn) {
+      document.querySelectorAll('.step-option.selected').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      document.getElementById('chat-input').value = btn.textContent;
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+      // Add user bubble
+      const chatScroll = document.getElementById('chat-scroll');
+      // Remove options
+      const opts = document.getElementById('step-options');
+      if (opts) opts.remove();
+      const userBubble = document.createElement('div');
+      userBubble.className = 'bubble bubble-user';
+      userBubble.setAttribute('aria-label', 'Your response');
+      userBubble.textContent = text;
+      chatScroll.insertBefore(userBubble, document.getElementById('typing-indicator'));
+      input.value = '';
+      // Show typing indicator
+      const typing = document.getElementById('typing-indicator');
+      typing.style.display = 'flex';
+      chatScroll.scrollTop = chatScroll.scrollHeight;
+      // After delay, show AI response
+      setTimeout(() => {
+        typing.style.display = 'none';
+        if (qIdx < questions.length) {
+          const aiBubble = document.createElement('div');
+          aiBubble.className = 'bubble bubble-ai';
+          aiBubble.innerHTML = `<div class="bubble-ai-header"><span aria-hidden="true">🤖</span> AI Health Assistant</div>${questions[qIdx].replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}`;
+          chatScroll.insertBefore(aiBubble, typing);
+          // Update progress
+          const pVal = progressVals[qIdx] || 100;
+          document.getElementById('progress-fill').style.width = pVal + '%';
+          const qCount = 4 + qIdx;
+          document.querySelector('.progress-count').textContent = `Question ${Math.min(qCount, 8)} of 8`;
+          // Last question: show submit button
+          if (qIdx === questions.length - 1) {
+            document.getElementById('btn-submit-intake').style.display = 'inline-flex';
+          }
+          qIdx++;
+          chatScroll.scrollTop = chatScroll.scrollHeight;
+        }
+      }, 1200);
+    }
+
+    // Enter key sends message
+    document.getElementById('chat-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+  </script>
+</body>
+</html>

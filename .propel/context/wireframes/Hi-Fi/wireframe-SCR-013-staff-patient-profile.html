@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-013 | Staff — Patient Profile (Conflicts) | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-013 Staff Patient Profile
+  | Element                    | Action | Target Screen                                  |
+  |----------------------------|--------|------------------------------------------------|
+  | #nav-queue                 | click  | wireframe-SCR-011-staff-queue.html             |
+  | #btn-resolve-conflict      | click  | Conflict Detail Drawer (inline)                |
+  | Drawer Resolve button      | click  | (inline status update, UC-022)                 |
+  | #btn-verify-codes          | click  | wireframe-SCR-014-code-verification.html       |
+
+  Source UCs: UC-020 (View Unified Profile), UC-022 (Conflict Resolution)
+  UXR: UXR-402 (PHI lock), UXR-403 (AI badge + Verified), UXR-404 (ConflictAlert cards), UXR-405 (RBAC staff)
+  FL: FL-010 (queue → staff profile → conflict drawer)
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;--c-err:#DC2626;--c-err-h:#B91C1C;--c-err-bg:#FEE2E2;--c-ai:#7C3AED;--c-ai-bg:#EDE9FE;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);--nav-h:64px;--max-w:1280px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}a:hover{text-decoration:underline}
+    .topnav{height:var(--nav-h);background:var(--cs);border-bottom:1px solid var(--cbord);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topnav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--s8);height:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--s4)}
+    .nav-logo{display:flex;align-items:center;gap:var(--s2);font-weight:700;color:var(--ct);font-size:var(--t-md)}
+    .nav-logo-mark{width:32px;height:32px;background:var(--c-ok);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-weight:700;font-size:var(--t-base)}
+    .nav-links{display:flex;align-items:center;gap:var(--s1)}
+    .nav-link{padding:var(--s2) var(--s3);border-radius:var(--r-sm);font-size:var(--t-base);color:var(--ct-s);font-weight:500;text-decoration:none;transition:background .1s}
+    .nav-link:hover{background:var(--cs-s);color:var(--ct);text-decoration:none}
+    .role-badge{display:flex;align-items:center;gap:var(--s2);padding:var(--s1) var(--s3);background:var(--c-ok-bg);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;color:var(--c-ok)}
+    .main-content{max-width:var(--max-w);margin:0 auto;padding:var(--s8)}
+    .breadcrumb{display:flex;align-items:center;gap:var(--s2);font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s6)}
+    .breadcrumb a{color:var(--ct-s)}
+    .breadcrumb a:hover{color:var(--cb)}
+    .breadcrumb-sep{color:var(--ct-d)}
+    .profile-header{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s6);margin-bottom:var(--s4);display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s6);flex-wrap:wrap}
+    .profile-identity{display:flex;align-items:center;gap:var(--s4)}
+    .avatar-lg{width:64px;height:64px;border-radius:var(--r-full);background:var(--cb);color:var(--ct-on);display:flex;align-items:center;justify-content:center;font-size:var(--t-xl);font-weight:700;flex-shrink:0}
+    .profile-name{font-size:var(--t-xl);font-weight:600;margin-bottom:var(--s1)}
+    .profile-meta{font-size:var(--t-sm);color:var(--ct-s)}
+    .profile-actions{display:flex;gap:var(--s3);flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s4);height:44px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s;text-decoration:none;white-space:nowrap}
+    .btn-sm{height:36px;padding:0 var(--s3);font-size:var(--t-sm)}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h);text-decoration:none}
+    .btn-secondary{background:var(--cs);color:var(--ct);border-color:var(--cbord)}
+    .btn-secondary:hover{background:var(--cs-s);text-decoration:none}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l);text-decoration:none}
+    .btn-danger-outline{background:transparent;color:var(--c-err);border-color:var(--c-err)}
+    .btn-danger-outline:hover{background:var(--c-err-bg)}
+    .badge{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s2);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+    .badge-ai{background:var(--c-ai-bg);color:var(--c-ai);border:1px solid #DDD6FE}
+    .badge-verified{background:var(--c-ok-bg);color:var(--c-ok)}
+    .badge-phi{background:var(--cb-l);color:var(--cb)}
+    /* CONFLICT ALERT (UXR-404) */
+    .conflict-alert{border-radius:var(--r-md);padding:var(--s4);margin-bottom:var(--s4);display:flex;gap:var(--s4);align-items:flex-start}
+    .conflict-alert.critical{background:var(--c-err-bg);border:1px solid var(--c-err);border-left:4px solid var(--c-err)}
+    .conflict-alert.high{background:var(--c-warn-bg);border:1px solid var(--c-warn);border-left:4px solid var(--c-warn)}
+    .conflict-icon{font-size:var(--t-xl);flex-shrink:0}
+    .conflict-title{font-weight:700;margin-bottom:var(--s1)}
+    .conflict-detail{font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s3)}
+    .conflict-meta{font-size:var(--t-xs);color:var(--ct-d)}
+    /* Profile sections */
+    .profile-section{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);margin-bottom:var(--s4);overflow:hidden}
+    .ps-header{padding:var(--s4) var(--s6);display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:none;border:none;width:100%;text-align:left;font-family:var(--ff)}
+    .ps-header:hover{background:var(--cs-s)}
+    .ps-title-row{display:flex;align-items:center;gap:var(--s3)}
+    .ps-title{font-size:var(--t-md);font-weight:600;color:var(--ct)}
+    .ps-chevron{color:var(--ct-d);font-size:var(--t-sm);transition:transform .2s}
+    .ps-header[aria-expanded="true"] .ps-chevron{transform:rotate(90deg)}
+    .ps-body{padding:var(--s6);border-top:1px solid var(--cbord)}
+    .ps-body.hidden{display:none}
+    .data-row{display:flex;align-items:flex-start;justify-content:space-between;padding:var(--s2) 0;border-bottom:1px solid var(--cbord);gap:var(--s4)}
+    .data-row:last-of-type{border-bottom:none}
+    .data-label{color:var(--ct-s);font-size:var(--t-sm);min-width:150px;flex-shrink:0;display:flex;align-items:center;gap:var(--s1)}
+    .data-value{font-size:var(--t-base);font-weight:600;text-align:right;display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap;justify-content:flex-end}
+    .phi-icon{font-size:var(--t-xs);color:var(--cb)}
+    .ai-accent-row{border-left:3px solid var(--c-ai);padding-left:var(--s3)}
+    /* Conflict Detail Drawer */
+    .drawer-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:1000;display:none}
+    .drawer-overlay.open{display:block}
+    .drawer{position:fixed;right:0;top:0;bottom:0;width:520px;max-width:100vw;background:var(--cs);box-shadow:var(--sh-lg);z-index:1001;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(0,0,.2,1)}
+    .drawer.open{transform:translateX(0)}
+    .drawer-header{padding:var(--s6);border-bottom:1px solid var(--cbord);display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s4);flex-shrink:0}
+    .drawer-title{font-size:var(--t-lg);font-weight:600}
+    .drawer-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:1px solid var(--cbord);border-radius:var(--r-sm);cursor:pointer;font-size:var(--t-md);color:var(--ct-s);flex-shrink:0}
+    .drawer-body{padding:var(--s6);flex:1;overflow-y:auto}
+    .drawer-footer{padding:var(--s6);border-top:1px solid var(--cbord);display:flex;gap:var(--s3);flex-shrink:0}
+    .conflict-evidence-box{background:var(--cs-s);border:1px solid var(--cbord);border-radius:var(--r-sm);padding:var(--s4);font-size:var(--t-sm);margin-bottom:var(--s4)}
+    .conflict-source-row{display:flex;justify-content:space-between;padding:var(--s2) 0;border-bottom:1px solid var(--cbord)}
+    .conflict-source-row:last-child{border-bottom:none}
+    .radio-group{display:flex;flex-direction:column;gap:var(--s2);margin-bottom:var(--s4)}
+    .radio-opt{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s4);border:1.5px solid var(--cbord);border-radius:var(--r-sm);cursor:pointer;min-height:44px}
+    .radio-opt:has(input:checked){border-color:var(--cb);background:var(--cb-l)}
+    .radio-opt input{accent-color:var(--cb);width:16px;height:16px}
+    @media(max-width:768px){.profile-header{flex-direction:column}.drawer{width:100vw}.main-content{padding:var(--s4)}.topnav-inner{padding:0 var(--s4)}.data-row{flex-direction:column}.data-value{text-align:left;justify-content:flex-start}}
+  </style>
+</head>
+<body>
+  <!-- Conflict Detail Drawer (UC-022, UXR-404) -->
+  <div id="conflict-drawer-overlay" class="drawer-overlay" onclick="closeConflictDrawer()"></div>
+  <div id="conflict-drawer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="conflict-drawer-title">
+    <div class="drawer-header">
+      <div>
+        <div style="font-size:var(--t-xs);font-weight:700;color:var(--c-err);text-transform:uppercase;letter-spacing:.05em;margin-bottom:var(--s1)">⚠ CRITICAL CONFLICT · conf-001</div>
+        <h2 id="conflict-drawer-title" class="drawer-title">Medication Dosage Conflict</h2>
+      </div>
+      <button class="drawer-close" onclick="closeConflictDrawer()" aria-label="Close conflict detail">✕</button>
+    </div>
+    <div class="drawer-body">
+      <p style="font-size:var(--t-sm);color:var(--ct-s);margin-bottom:var(--s6)">Two sources report conflicting dosages for <strong>Metoprolol Succinate</strong> for patient <strong>Michael Chen</strong>. Review the evidence and select the correct value to resolve.</p>
+      <div class="conflict-evidence-box">
+        <div style="font-weight:600;margin-bottom:var(--s3);font-size:var(--t-sm)">Conflicting sources</div>
+        <div class="conflict-source-row">
+          <span><span class="badge badge-ai" style="margin-right:var(--s2)">🤖 AI</span>Extracted from admission record (Mar 12 2026)</span>
+          <strong>25mg daily</strong>
+        </div>
+        <div class="conflict-source-row">
+          <span><span class="badge badge-verified" style="margin-right:var(--s2)">✓ Verified</span>Patient-reported in intake (Apr 15 2026)</span>
+          <strong>50mg daily</strong>
+        </div>
+      </div>
+      <div style="margin-bottom:var(--s4)">
+        <div style="font-size:var(--t-sm);font-weight:600;color:var(--ct-s);text-transform:uppercase;letter-spacing:.05em;margin-bottom:var(--s3)">Select correct value</div>
+        <div class="radio-group" role="radiogroup" aria-label="Select correct Metoprolol dose">
+          <label class="radio-opt"><input type="radio" name="conflict-val" value="25"> <span><strong>25mg daily</strong> — from AI-extracted admission record</span></label>
+          <label class="radio-opt"><input type="radio" name="conflict-val" value="50" checked> <span><strong>50mg daily</strong> — from verified patient intake</span></label>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:var(--s4)">
+        <label style="font-size:var(--t-sm);font-weight:600;color:var(--ct-s);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:var(--s2)">Resolution note</label>
+        <textarea style="width:100%;padding:var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-base);min-height:80px;resize:vertical" placeholder="Describe why you chose this value…" aria-label="Resolution note"></textarea>
+      </div>
+      <div style="background:var(--cb-l);border-radius:var(--r-sm);padding:var(--s3);font-size:var(--t-xs);color:var(--ct-s)">
+        Your resolution decision will be audit-logged with your staff ID and timestamp.
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-ghost" onclick="closeConflictDrawer()" style="flex:1">Cancel</button>
+      <button class="btn btn-primary" id="btn-resolve-confirm" onclick="resolveConflict()" style="flex:2">Resolve conflict</button>
+    </div>
+  </div>
+
+  <nav class="topnav" aria-label="Main navigation — Staff Portal">
+    <div class="topnav-inner">
+      <a href="wireframe-SCR-011-staff-queue.html" class="nav-logo" aria-label="Staff Portal home" id="nav-queue-logo">
+        <div class="nav-logo-mark" aria-hidden="true">S</div>
+        <span>Staff Portal</span>
+      </a>
+      <div class="nav-links">
+        <a href="wireframe-SCR-011-staff-queue.html" class="nav-link" id="nav-queue">📋 Queue</a>
+        <a href="wireframe-SCR-012-walkin-booking.html" class="nav-link">➕ New Walk-in</a>
+      </div>
+      <span class="role-badge" aria-label="Staff role">👩‍⚕ Staff</span>
+    </div>
+  </nav>
+
+  <main class="main-content" role="main">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="wireframe-SCR-011-staff-queue.html">Queue</a>
+      <span class="breadcrumb-sep" aria-hidden="true">/</span>
+      <span style="color:var(--ct);font-weight:600" aria-current="page">Michael Chen — Profile</span>
+    </nav>
+
+    <!-- Profile header -->
+    <div class="profile-header">
+      <div class="profile-identity">
+        <div class="avatar-lg" aria-hidden="true">MC</div>
+        <div>
+          <div class="profile-name">Michael Chen</div>
+          <div class="profile-meta">DOB: Jul 8, 1978 · M · (555) 831-4920</div>
+          <div style="margin-top:var(--s2);display:flex;gap:var(--s2);flex-wrap:wrap">
+            <span class="badge badge-phi"><span aria-hidden="true">🔒</span> PHI Protected</span>
+            <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI-enriched</span>
+          </div>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <a href="wireframe-SCR-014-code-verification.html" class="btn btn-primary" id="btn-verify-codes">Verify codes</a>
+        <a href="wireframe-SCR-011-staff-queue.html" class="btn btn-secondary">← Queue</a>
+      </div>
+    </div>
+
+    <!-- CONFLICT ALERTS (UXR-404) — shown to staff only, not patient self-view -->
+    <div role="region" aria-label="Data conflicts requiring review">
+      <!-- Critical conflict: conf-001 -->
+      <div class="conflict-alert critical" id="conflict-conf001">
+        <span class="conflict-icon" aria-hidden="true">⛔</span>
+        <div style="flex:1">
+          <div class="conflict-title">CRITICAL: Medication Dosage Conflict — Metoprolol Succinate</div>
+          <div class="conflict-detail">Extracted record shows 25mg/day; patient-reported intake shows 50mg/day. Requires clinician review before visit.</div>
+          <div class="conflict-meta">conf-001 · Detected May 18, 2026 · Unresolved</div>
+          <button class="btn btn-sm btn-danger-outline" id="btn-resolve-conflict" style="margin-top:var(--s3)" onclick="openConflictDrawer()" aria-label="Review and resolve Metoprolol dosage conflict">Review &amp; Resolve</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Medications (expanded) -->
+    <div class="profile-section">
+      <button class="ps-header" onclick="togglePS('ps-meds-body',this)" aria-expanded="true" aria-controls="ps-meds-body">
+        <div class="ps-title-row"><span aria-hidden="true">💊</span><span class="ps-title">Medications</span></div>
+        <div style="display:flex;gap:var(--s2);align-items:center">
+          <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span>
+          <span class="ps-chevron" aria-hidden="true">›</span>
+        </div>
+      </button>
+      <div class="ps-body" id="ps-meds-body">
+        <div class="data-row ai-accent-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Metoprolol Succinate</span>
+          <span class="data-value" style="color:var(--c-err)">⚠ Conflict: 25mg vs 50mg <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span></span>
+        </div>
+        <div class="data-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Atorvastatin</span>
+          <span class="data-value">40mg daily <span class="badge badge-verified">✓ Verified</span></span>
+        </div>
+        <div class="data-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Lisinopril</span>
+          <span class="data-value">10mg daily <span class="badge badge-verified">✓ Verified</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vitals -->
+    <div class="profile-section">
+      <button class="ps-header" onclick="togglePS('ps-vitals-body',this)" aria-expanded="false" aria-controls="ps-vitals-body">
+        <div class="ps-title-row"><span aria-hidden="true">❤</span><span class="ps-title">Vitals</span></div>
+        <div style="display:flex;gap:var(--s2);align-items:center">
+          <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span>
+          <span class="ps-chevron" aria-hidden="true">›</span>
+        </div>
+      </button>
+      <div class="ps-body hidden" id="ps-vitals-body">
+        <div class="data-row ai-accent-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Blood pressure</span>
+          <span class="data-value">142/88 mmHg <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span></span>
+        </div>
+        <div class="data-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Heart rate</span>
+          <span class="data-value">68 bpm <span class="badge badge-verified">✓ Verified</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conditions -->
+    <div class="profile-section">
+      <button class="ps-header" onclick="togglePS('ps-cond-body',this)" aria-expanded="false" aria-controls="ps-cond-body">
+        <div class="ps-title-row"><span aria-hidden="true">🏥</span><span class="ps-title">Conditions &amp; Diagnoses</span></div>
+        <div style="display:flex;gap:var(--s2);align-items:center">
+          <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span>
+          <span class="ps-chevron" aria-hidden="true">›</span>
+        </div>
+      </button>
+      <div class="ps-body hidden" id="ps-cond-body">
+        <div class="data-row ai-accent-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Hypertension</span>
+          <span class="data-value">I10 · Active <span class="badge badge-ai"><span aria-hidden="true">🤖</span> AI</span></span>
+        </div>
+        <div class="data-row ai-accent-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Hyperlipidemia</span>
+          <span class="data-value">E78.5 · Active <span class="badge badge-verified">✓ Verified</span></span>
+        </div>
+        <div class="data-row">
+          <span class="data-label"><span class="phi-icon" aria-label="PHI">🔒</span>Penicillin allergy</span>
+          <span class="data-value">Z88.0 · Moderate <span class="badge badge-verified">✓ Verified</span></span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function togglePS(bodyId, btn) {
+      const body = document.getElementById(bodyId);
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      body.classList.toggle('hidden', expanded);
+      btn.setAttribute('aria-expanded', String(!expanded));
+    }
+    function openConflictDrawer() {
+      document.getElementById('conflict-drawer-overlay').classList.add('open');
+      document.getElementById('conflict-drawer').classList.add('open');
+    }
+    function closeConflictDrawer() {
+      document.getElementById('conflict-drawer-overlay').classList.remove('open');
+      document.getElementById('conflict-drawer').classList.remove('open');
+    }
+    function resolveConflict() {
+      const btn = document.getElementById('btn-resolve-confirm');
+      btn.disabled = true;
+      btn.textContent = 'Resolving…';
+      setTimeout(() => {
+        closeConflictDrawer();
+        // Update conflict alert to resolved
+        const alertEl = document.getElementById('conflict-conf001');
+        alertEl.classList.remove('critical');
+        alertEl.style.background = 'var(--c-ok-bg)';
+        alertEl.style.borderColor = 'var(--c-ok)';
+        alertEl.style.borderLeft = '4px solid var(--c-ok)';
+        alertEl.querySelector('.conflict-icon').textContent = '✓';
+        alertEl.querySelector('.conflict-title').textContent = 'RESOLVED: Medication Dosage Conflict — Metoprolol Succinate (50mg/day)';
+        alertEl.querySelector('.conflict-meta').textContent = 'Resolved just now by Staff';
+        alertEl.querySelector('button').remove();
+      }, 800);
+    }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeConflictDrawer(); });
+  </script>
+</body>
+</html>
