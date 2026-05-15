@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCR-017 | Admin Audit Log | UPACIP Wireframes</title>
+  <!--
+  Navigation Map — SCR-017 Admin Audit Log
+  | Element                          | Action | Target Screen                                |
+  |----------------------------------|--------|----------------------------------------------|
+  | Nav logo / "Admin Portal"        | click  | wireframe-SCR-015-admin-user-management.html |
+  | Nav "Users"                      | click  | wireframe-SCR-015-admin-user-management.html |
+  | Nav "Audit Log"                  | —      | (current page — active)                      |
+  | "Export CSV" button              | click  | (download simulation — same page)            |
+  | Detail drawer "Close"            | click  | (closes drawer — same page)                  |
+  | Sign out                         | click  | wireframe-SCR-001-login.html                 |
+
+  Screen ID : SCR-017
+  Title     : Admin Audit Log
+  Actor     : Admin
+  UC        : UC-018 (Immutable Audit Logging)
+  UXR       : UXR-107 (audit log), UXR-405 (RBAC — admin role)
+  FL        : FL-009 (Admin audit — self-contained)
+  BRD ref   : §7.1 Immutable audit logging · §5 Infrastructure & Compliance
+  NFR       : Immutable (read-only) · HIPAA-compliant · Zero data mutation from UI
+  -->
+  <style>
+    :root{--cb:#1A56DB;--cb-h:#1446BE;--cb-l:#EFF6FF;--cs:#FFFFFF;--cs-m:#F8FAFC;--cs-s:#F1F5F9;--cbord:#E2E8F0;--cbord-f:#1A56DB;--ct:#0F172A;--ct-s:#475569;--ct-d:#94A3B8;--ct-on:#FFFFFF;--c-ok:#16A34A;--c-ok-bg:#DCFCE7;--c-warn:#D97706;--c-warn-bg:#FEF3C7;--c-err:#DC2626;--c-err-h:#B91C1C;--c-err-bg:#FEE2E2;--c-ai:#7C3AED;--c-ai-bg:#EDE9FE;--ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--t-xs:11px;--t-sm:12px;--t-base:14px;--t-md:16px;--t-lg:18px;--t-xl:20px;--t-2xl:24px;--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s6:24px;--s8:32px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:9999px;--sh-sm:0 1px 2px rgba(0,0,0,.05);--sh-md:0 4px 6px -1px rgba(0,0,0,.07);--sh-lg:0 10px 15px -3px rgba(0,0,0,.1);--nav-h:64px;--max-w:1280px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px}body{font-family:var(--ff);font-size:var(--t-base);color:var(--ct);background:var(--cs-m);-webkit-font-smoothing:antialiased}
+    :focus-visible{outline:3px solid var(--cbord-f);outline-offset:2px;border-radius:var(--r-sm)}
+    a{color:var(--cb);text-decoration:none}a:hover{text-decoration:underline}
+
+    /* ── Top Navigation ── */
+    .topnav{height:var(--nav-h);background:var(--cs);border-bottom:1px solid var(--cbord);position:sticky;top:0;z-index:100;box-shadow:var(--sh-sm)}
+    .topnav-inner{max-width:var(--max-w);margin:0 auto;padding:0 var(--s8);height:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--s4)}
+    .nav-logo{display:flex;align-items:center;gap:var(--s2);font-weight:700;color:var(--ct);font-size:var(--t-md);text-decoration:none}
+    .nav-logo:hover{text-decoration:none}
+    .nav-logo-mark{width:32px;height:32px;background:var(--c-err);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--ct-on);font-weight:700;font-size:var(--t-base)}
+    .nav-links{display:flex;align-items:center;gap:var(--s1)}
+    .nav-link{padding:var(--s2) var(--s3);border-radius:var(--r-sm);font-size:var(--t-base);color:var(--ct-s);font-weight:500;text-decoration:none;transition:background .1s}
+    .nav-link:hover{background:var(--cs-s);color:var(--ct);text-decoration:none}
+    .nav-link.active{background:var(--cb-l);color:var(--cb);font-weight:600}
+    .nav-right{display:flex;align-items:center;gap:var(--s3)}
+    .role-badge{display:flex;align-items:center;gap:var(--s2);padding:var(--s1) var(--s3);background:var(--c-err-bg);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;color:var(--c-err)}
+    .btn-signout{height:34px;padding:0 var(--s3);border:1px solid var(--cbord);background:var(--cs);color:var(--ct-s);font-weight:500;font-size:var(--t-sm);border-radius:var(--r-sm);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+    .btn-signout:hover{background:var(--cs-s);text-decoration:none}
+
+    /* ── Main Layout ── */
+    .main-content{max-width:var(--max-w);margin:0 auto;padding:var(--s8)}
+    .page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:var(--s6);flex-wrap:wrap;gap:var(--s4)}
+    .page-title-group{}
+    .page-title{font-size:var(--t-2xl);font-weight:600;margin-bottom:var(--s1)}
+    .page-subtitle{font-size:var(--t-sm);color:var(--ct-s);display:flex;align-items:center;gap:var(--s2)}
+    .immutable-badge{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s2);background:#FEF3C7;border:1px solid #D97706;border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;color:#92400E}
+
+    /* ── Stat Strip ── */
+    .stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4);margin-bottom:var(--s6)}
+    .stat-card{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s4) var(--s6);box-shadow:var(--sh-sm)}
+    .stat-label{font-size:var(--t-xs);font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ct-s);margin-bottom:var(--s1)}
+    .stat-value{font-size:var(--t-xl);font-weight:700;color:var(--ct)}
+    .stat-meta{font-size:var(--t-xs);color:var(--ct-d);margin-top:2px}
+    .stat-value.err{color:var(--c-err)}
+    .stat-value.ok{color:var(--c-ok)}
+
+    /* ── Filter Bar ── */
+    .filter-bar{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);padding:var(--s4) var(--s6);margin-bottom:var(--s4);box-shadow:var(--sh-sm)}
+    .filter-row{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
+    .filter-group{display:flex;flex-direction:column;gap:4px}
+    .filter-label{font-size:var(--t-xs);font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ct-s)}
+    .filter-input{height:38px;padding:0 var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-sm);color:var(--ct);background:var(--cs)}
+    .filter-input:focus{border-color:var(--cbord-f);outline:3px solid rgba(26,86,219,.2);outline-offset:0}
+    .filter-select{height:38px;padding:0 var(--s3);border:1.5px solid var(--cbord);border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-sm);color:var(--ct);background:var(--cs);min-width:150px}
+    .filter-select:focus{border-color:var(--cbord-f);outline:3px solid rgba(26,86,219,.2);outline-offset:0}
+    .filter-search{width:240px}
+    .filter-date{width:150px}
+    .filter-divider{width:1px;height:24px;background:var(--cbord);margin:0 var(--s1)}
+    .btn-reset{background:none;border:none;font-family:var(--ff);font-size:var(--t-sm);color:var(--ct-s);cursor:pointer;padding:var(--s1) var(--s2);border-radius:var(--r-sm)}
+    .btn-reset:hover{color:var(--cb);background:var(--cb-l)}
+
+    /* ── Card ── */
+    .card{background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-md);box-shadow:var(--sh-sm)}
+    .card-header{padding:var(--s4) var(--s6);border-bottom:1px solid var(--cbord);display:flex;align-items:center;justify-content:space-between;gap:var(--s4);flex-wrap:wrap}
+    .card-title{font-size:var(--t-md);font-weight:600}
+    .card-actions{display:flex;align-items:center;gap:var(--s3)}
+
+    /* ── Buttons ── */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);padding:0 var(--s3);height:36px;border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-sm);font-weight:600;border:1.5px solid transparent;cursor:pointer;transition:background .15s;text-decoration:none;white-space:nowrap}
+    .btn-primary{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .btn-primary:hover{background:var(--cb-h);text-decoration:none}
+    .btn-ghost{background:transparent;color:var(--cb);border-color:var(--cbord)}
+    .btn-ghost:hover{background:var(--cb-l);text-decoration:none}
+    .btn-expand{background:none;border:none;font-family:var(--ff);font-size:var(--t-sm);color:var(--cb);cursor:pointer;font-weight:600;padding:var(--s1) var(--s2)}
+
+    /* ── Audit Table ── */
+    .audit-table{width:100%;border-collapse:collapse}
+    .audit-table th{text-align:left;font-size:var(--t-xs);font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ct-s);padding:var(--s3) var(--s4);border-bottom:2px solid var(--cbord);background:var(--cs-s);white-space:nowrap}
+    .audit-table td{padding:var(--s3) var(--s4);border-bottom:1px solid var(--cbord);font-size:var(--t-sm);vertical-align:middle}
+    .audit-table tr:hover td{background:var(--cs-m)}
+    .audit-table tr.row-expanded td{background:#FAFBFF}
+    .col-ts{width:160px;white-space:nowrap}
+    .col-user{min-width:180px}
+    .col-role{width:90px}
+    .col-action{width:180px}
+    .col-resource{min-width:180px}
+    .col-ip{width:130px;font-family:monospace;font-size:var(--t-xs);color:var(--ct-s)}
+    .col-status{width:90px}
+    .col-actions{width:80px;text-align:right}
+
+    .ts-primary{font-weight:600;color:var(--ct)}
+    .ts-secondary{font-size:var(--t-xs);color:var(--ct-d);margin-top:1px}
+    .user-name{font-weight:600;color:var(--ct)}
+    .user-email{font-size:var(--t-xs);color:var(--ct-s);margin-top:1px}
+
+    /* ── Badges ── */
+    .badge{display:inline-flex;align-items:center;gap:var(--s1);padding:2px var(--s3);border-radius:var(--r-full);font-size:var(--t-xs);font-weight:700;white-space:nowrap}
+    .badge-admin{background:#FEF3C7;color:#92400E}
+    .badge-staff{background:var(--c-ok-bg);color:var(--c-ok)}
+    .badge-patient{background:var(--cb-l);color:var(--cb)}
+    .badge-system{background:var(--cs-s);color:var(--ct-s)}
+    .badge-success{background:var(--c-ok-bg);color:var(--c-ok)}
+    .badge-failure{background:var(--c-err-bg);color:var(--c-err)}
+
+    /* Action type badges */
+    .action-badge{display:inline-flex;align-items:center;gap:5px;padding:3px var(--s2);border-radius:var(--r-sm);font-size:var(--t-xs);font-weight:700;font-family:monospace;white-space:nowrap}
+    .action-auth{background:#EFF6FF;color:#1A56DB;border:1px solid #BFDBFE}
+    .action-create{background:#DCFCE7;color:#15803D;border:1px solid #86EFAC}
+    .action-update{background:#FEF3C7;color:#B45309;border:1px solid #FDE68A}
+    .action-delete{background:#FEE2E2;color:#B91C1C;border:1px solid #FECACA}
+    .action-view{background:#F1F5F9;color:#475569;border:1px solid #E2E8F0}
+    .action-export{background:#EDE9FE;color:#6D28D9;border:1px solid #DDD6FE}
+    .action-failure{background:#FEE2E2;color:#B91C1C;border:1px solid #FECACA}
+
+    /* ── Expand Row (Detail Drawer) ── */
+    .expand-row{display:none}
+    .expand-row.visible{display:table-row}
+    .expand-cell{padding:var(--s4) var(--s6);background:var(--cs-s);border-bottom:2px solid var(--cbord)}
+    .detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s6)}
+    .detail-section-title{font-size:var(--t-xs);font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ct-s);margin-bottom:var(--s3);padding-bottom:var(--s2);border-bottom:1px solid var(--cbord)}
+    .detail-field{margin-bottom:var(--s3)}
+    .detail-field-label{font-size:var(--t-xs);font-weight:600;color:var(--ct-d);margin-bottom:2px}
+    .detail-field-value{font-size:var(--t-sm);color:var(--ct);font-weight:500}
+    .detail-field-value.mono{font-family:monospace;font-size:var(--t-xs);background:var(--cs);border:1px solid var(--cbord);border-radius:var(--r-sm);padding:var(--s2) var(--s3);display:block;line-height:1.5}
+    .phi-indicator{display:inline-flex;align-items:center;gap:var(--s1);font-size:var(--t-xs);color:var(--cb);background:var(--cb-l);border-radius:var(--r-full);padding:1px var(--s2);font-weight:600}
+    .immutable-note{display:flex;align-items:center;gap:var(--s2);font-size:var(--t-xs);color:var(--c-warn);background:var(--c-warn-bg);border:1px solid #FDE68A;border-radius:var(--r-sm);padding:var(--s2) var(--s3);margin-top:var(--s3)}
+
+    /* ── Pagination ── */
+    .pagination{display:flex;align-items:center;justify-content:space-between;padding:var(--s4) var(--s6);border-top:1px solid var(--cbord);flex-wrap:wrap;gap:var(--s3)}
+    .pagination-info{font-size:var(--t-sm);color:var(--ct-s)}
+    .pagination-controls{display:flex;align-items:center;gap:var(--s2)}
+    .page-btn{width:34px;height:34px;border:1.5px solid var(--cbord);background:var(--cs);border-radius:var(--r-sm);font-family:var(--ff);font-size:var(--t-sm);font-weight:600;color:var(--ct-s);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .1s}
+    .page-btn:hover{background:var(--cs-s);color:var(--ct)}
+    .page-btn.active{background:var(--cb);color:var(--ct-on);border-color:var(--cb)}
+    .page-btn:disabled{opacity:.4;cursor:not-allowed}
+
+    /* ── HIPAA Banner ── */
+    .hipaa-banner{background:var(--cb-l);border:1px solid #BFDBFE;border-radius:var(--r-md);padding:var(--s3) var(--s4);margin-bottom:var(--s6);display:flex;align-items:center;gap:var(--s3);font-size:var(--t-sm)}
+    .hipaa-banner strong{color:var(--cb)}
+
+    /* ── Export toast ── */
+    .toast{position:fixed;bottom:var(--s8);right:var(--s8);background:var(--ct);color:var(--ct-on);padding:var(--s3) var(--s6);border-radius:var(--r-md);font-size:var(--t-sm);font-weight:500;box-shadow:var(--sh-lg);z-index:500;opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s;pointer-events:none}
+    .toast.show{opacity:1;transform:translateY(0)}
+
+    @media(max-width:768px){
+      .main-content{padding:var(--s4)}
+      .topnav-inner{padding:0 var(--s4)}
+      .stat-strip{grid-template-columns:repeat(2,1fr)}
+      .filter-row{gap:var(--s2)}
+      .filter-search{width:160px}
+      .audit-table{font-size:var(--t-xs)}
+      .col-ip,.col-resource{display:none}
+      .detail-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Export Toast -->
+  <div id="export-toast" class="toast" role="status" aria-live="polite">✓ Audit log exported — audit_log_2026-05-15.csv</div>
+
+  <!-- Top Navigation -->
+  <nav class="topnav" aria-label="Main navigation — Admin Portal">
+    <div class="topnav-inner">
+      <div style="display:flex;align-items:center;gap:var(--s6)">
+        <a href="wireframe-SCR-015-admin-user-management.html" class="nav-logo" aria-label="Admin Portal home">
+          <div class="nav-logo-mark" aria-hidden="true">A</div>
+          <span>Admin Portal</span>
+        </a>
+        <nav class="nav-links" aria-label="Admin sections">
+          <a href="wireframe-SCR-015-admin-user-management.html" class="nav-link">👥 Users</a>
+          <a href="#" class="nav-link active" aria-current="page">📋 Audit Log</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <span class="role-badge" aria-label="Admin role">🔑 Admin</span>
+        <a href="wireframe-SCR-001-login.html" class="btn-signout">Sign out</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content" role="main">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-title-group">
+        <h1 class="page-title">Audit Log</h1>
+        <div class="page-subtitle">
+          <span>Immutable record of all system events · HIPAA-compliant</span>
+          <span class="immutable-badge" aria-label="Immutable — read-only log">🔒 Immutable</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:var(--s3);align-items:center">
+        <button class="btn btn-ghost" onclick="window.print()" aria-label="Print audit log">🖨 Print</button>
+        <button class="btn btn-primary" onclick="exportCSV()" aria-label="Export audit log as CSV">⬇ Export CSV</button>
+      </div>
+    </div>
+
+    <!-- HIPAA Notice -->
+    <div class="hipaa-banner" role="note" aria-label="HIPAA notice">
+      <span>🔒</span>
+      <span><strong>HIPAA Notice:</strong> This log contains Protected Health Information (PHI) access records. Access is restricted to authorized administrators. Each view of this screen is itself logged.</span>
+    </div>
+
+    <!-- Stat Strip -->
+    <div class="stat-strip" role="region" aria-label="Audit summary statistics">
+      <div class="stat-card">
+        <div class="stat-label">Events Today</div>
+        <div class="stat-value">247</div>
+        <div class="stat-meta">Since 12:00 AM</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Unique Users</div>
+        <div class="stat-value">18</div>
+        <div class="stat-meta">Active sessions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">PHI Access Events</div>
+        <div class="stat-value">84</div>
+        <div class="stat-meta">Patient profile views</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Failed Attempts</div>
+        <div class="stat-value err">3</div>
+        <div class="stat-meta">Login failures today</div>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar" role="search" aria-label="Filter audit log">
+      <div class="filter-row">
+        <div class="filter-group">
+          <span class="filter-label">From</span>
+          <input type="date" class="filter-input filter-date" id="filter-from" value="2026-05-15" aria-label="Filter from date" onchange="applyFilters()">
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">To</span>
+          <input type="date" class="filter-input filter-date" id="filter-to" value="2026-05-15" aria-label="Filter to date" onchange="applyFilters()">
+        </div>
+        <div class="filter-divider" aria-hidden="true"></div>
+        <div class="filter-group">
+          <span class="filter-label">Action Category</span>
+          <select class="filter-select" id="filter-action" aria-label="Filter by action category" onchange="applyFilters()">
+            <option value="">All actions</option>
+            <option value="AUTH">Authentication</option>
+            <option value="ACCOUNT">Account Management</option>
+            <option value="SCHEDULING">Scheduling</option>
+            <option value="CLINICAL">Clinical / PHI</option>
+            <option value="INTEGRATION">Integration</option>
+            <option value="SECURITY">Security</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Role</span>
+          <select class="filter-select" id="filter-role" aria-label="Filter by role" onchange="applyFilters()">
+            <option value="">All roles</option>
+            <option value="Admin">Admin</option>
+            <option value="Staff">Staff</option>
+            <option value="Patient">Patient</option>
+            <option value="System">System</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Status</span>
+          <select class="filter-select" id="filter-status" aria-label="Filter by status" onchange="applyFilters()">
+            <option value="">All status</option>
+            <option value="SUCCESS">Success</option>
+            <option value="FAILURE">Failure</option>
+          </select>
+        </div>
+        <div class="filter-divider" aria-hidden="true"></div>
+        <div class="filter-group">
+          <span class="filter-label">Search</span>
+          <input type="search" class="filter-input filter-search" id="filter-search" placeholder="User, email, or resource…" aria-label="Search audit events" oninput="applyFilters()">
+        </div>
+        <button class="btn-reset" onclick="resetFilters()" aria-label="Reset all filters">✕ Reset</button>
+      </div>
+    </div>
+
+    <!-- Audit Log Table -->
+    <div class="card" role="region" aria-label="Audit log events">
+      <div class="card-header">
+        <span class="card-title">
+          Audit Events
+          <span style="font-size:var(--t-sm);color:var(--ct-s);font-weight:400" id="event-count">Showing 15 of 247</span>
+        </span>
+        <div class="card-actions">
+          <span style="font-size:var(--t-xs);color:var(--ct-s)">Sorted by: <strong>Newest first</strong></span>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="audit-table" aria-label="Audit log entries">
+          <thead>
+            <tr>
+              <th class="col-ts" scope="col">Timestamp</th>
+              <th class="col-user" scope="col">User</th>
+              <th class="col-role" scope="col">Role</th>
+              <th class="col-action" scope="col">Action</th>
+              <th class="col-resource" scope="col">Resource / Target</th>
+              <th class="col-ip" scope="col">IP Address</th>
+              <th class="col-status" scope="col">Status</th>
+              <th class="col-actions" scope="col"><span class="sr-only">Detail</span></th>
+            </tr>
+          </thead>
+          <tbody id="audit-tbody">
+
+            <!-- EVT-001: Admin exports audit log -->
+            <tr data-role="Admin" data-action="SECURITY" data-status="SUCCESS" data-search="admin user admin@upacip.health audit_log export">
+              <td class="col-ts"><div class="ts-primary">2026-05-15</div><div class="ts-secondary">14:42:07 UTC</div></td>
+              <td class="col-user"><div class="user-name">Admin User</div><div class="user-email">admin@upacip.health</div></td>
+              <td class="col-role"><span class="badge badge-admin">Admin</span></td>
+              <td><span class="action-badge action-export">AUDIT_LOG_EXPORTED</span></td>
+              <td class="col-resource">audit_log · date: 2026-05-14</td>
+              <td class="col-ip">192.168.1.10</td>
+              <td><span class="badge badge-success">● Success</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-001',this)" aria-expanded="false" aria-controls="det-001">Detail ▾</button></td>
+            </tr>
+            <tr id="det-001" class="expand-row" role="region" aria-label="Event detail for EVT-001">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051514420001</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Correlation ID</div><div class="detail-field-value">COR-BCDE4481</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Session ID</div><div class="detail-field-value">SES-A9C231</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-15T14:42:07.013Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">User ID</div><div class="detail-field-value">usr-001</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Name</div><div class="detail-field-value">Admin User</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Role</div><div class="detail-field-value">Admin</div></div>
+                    <div class="detail-field"><div class="detail-field-label">IP / User Agent</div><div class="detail-field-value">192.168.1.10 · Chrome 124 / Windows</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Payload</div>
+                    <div class="detail-field"><div class="detail-field-label">Resource</div><div class="detail-field-value">audit_log</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Parameters</div><div class="detail-field-value mono">{ "date": "2026-05-14", "format": "csv", "rows": 312 }</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Result</div><div class="detail-field-value">File generated · 312 records · 48 KB</div></div>
+                    <div class="immutable-note" aria-label="Immutable record note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- EVT-002: Role change -->
+            <tr data-role="Admin" data-action="ACCOUNT" data-status="SUCCESS" data-search="admin user admin@upacip.health role_changed staff patient">
+              <td class="col-ts"><div class="ts-primary">2026-05-15</div><div class="ts-secondary">14:31:55 UTC</div></td>
+              <td class="col-user"><div class="user-name">Admin User</div><div class="user-email">admin@upacip.health</div></td>
+              <td class="col-role"><span class="badge badge-admin">Admin</span></td>
+              <td><span class="action-badge action-update">ROLE_CHANGED</span></td>
+              <td class="col-resource">usr-004 · Patient → Staff</td>
+              <td class="col-ip">192.168.1.10</td>
+              <td><span class="badge badge-success">● Success</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-002',this)" aria-expanded="false" aria-controls="det-002">Detail ▾</button></td>
+            </tr>
+            <tr id="det-002" class="expand-row" role="region" aria-label="Event detail for EVT-002">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051514310002</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-15T14:31:55.442Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">User ID</div><div class="detail-field-value">usr-001</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Role</div><div class="detail-field-value">Admin</div></div>
+                    <div class="detail-field"><div class="detail-field-label">IP</div><div class="detail-field-value">192.168.1.10</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Payload</div>
+                    <div class="detail-field"><div class="detail-field-label">Target User</div><div class="detail-field-value">usr-004 · Michael Chen</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Change</div><div class="detail-field-value mono">{ "from": "Patient", "to": "Staff" }</div></div>
+                    <div class="immutable-note" aria-label="Immutable record note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- EVT-003: PHI profile view by staff -->
+            <tr data-role="Staff" data-action="CLINICAL" data-status="SUCCESS" data-search="nurse practitioner np.johnson staff profile_viewed patient">
+              <td class="col-ts"><div class="ts-primary">2026-05-15</div><div class="ts-secondary">14:18:30 UTC</div></td>
+              <td class="col-user"><div class="user-name">Nurse Practitioner R.</div><div class="user-email">np.johnson@upacip.health</div></td>
+              <td class="col-role"><span class="badge badge-staff">Staff</span></td>
+              <td><span class="action-badge action-view">PROFILE_VIEWED <span class="phi-indicator">🔒 PHI</span></span></td>
+              <td class="col-resource">Patient: Michael Chen (usr-003)</td>
+              <td class="col-ip">10.0.0.22</td>
+              <td><span class="badge badge-success">● Success</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-003',this)" aria-expanded="false" aria-controls="det-003">Detail ▾</button></td>
+            </tr>
+            <tr id="det-003" class="expand-row" role="region" aria-label="Event detail for EVT-003">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051514180003</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-15T14:18:30.881Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">User ID</div><div class="detail-field-value">usr-006</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Role</div><div class="detail-field-value">Staff</div></div>
+                    <div class="detail-field"><div class="detail-field-label">IP</div><div class="detail-field-value">10.0.0.22</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">PHI Access Record</div>
+                    <div class="detail-field"><div class="detail-field-label">Patient ID</div><div class="detail-field-value">🔒 usr-003 (PHI)</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Sections Accessed</div><div class="detail-field-value mono">[ "vitals", "medications", "conflicts" ]</div></div>
+                    <div class="immutable-note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- EVT-004: Appointment booked -->
+            <tr data-role="Patient" data-action="SCHEDULING" data-status="SUCCESS" data-search="sarah johnson patient appointment_booked scheduling">
+              <td class="col-ts"><div class="ts-primary">2026-05-15</div><div class="ts-secondary">13:55:14 UTC</div></td>
+              <td class="col-user"><div class="user-name">Sarah J. Johnson</div><div class="user-email">sarah.johnson@email.com</div></td>
+              <td class="col-role"><span class="badge badge-patient">Patient</span></td>
+              <td><span class="action-badge action-create">APPOINTMENT_BOOKED</span></td>
+              <td class="col-resource">appt-20260519-002</td>
+              <td class="col-ip">203.0.113.45</td>
+              <td><span class="badge badge-success">● Success</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-004',this)" aria-expanded="false" aria-controls="det-004">Detail ▾</button></td>
+            </tr>
+            <tr id="det-004" class="expand-row" role="region" aria-label="Event detail for EVT-004">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051513550004</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-15T13:55:14.221Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">User ID</div><div class="detail-field-value">usr-003</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Role</div><div class="detail-field-value">Patient</div></div>
+                    <div class="detail-field"><div class="detail-field-label">IP</div><div class="detail-field-value">203.0.113.45</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Payload</div>
+                    <div class="detail-field"><div class="detail-field-label">Appointment ID</div><div class="detail-field-value">appt-20260519-002</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Slot</div><div class="detail-field-value mono">{ "date": "2026-05-19", "time": "10:30", "provider": "Dr. Okafor" }</div></div>
+                    <div class="immutable-note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- EVT-005: Document uploaded -->
+            <tr data-role="Patient" data-action="CLINICAL" data-status="SUCCESS" data-search="michael chen patient document_uploaded clinical phi">
+              <td class="col-ts"><div class="ts-primary">2026-05-15</div><div class="ts-secondary">13:42:09 UTC</div></td>
+              <td class="col-user"><div class="user-name">Michael Chen</div><div class="user-email">michael.chen@email.com</div></td>
+              <td class="col-role"><span class="badge badge-patient">Patient</span></td>
+              <td><span class="action-badge action-create">DOCUMENT_UPLOADED <span class="phi-indicator">🔒 PHI</span></span></td>
+              <td class="col-resource">doc-20260515-011 · cardiology_report.pdf</td>
+              <td class="col-ip">198.51.100.7</td>
+              <td><span class="badge badge-success">● Success</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-005',this)" aria-expanded="false" aria-controls="det-005">Detail ▾</button></td>
+            </tr>
+            <tr id="det-005" class="expand-row" role="region" aria-label="Event detail for EVT-005">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051513420005</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-15T13:42:09.664Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">User ID</div><div class="detail-field-value">usr-004</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Role</div><div class="detail-field-value">Patient</div></div>
+                    <div class="detail-field"><div class="detail-field-label">IP</div><div class="detail-field-value">198.51.100.7</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">PHI Upload Record</div>
+                    <div class="detail-field"><div class="detail-field-label">Document ID</div><div class="detail-field-value">🔒 doc-20260515-011 (PHI)</div></div>
+                    <div class="detail-field"><div class="detail-field-label">File Metadata</div><div class="detail-field-value mono">{ "name": "cardiology_report.pdf", "size": "2.1 MB", "type": "application/pdf" }</div></div>
+                    <div class="immutable-note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- EVT-006: Walk-in created by staff -->
+            <tr data-role="Staff" data-action="SCHEDULING" data-status="SUCCESS" data-search="dr okafor staff walkin_created scheduling">
+              <td class="col-ts"><div class="ts-primary">2026-05-15</div><div class="ts-secondary">13:30:00 UTC</div></td>
+              <td class="col-user"><div class="user-name">Dr. M. Okafor</div><div class="user-email">m.okafor@upacip.health</div></td>
+              <td class="col-role"><span class="badge badge-staff">Staff</span></td>
+              <td><span class="action-badge action-create">WALKIN_CREATED</span></td>
+              <td class="col-resource">walkin-20260515-004</td>
+              <td class="col-ip">10.0.0.31</td>
+              <td><span class="badge badge-success">● Success</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-006',this)" aria-expanded="false" aria-controls="det-006">Detail ▾</button></td>
+            </tr>
+            <tr id="det-006" class="expand-row" role="region" aria-label="Event detail for EVT-006">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051513300006</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-15T13:30:00.001Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">User ID</div><div class="detail-field-value">usr-006</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Role</div><div class="detail-field-value">Staff</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Payload</div>
+                    <div class="detail-field"><div class="detail-field-label">Walk-in ID</div><div class="detail-field-value">walkin-20260515-004</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Queue position</div><div class="detail-field-value">4</div></div>
+                    <div class="immutable-note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- EVT-007: ICD codes verified -->
+            <tr data-role="Staff" data-action="CLINICAL" data-status="SUCCESS" data-search="nurse practitioner np.johnson staff codes_verified clinical">
+              <td class="col-ts"><div class="ts-primary">2026-05-15</div><div class="ts-secondary">12:59:47 UTC</div></td>
+              <td class="col-user"><div class="user-name">Nurse Practitioner R.</div><div class="user-email">np.johnson@upacip.health</div></td>
+              <td class="col-role"><span class="badge badge-staff">Staff</span></td>
+              <td><span class="action-badge action-update">CODES_VERIFIED <span class="phi-indicator">🔒 PHI</span></span></td>
+              <td class="col-resource">Patient: Michael Chen · ICD-10 + CPT</td>
+              <td class="col-ip">10.0.0.22</td>
+              <td><span class="badge badge-success">● Success</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-007',this)" aria-expanded="false" aria-controls="det-007">Detail ▾</button></td>
+            </tr>
+            <tr id="det-007" class="expand-row" role="region" aria-label="Event detail for EVT-007">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051512590007</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-15T12:59:47.330Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">User ID</div><div class="detail-field-value">usr-006</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Role</div><div class="detail-field-value">Staff</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Clinical PHI Record</div>
+                    <div class="detail-field"><div class="detail-field-label">Patient ID</div><div class="detail-field-value">🔒 usr-004 (PHI)</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Codes Verified</div><div class="detail-field-value mono">{ "icd10": ["I10", "E11.9"], "cpt": ["99213"] }</div></div>
+                    <div class="immutable-note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- EVT-008: Calendar connected -->
+            <tr data-role="Patient" data-action="INTEGRATION" data-status="SUCCESS" data-search="emily carter patient calendar_connected integration">
+              <td class="col-ts"><div class="ts-primary">2026-05-15</div><div class="ts-secondary">12:44:02 UTC</div></td>
+              <td class="col-user"><div class="user-name">Emily Carter</div><div class="user-email">emily.carter@email.com</div></td>
+              <td class="col-role"><span class="badge badge-patient">Patient</span></td>
+              <td><span class="action-badge action-create">CALENDAR_CONNECTED</span></td>
+              <td class="col-resource">Google Calendar · OAuth 2.0</td>
+              <td class="col-ip">198.51.100.9</td>
+              <td><span class="badge badge-success">● Success</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-008',this)" aria-expanded="false" aria-controls="det-008">Detail ▾</button></td>
+            </tr>
+            <tr id="det-008" class="expand-row" role="region" aria-label="Event detail for EVT-008">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051512440008</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-15T12:44:02.779Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">User ID</div><div class="detail-field-value">usr-005</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Role</div><div class="detail-field-value">Patient</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Payload</div>
+                    <div class="detail-field"><div class="detail-field-label">Provider</div><div class="detail-field-value">Google Calendar</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Scope</div><div class="detail-field-value mono">{ "scope": "calendar.events.readonly", "grant": "authorized" }</div></div>
+                    <div class="immutable-note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- EVT-009: User deactivated -->
+            <tr data-role="Admin" data-action="ACCOUNT" data-status="SUCCESS" data-search="admin user admin@upacip.health user_deactivated account">
+              <td class="col-ts"><div class="ts-primary">2026-05-15</div><div class="ts-secondary">11:20:44 UTC</div></td>
+              <td class="col-user"><div class="user-name">Admin User</div><div class="user-email">admin@upacip.health</div></td>
+              <td class="col-role"><span class="badge badge-admin">Admin</span></td>
+              <td><span class="action-badge action-delete">USER_DEACTIVATED</span></td>
+              <td class="col-resource">usr-007 · Former Patient</td>
+              <td class="col-ip">192.168.1.10</td>
+              <td><span class="badge badge-success">● Success</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-009',this)" aria-expanded="false" aria-controls="det-009">Detail ▾</button></td>
+            </tr>
+            <tr id="det-009" class="expand-row" role="region" aria-label="Event detail for EVT-009">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051511200009</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-15T11:20:44.102Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">User ID</div><div class="detail-field-value">usr-001</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Role</div><div class="detail-field-value">Admin</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Payload</div>
+                    <div class="detail-field"><div class="detail-field-label">Target User</div><div class="detail-field-value">usr-007 · Former Patient</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Change</div><div class="detail-field-value mono">{ "status": "Active → Inactive" }</div></div>
+                    <div class="immutable-note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- EVT-010: Intake submitted (AI) -->
+            <tr data-role="Patient" data-action="CLINICAL" data-status="SUCCESS" data-search="sarah johnson patient intake_submitted ai clinical phi">
+              <td class="col-ts"><div class="ts-primary">2026-05-15</div><div class="ts-secondary">10:08:31 UTC</div></td>
+              <td class="col-user"><div class="user-name">Sarah J. Johnson</div><div class="user-email">sarah.johnson@email.com</div></td>
+              <td class="col-role"><span class="badge badge-patient">Patient</span></td>
+              <td><span class="action-badge action-create">INTAKE_SUBMITTED <span class="phi-indicator">🔒 PHI</span></span></td>
+              <td class="col-resource">intake-20260515-003 · AI mode</td>
+              <td class="col-ip">203.0.113.45</td>
+              <td><span class="badge badge-success">● Success</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-010',this)" aria-expanded="false" aria-controls="det-010">Detail ▾</button></td>
+            </tr>
+            <tr id="det-010" class="expand-row" role="region" aria-label="Event detail for EVT-010">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051510080010</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-15T10:08:31.557Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">User ID</div><div class="detail-field-value">usr-003</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Role</div><div class="detail-field-value">Patient</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Clinical PHI Record</div>
+                    <div class="detail-field"><div class="detail-field-label">Intake ID</div><div class="detail-field-value">🔒 intake-20260515-003 (PHI)</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Mode</div><div class="detail-field-value">AI Conversational (Gemini)</div></div>
+                    <div class="immutable-note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- EVT-011: Failed login -->
+            <tr data-role="System" data-action="SECURITY" data-status="FAILURE" data-search="unknown login_failed security failure authentication">
+              <td class="col-ts"><div class="ts-primary">2026-05-15</div><div class="ts-secondary">09:47:12 UTC</div></td>
+              <td class="col-user"><div class="user-name" style="color:var(--ct-d)">Unknown</div><div class="user-email">j.doe.attempt@ext.com</div></td>
+              <td class="col-role"><span class="badge badge-system">System</span></td>
+              <td><span class="action-badge action-failure">LOGIN_FAILED</span></td>
+              <td class="col-resource">Authentication — invalid credentials</td>
+              <td class="col-ip">91.234.56.78</td>
+              <td><span class="badge badge-failure">✕ Failure</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-011',this)" aria-expanded="false" aria-controls="det-011">Detail ▾</button></td>
+            </tr>
+            <tr id="det-011" class="expand-row" role="region" aria-label="Event detail for EVT-011">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051509470011</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-15T09:47:12.002Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">Attempted Email</div><div class="detail-field-value">j.doe.attempt@ext.com</div></div>
+                    <div class="detail-field"><div class="detail-field-label">IP / Location</div><div class="detail-field-value">91.234.56.78</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Failure Details</div>
+                    <div class="detail-field"><div class="detail-field-label">Reason</div><div class="detail-field-value">Invalid credentials — no matching account</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Consecutive failures from IP</div><div class="detail-field-value" style="color:var(--c-err);font-weight:700">2 attempts</div></div>
+                    <div class="immutable-note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- EVT-012: User login -->
+            <tr data-role="Staff" data-action="AUTH" data-status="SUCCESS" data-search="dr okafor staff user_login authentication">
+              <td class="col-ts"><div class="ts-primary">2026-05-15</div><div class="ts-secondary">07:30:05 UTC</div></td>
+              <td class="col-user"><div class="user-name">Dr. M. Okafor</div><div class="user-email">m.okafor@upacip.health</div></td>
+              <td class="col-role"><span class="badge badge-staff">Staff</span></td>
+              <td><span class="action-badge action-auth">USER_LOGIN</span></td>
+              <td class="col-resource">Session SES-B7F441 started</td>
+              <td class="col-ip">10.0.0.31</td>
+              <td><span class="badge badge-success">● Success</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-012',this)" aria-expanded="false" aria-controls="det-012">Detail ▾</button></td>
+            </tr>
+            <tr id="det-012" class="expand-row" role="region" aria-label="Event detail for EVT-012">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051507300012</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-15T07:30:05.341Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">User ID</div><div class="detail-field-value">usr-006</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Role</div><div class="detail-field-value">Staff</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Session</div>
+                    <div class="detail-field"><div class="detail-field-label">Session ID</div><div class="detail-field-value">SES-B7F441</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Auth method</div><div class="detail-field-value">Email + Password</div></div>
+                    <div class="immutable-note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- EVT-013: Appointment cancelled -->
+            <tr data-role="Patient" data-action="SCHEDULING" data-status="SUCCESS" data-search="sarah johnson patient appointment_cancelled scheduling">
+              <td class="col-ts"><div class="ts-primary">2026-05-14</div><div class="ts-secondary">16:12:38 UTC</div></td>
+              <td class="col-user"><div class="user-name">Sarah J. Johnson</div><div class="user-email">sarah.johnson@email.com</div></td>
+              <td class="col-role"><span class="badge badge-patient">Patient</span></td>
+              <td><span class="action-badge action-delete">APPOINTMENT_CANCELLED</span></td>
+              <td class="col-resource">appt-20260518-001</td>
+              <td class="col-ip">203.0.113.45</td>
+              <td><span class="badge badge-success">● Success</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-013',this)" aria-expanded="false" aria-controls="det-013">Detail ▾</button></td>
+            </tr>
+            <tr id="det-013" class="expand-row" role="region" aria-label="Event detail for EVT-013">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051416120013</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-14T16:12:38.887Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">User ID</div><div class="detail-field-value">usr-003</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Role</div><div class="detail-field-value">Patient</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Payload</div>
+                    <div class="detail-field"><div class="detail-field-label">Appointment ID</div><div class="detail-field-value">appt-20260518-001</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Reason</div><div class="detail-field-value">Patient request</div></div>
+                    <div class="immutable-note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- EVT-014: User logout -->
+            <tr data-role="Admin" data-action="AUTH" data-status="SUCCESS" data-search="admin user admin@upacip.health user_logout authentication">
+              <td class="col-ts"><div class="ts-primary">2026-05-14</div><div class="ts-secondary">09:15:00 UTC</div></td>
+              <td class="col-user"><div class="user-name">Admin User</div><div class="user-email">admin@upacip.health</div></td>
+              <td class="col-role"><span class="badge badge-admin">Admin</span></td>
+              <td><span class="action-badge action-auth">USER_LOGOUT</span></td>
+              <td class="col-resource">Session SES-A9C231 ended</td>
+              <td class="col-ip">192.168.1.10</td>
+              <td><span class="badge badge-success">● Success</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-014',this)" aria-expanded="false" aria-controls="det-014">Detail ▾</button></td>
+            </tr>
+            <tr id="det-014" class="expand-row" role="region" aria-label="Event detail for EVT-014">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051409150014</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-14T09:15:00.000Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">User ID</div><div class="detail-field-value">usr-001</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Role</div><div class="detail-field-value">Admin</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Session</div>
+                    <div class="detail-field"><div class="detail-field-label">Session ID</div><div class="detail-field-value">SES-A9C231</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Duration</div><div class="detail-field-value">1h 42m</div></div>
+                    <div class="immutable-note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- EVT-015: System - Hangfire job -->
+            <tr data-role="System" data-action="AUTH" data-status="SUCCESS" data-search="system hangfire reminder_sent notification">
+              <td class="col-ts"><div class="ts-primary">2026-05-14</div><div class="ts-secondary">08:00:00 UTC</div></td>
+              <td class="col-user"><div class="user-name">System</div><div class="user-email">hangfire@upacip.internal</div></td>
+              <td class="col-role"><span class="badge badge-system">System</span></td>
+              <td><span class="action-badge action-auth">REMINDER_SENT</span></td>
+              <td class="col-resource">appt-20260515-* · 12 reminders</td>
+              <td class="col-ip">127.0.0.1</td>
+              <td><span class="badge badge-success">● Success</span></td>
+              <td><button class="btn-expand" onclick="toggleDetail('det-015',this)" aria-expanded="false" aria-controls="det-015">Detail ▾</button></td>
+            </tr>
+            <tr id="det-015" class="expand-row" role="region" aria-label="Event detail for EVT-015">
+              <td colspan="8" class="expand-cell">
+                <div class="detail-grid">
+                  <div>
+                    <div class="detail-section-title">Event Identity</div>
+                    <div class="detail-field"><div class="detail-field-label">Event ID</div><div class="detail-field-value">EVT-2026051408000015</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Timestamp (ISO 8601)</div><div class="detail-field-value">2026-05-14T08:00:00.000Z</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Actor</div>
+                    <div class="detail-field"><div class="detail-field-label">System</div><div class="detail-field-value">Hangfire Background Job</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Job ID</div><div class="detail-field-value">job-20260514-001</div></div>
+                  </div>
+                  <div>
+                    <div class="detail-section-title">Payload</div>
+                    <div class="detail-field"><div class="detail-field-label">Reminders sent</div><div class="detail-field-value">12 (SMS + Email)</div></div>
+                    <div class="detail-field"><div class="detail-field-label">Channels</div><div class="detail-field-value mono">["SMS", "Email"]</div></div>
+                    <div class="immutable-note">🔒 This record is immutable and cannot be modified or deleted.</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+          </tbody><!-- /audit-tbody -->
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" role="navigation" aria-label="Audit log pagination">
+        <span class="pagination-info" id="pagination-info">Showing 1–15 of 247 events</span>
+        <div class="pagination-controls">
+          <button class="page-btn" disabled aria-label="Previous page" aria-disabled="true">‹</button>
+          <button class="page-btn active" aria-current="page" aria-label="Page 1">1</button>
+          <button class="page-btn" aria-label="Page 2" onclick="pageNav(2)">2</button>
+          <button class="page-btn" aria-label="Page 3" onclick="pageNav(3)">3</button>
+          <span style="padding:0 var(--s2);color:var(--ct-d);font-size:var(--t-sm)">…</span>
+          <button class="page-btn" aria-label="Page 17" onclick="pageNav(17)">17</button>
+          <button class="page-btn" aria-label="Next page" onclick="pageNav(2)">›</button>
+        </div>
+      </div>
+    </div><!-- /card -->
+
+  </main>
+
+  <!-- Screen Annotation (for design review) -->
+  <aside style="max-width:var(--max-w);margin:var(--s8) auto var(--s4);padding:var(--s4) var(--s8);border-top:1px solid var(--cbord);font-size:var(--t-xs);color:var(--ct-d)" aria-label="Wireframe annotations">
+    <strong style="color:var(--ct-s)">SCR-017 Wireframe Annotations</strong> ·
+    UC-018 Immutable Audit Logging · HIPAA §164.312(b) · BRD §7.1 · BRD §9 Epic 5 ·
+    All 15 sample events are representative; production data is paginated 15/page ·
+    Action badges: AUTH (blue) · CREATE (green) · UPDATE (amber) · DELETE (red) · VIEW (grey) · EXPORT (purple) · FAILURE (red-outline) ·
+    🔒 PHI indicator on profile, document, intake, and code events ·
+    Export CSV triggers a file download (simulated); the export action is itself audit-logged ·
+    Immutable note in every detail row reinforces read-only constraint
+  </aside>
+
+  <script>
+    /* ── Row Detail Toggle ── */
+    function toggleDetail(rowId, btn) {
+      const row = document.getElementById(rowId);
+      const isVisible = row.classList.contains('visible');
+      // Close all
+      document.querySelectorAll('.expand-row').forEach(r => r.classList.remove('visible'));
+      document.querySelectorAll('.btn-expand').forEach(b => {
+        b.textContent = b.textContent.replace('▴', '▾');
+        b.setAttribute('aria-expanded', 'false');
+      });
+      document.querySelectorAll('.audit-table tr:not(.expand-row)').forEach(r => r.classList.remove('row-expanded'));
+      if (!isVisible) {
+        row.classList.add('visible');
+        btn.textContent = btn.textContent.replace('▾', '▴');
+        btn.setAttribute('aria-expanded', 'true');
+        const parentRow = btn.closest('tr');
+        if (parentRow) parentRow.classList.add('row-expanded');
+      }
+    }
+
+    /* ── Filters ── */
+    function applyFilters() {
+      const search = (document.getElementById('filter-search').value || '').toLowerCase();
+      const action = document.getElementById('filter-action').value;
+      const role   = document.getElementById('filter-role').value;
+      const status = document.getElementById('filter-status').value;
+      let count = 0;
+      document.querySelectorAll('#audit-tbody tr:not(.expand-row)').forEach(row => {
+        const rRole   = row.dataset.role   || '';
+        const rAction = row.dataset.action || '';
+        const rStatus = row.dataset.status || '';
+        const rSearch = row.dataset.search || '';
+        const matchSearch = !search || rSearch.includes(search);
+        const matchAction = !action || rAction === action;
+        const matchRole   = !role   || rRole === role;
+        const matchStatus = !status || rStatus === status;
+        const visible = matchSearch && matchAction && matchRole && matchStatus;
+        row.style.display = visible ? '' : 'none';
+        // hide associated expand row
+        const nextRow = row.nextElementSibling;
+        if (nextRow && nextRow.classList.contains('expand-row')) {
+          nextRow.classList.remove('visible');
+          nextRow.style.display = visible ? '' : 'none';
+        }
+        if (visible) count++;
+      });
+      document.getElementById('event-count').textContent = `Showing ${count} of 247`;
+      document.getElementById('pagination-info').textContent = `Showing 1–${count} of 247 events`;
+    }
+
+    function resetFilters() {
+      document.getElementById('filter-search').value = '';
+      document.getElementById('filter-action').value = '';
+      document.getElementById('filter-role').value = '';
+      document.getElementById('filter-status').value = '';
+      document.getElementById('filter-from').value = '2026-05-15';
+      document.getElementById('filter-to').value = '2026-05-15';
+      applyFilters();
+    }
+
+    /* ── Export CSV (simulation) ── */
+    function exportCSV() {
+      const toast = document.getElementById('export-toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    /* ── Pagination (demo navigation) ── */
+    function pageNav(page) {
+      document.querySelectorAll('.page-btn').forEach(b => {
+        b.classList.remove('active');
+        b.removeAttribute('aria-current');
+      });
+      alert(`Navigating to page ${page} — (demo simulation)`);
+    }
+
+    /* ── Keyboard: close detail on Escape ── */
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.expand-row').forEach(r => r.classList.remove('visible'));
+        document.querySelectorAll('.btn-expand').forEach(b => {
+          b.textContent = b.textContent.replace('▴', '▾');
+          b.setAttribute('aria-expanded', 'false');
+        });
+        document.querySelectorAll('.audit-table tr:not(.expand-row)').forEach(r => r.classList.remove('row-expanded'));
+      }
+    });
+  </script>
+</body>
+</html>

@@ -16,7 +16,7 @@
 | Viewport width | 1440px (primary) |
 | Responsive breakpoints | 1440px · 768px · 640px (slot grid) · 375px (mobile) |
 | Output path | `.propel/context/wireframes/Hi-Fi/` |
-| Total screens | 16 |
+| Total screens | 17 |
 | Tech stack | Standalone HTML5, CSS custom properties, vanilla JS |
 | Dependencies | None (zero external dependencies) |
 | Accessibility | WCAG 2.2 Level AA |
@@ -60,6 +60,7 @@ The system processes PHI under HIPAA controls (visual cue: 🔒 lock icon prefix
 | `wireframe-SCR-014-code-verification.html` | SCR-014 | Medical Code Verification | Staff | UC-023, UC-024 |
 | `wireframe-SCR-015-admin-user-management.html` | SCR-015 | Admin User Management | Admin | UC-017 |
 | `wireframe-SCR-016-calendar-oauth.html` | SCR-016 | Calendar OAuth Consent | Patient | UC-013 |
+| `wireframe-SCR-017-admin-audit-log.html` | SCR-017 | Admin Audit Log | Admin | UC-018 |
 
 ---
 
@@ -92,6 +93,7 @@ The system processes PHI under HIPAA controls (visual cue: 🔒 lock icon prefix
 | FL-006 | Calendar sync | SCR-003/016 → SCR-016 → SCR-003 |
 | FL-007 | Staff queue → walk-in | SCR-011 → SCR-012 → SCR-011 |
 | FL-008 | Admin user management | SCR-015 (self-contained) |
+| FL-009 | Admin audit log | SCR-017 (self-contained, read-only) |
 | FL-009 | Document upload → profile | SCR-010 → SCR-009 |
 | FL-010 | Staff profile + conflict resolution | SCR-011/013 → SCR-013 (drawer) |
 | FL-011 | Staff code verification | SCR-011 → SCR-014 → SCR-011 |

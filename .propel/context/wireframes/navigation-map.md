@@ -20,6 +20,7 @@
 | FL-009 | Document upload | SCR-003 / SCR-009 | SCR-009 | "Upload document" CTA |
 | FL-010 | Staff conflict resolution | SCR-011 / SCR-013 | SCR-011 | "Profile" → conflict drawer |
 | FL-011 | Staff code verification | SCR-011 | SCR-011 | "Verify codes" button |
+| FL-012 | Admin audit log | SCR-015 | SCR-017 | Nav "Audit Log" link |
 
 ---
 
@@ -145,6 +146,7 @@
 | Element | Direction | Target | Condition |
 |---|---|---|---|
 | Nav "Users" (active) | — | SCR-015 | Always |
+| Nav "Audit Log" | → | SCR-017 | Always |
 | Role change modal → confirm | — | SCR-015 (role updated inline) | Always |
 | Deactivate modal → confirm | — | SCR-015 (row updated to Inactive) | User is not self |
 | Self-deactivation attempt | — | SCR-015 (error inside modal) | `data-self="true"` |
@@ -161,6 +163,21 @@
 | "Retry sync now" (advisory) | — | SCR-016 (advisory dismissed, retry spinner) | Sync failed |
 | "Dismiss" advisory | — | SCR-016 (advisory hidden) | Always |
 
+### SCR-017 — Admin Audit Log
+| Element | Direction | Target | Condition |
+|---|---|---|---|
+| Nav logo / "Admin Portal" | → | SCR-015 | Always |
+| Nav "Users" | → | SCR-015 | Always |
+| Nav "Audit Log" (active) | — | SCR-017 | Always |
+| "Export CSV" button | — | SCR-017 (toast shown, file download triggered) | Always |
+| "🖨 Print" button | — | SCR-017 (browser print dialog) | Always |
+| Row "Detail ▾" button | — | SCR-017 (expand row shown inline) | Always |
+| Row "Detail ▴" button (close) | — | SCR-017 (expand row hidden) | Row expanded |
+| Filter controls (date, action, role, status, search) | — | SCR-017 (filtered rows) | Always |
+| "✕ Reset" filter button | — | SCR-017 (filters cleared) | Any filter active |
+| Pagination page buttons | — | SCR-017 (demo alert, pages 2–17 not wired) | Always |
+| Sign out | → | SCR-001 | Always |
+
 ---
 
 ## Dead Ends and Exceptions
@@ -172,4 +189,5 @@
 | SCR-014 | Staff navigates away before submitting decisions | `beforeunload` warning text noted (not yet wired in wireframe) |
 | SCR-013 | Conflict drawer open + nav link clicked | Drawer closes on navigation; no data loss (drawer is read-only resolution form) |
 | SCR-016 | OAuth provider cancels consent | Simulated: page returns to disconnected state (no provider connected) |
+| SCR-017 | Admin reads immutable log — no mutations | UI is fully read-only; Export and Print are output-only |
 | SCR-007/008 | User navigates away mid-intake | Session continues; intake alert remains on SCR-003 until submitted |
