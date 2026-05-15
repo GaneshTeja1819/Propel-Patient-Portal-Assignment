@@ -32,7 +32,7 @@ status: "Draft"
 
 ## Epic Summary Table
 
-> **Traceability Note**: 136 requirement IDs mapped across 12 epics (41 FRs + 25 UCs + 12 NFRs + 18 TRs + 7 DRs + 7 AIRs + 26 UXRs). Every ID appears in exactly one epic. EP-TECH and EP-DATA exceed the ~12-item soft limit; both are retained as single cohesive epics due to interdependent infrastructure concerns documented in each epic description.
+> **Traceability Note**: 138 requirement IDs mapped across 12 epics (42 FRs + 26 UCs + 12 NFRs + 18 TRs + 7 DRs + 7 AIRs + 26 UXRs). Every ID appears in exactly one epic. EP-TECH and EP-DATA exceed the ~12-item soft limit; both are retained as single cohesive epics due to interdependent infrastructure concerns documented in each epic description.
 
 | Epic ID | Epic Title | Mapped Requirement IDs |
 |---------|------------|------------------------|
@@ -44,7 +44,7 @@ status: "Draft"
 | EP-004 | Patient Intake — AI Conversational & Manual | FR-015, FR-016, FR-017, UC-009, UC-010, UC-011, AIR-001, UXR-103, UXR-502 |
 | EP-005 | Notifications, Reminders & Calendar Sync | FR-018, FR-020, FR-021, UC-012, UC-013, TR-009, TR-010, UXR-604 |
 | EP-006 | Staff Walk-in Booking, Queue & Arrival Management | FR-022, FR-023, FR-024, FR-025, FR-026, UC-014, UC-015, UC-016, UXR-104 |
-| EP-007 | Admin User & Role Management | FR-027, FR-028, UC-017, UXR-105 |
+| EP-007 | Admin User & Role Management | FR-027, FR-028, FR-042, UC-017, UC-026, UXR-105 |
 | EP-008 | Clinical Document Upload & AI Data Extraction | FR-030, FR-031, FR-032, FR-033, UC-019, UC-021, AIR-002, AIR-006, AIR-007, UXR-603 |
 | EP-009 | 360° Patient Profile, De-duplication & Conflict Resolution | FR-034, FR-035, FR-036, UC-020, UC-022, AIR-004, UXR-106, UXR-402, UXR-403, UXR-404 |
 | EP-010 | Medical Code Suggestion & Human Verification | FR-037, FR-038, FR-039, UC-023, UC-024, AIR-003, AIR-005, UXR-107 |
@@ -271,13 +271,13 @@ status: "Draft"
 
 ### EP-007: Admin User & Role Management
 
-**Business Value**: Provides the operational control plane for the platform — Admins can manage all user accounts and roles, enabling onboarding, offboarding, and access correction without developer intervention.
+**Business Value**: Provides the operational control plane for the platform — Admins can manage all user accounts and roles, enabling onboarding, offboarding, and access correction without developer intervention. The immutable audit log viewer gives Admins full HIPAA-required visibility into all system activity and supports compliance reporting.
 
-**Description**: Implements the Admin user management dashboard with user search, account create, profile update, account deactivation, and role change (Patient / Staff / Admin). Role changes and deactivations invalidate any active sessions for the affected user. Blocks self-deactivation and Admin-to-lower-role changes require explicit confirmation. All actions attributed to the Admin actor in the immutable audit log. Cohesive ≤2-screen-transition workflow (UXR-105).
+**Description**: Implements the Admin user management dashboard with user search, account create, profile update, account deactivation, and role change (Patient / Staff / Admin). Role changes and deactivations invalidate any active sessions for the affected user. Blocks self-deactivation and Admin-to-lower-role changes require explicit confirmation. All actions attributed to the Admin actor in the immutable audit log. Cohesive ≤2-screen-transition workflow (UXR-105). Implements the Admin Audit Log Viewer (SCR-017): a read-only, paginated, filterable view of all audit events across the platform, accessible only to Admin users. Supports filtering by date range, action category, role, status, and free-text search. Provides CSV export (the export itself is audit-logged). Satisfies HIPAA §164.312(b) audit controls requirement (FR-042, UC-026).
 
 **UI Impact**: Yes
 
-**Screen References**: SCR-015 (Admin User Management)
+**Screen References**: SCR-015 (Admin User Management), SCR-017 (Admin Audit Log)
 
 **Key Deliverables**:
 - User search by name / email with paginated results
@@ -287,10 +287,16 @@ status: "Draft"
 - Role assignment / change with confirmation prompt for downgrade; active session invalidated
 - ≤2 screen transitions for all admin actions (UXR-105)
 - All actions written to immutable audit log with Admin actor and timestamp
+- Read-only audit log viewer with date range, action category, role, status, and text filters
+- Paginated audit event table (15 rows/page): timestamp, user, role, action badge, resource, IP, status
+- Inline row-expand detail panel: event ID, ISO 8601 timestamp, actor, payload/JSON, immutable-record notice
+- 🔒 PHI indicator on profile-view, document-upload, intake, and code-verification events
+- CSV export with audit entry written for the export action itself
+- Summary stat strip: events today, unique users, PHI access count, failed-attempt count
 
 **Dependent EPICs**:
 - EP-TECH - Foundational - Requires React SPA and .NET API
-- EP-DATA - Foundational - Requires User entity, session invalidation via Redis, and RBAC AdminPolicy
+- EP-DATA - Foundational - Requires User entity, session invalidation via Redis, RBAC AdminPolicy, and AuditLog entity with SELECT-permitted admin read role
 
 ---
 
