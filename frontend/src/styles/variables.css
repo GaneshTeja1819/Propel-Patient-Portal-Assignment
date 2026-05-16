@@ -1,0 +1,272 @@
+/*
+ * variables.css — Design Token System
+ * Single source of truth for all visual constants (UXR-401).
+ * All colour, spacing, typography, radius, elevation, and motion values
+ * are defined here as CSS custom properties.
+ *
+ * Primitive values (raw hex / raw px) are ONLY permitted in this file.
+ * All other stylesheets must reference these tokens via var(--token-name).
+ *
+ * Token groups:
+ *   1. Colour primitives
+ *   2. Colour semantic aliases
+ *   3. Typography
+ *   4. Spacing
+ *   5. Border radius
+ *   6. Elevation / shadows
+ *   7. Grid / breakpoints (reference values)
+ *   8. Motion
+ *   9. Focus ring
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────
+   * 1. Colour Primitives
+   * Source: designsystem.md §4.1
+   * ───────────────────────────────────────────────────────────── */
+
+  /* Brand — Blue */
+  --color-blue-900: #0c2f6f;
+  --color-blue-700: #1a56db;
+  --color-blue-600: #1446be;
+  --color-blue-100: #dbeafe;
+  --color-blue-050: #eff6ff;
+
+  /* Greens */
+  --color-green-700: #15803d;
+  --color-green-600: #16a34a;
+  --color-green-100: #dcfce7;
+
+  /* Ambers */
+  --color-amber-700: #b45309;
+  --color-amber-600: #d97706;
+  --color-amber-100: #fef3c7;
+
+  /* Reds */
+  --color-red-700: #b91c1c;
+  --color-red-600: #dc2626;
+  --color-red-100: #fee2e2;
+
+  /* Purples — AI-reserved */
+  --color-purple-700: #6d28d9;
+  --color-purple-600: #7c3aed;
+  --color-purple-100: #ede9fe;
+
+  /* Grays */
+  --color-gray-950: #0f172a;
+  --color-gray-800: #1e293b;
+  --color-gray-700: #334155;
+  --color-gray-600: #475569;
+  --color-gray-400: #94a3b8;
+  --color-gray-200: #e2e8f0;
+  --color-gray-100: #f1f5f9;
+  --color-gray-050: #f8fafc;
+
+  /* Base */
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* ─────────────────────────────────────────────────────────────
+   * 2. Colour Semantic Aliases
+   * Source: designsystem.md §4.1 — Semantic Aliases
+   * ───────────────────────────────────────────────────────────── */
+
+  /* Brand */
+  --color-brand-primary: var(--color-blue-700);
+  --color-brand-primary-hover: var(--color-blue-600);
+  --color-brand-primary-light: var(--color-blue-050);
+
+  /* Surfaces */
+  --color-surface-default: var(--color-white);
+  --color-surface-muted: var(--color-gray-050);
+  --color-surface-subtle: var(--color-gray-100);
+  --color-surface-phi: var(--color-blue-050);
+  --color-surface-ai: var(--color-purple-100);
+
+  /* Borders */
+  --color-border-default: var(--color-gray-200);
+  --color-border-focus: var(--color-blue-700);
+  --color-border-ai: var(--color-purple-600);
+
+  /* Text */
+  --color-text-primary: var(--color-gray-950);
+  --color-text-secondary: var(--color-gray-600);
+  --color-text-disabled: var(--color-gray-400);
+  --color-text-on-primary: var(--color-white);
+  --color-text-inverse: var(--color-white);
+
+  /* Semantic — Status */
+  --color-success: var(--color-green-600);
+  --color-success-bg: var(--color-green-100);
+  --color-warning: var(--color-amber-600);
+  --color-warning-bg: var(--color-amber-100);
+  --color-danger: var(--color-red-600);
+  --color-danger-bg: var(--color-red-100);
+
+  /* Semantic — AI & Conflicts */
+  --color-ai-accent: var(--color-purple-600);
+  --color-ai-accent-bg: var(--color-purple-100);
+  --color-conflict-critical: var(--color-red-600);
+  --color-conflict-high: var(--color-amber-600);
+
+  /* Interactive */
+  --color-interactive-default: var(--color-blue-700);
+  --color-interactive-hover: var(--color-blue-600);
+  --color-interactive-disabled: var(--color-gray-400);
+
+  /* ─────────────────────────────────────────────────────────────
+   * 3. Typography
+   * Source: designsystem.md §4.2
+   * ───────────────────────────────────────────────────────────── */
+
+  --font-family-default: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+
+  /* Type Scale — Headings */
+  --font-size-heading-xl: 24px;
+  --line-height-heading-xl: 1.3;
+  --font-weight-heading-xl: 600;
+  --letter-spacing-heading-xl: -0.01em;
+
+  --font-size-heading-lg: 20px;
+  --line-height-heading-lg: 1.3;
+  --font-weight-heading-lg: 600;
+  --letter-spacing-heading-lg: -0.01em;
+
+  --font-size-heading-md: 18px;
+  --line-height-heading-md: 1.4;
+  --font-weight-heading-md: 600;
+  --letter-spacing-heading-md: 0;
+
+  --font-size-heading-sm: 16px;
+  --line-height-heading-sm: 1.4;
+  --font-weight-heading-sm: 600;
+  --letter-spacing-heading-sm: 0;
+
+  /* Type Scale — Body */
+  --font-size-body-md: 14px;
+  --line-height-body-md: 1.6;
+  --font-weight-body-md: 400;
+  --letter-spacing-body-md: 0;
+
+  --font-size-body-sm: 13px;
+  --line-height-body-sm: 1.6;
+  --font-weight-body-sm: 400;
+  --letter-spacing-body-sm: 0;
+
+  /* Type Scale — Utility */
+  --font-size-caption: 12px;
+  --line-height-caption: 1.5;
+  --font-weight-caption: 400;
+  --letter-spacing-caption: 0.01em;
+
+  --font-size-label: 12px;
+  --line-height-label: 1.4;
+  --font-weight-label: 600;
+  --letter-spacing-label: 0.05em;
+
+  /* ─────────────────────────────────────────────────────────────
+   * 4. Spacing
+   * Source: designsystem.md §4.3
+   * ───────────────────────────────────────────────────────────── */
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ─────────────────────────────────────────────────────────────
+   * 5. Border Radius
+   * Source: designsystem.md §4.4
+   * ───────────────────────────────────────────────────────────── */
+
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
+
+  /* ─────────────────────────────────────────────────────────────
+   * 6. Elevation / Shadows
+   * Source: designsystem.md §4.5
+   * ───────────────────────────────────────────────────────────── */
+
+  --shadow-none: none;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+
+  /* ─────────────────────────────────────────────────────────────
+   * 7. Grid / Breakpoints (reference values)
+   * Source: designsystem.md §4.6
+   * Note: CSS custom properties cannot be used directly inside
+   * @media conditions. These values serve as reference documentation
+   * and can be used in JS via getComputedStyle.
+   * Actual @media queries in global.css mirror these exact values.
+   * ───────────────────────────────────────────────────────────── */
+
+  --breakpoint-xs: 375px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1280px;
+
+  --grid-gutter-desktop: var(--space-6);
+  --grid-gutter-tablet: var(--space-4);
+  --grid-gutter-mobile: var(--space-3);
+
+  --grid-margin-desktop: var(--space-8);
+  --grid-margin-tablet: var(--space-6);
+  --grid-margin-mobile: var(--space-4);
+
+  --grid-max-width: 1280px;
+
+  /* ─────────────────────────────────────────────────────────────
+   * 8. Motion / Transitions
+   * Source: designsystem.md §4.7
+   * ───────────────────────────────────────────────────────────── */
+
+  --duration-instant: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+
+  --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-enter: cubic-bezier(0, 0, 0.2, 1);
+  --easing-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* ─────────────────────────────────────────────────────────────
+   * 9. Focus Ring (Accessibility — UXR-202)
+   * Source: designsystem.md §4.8
+   * WCAG 2.2 SC 2.4.11 — Focus Appearance compliant
+   * ───────────────────────────────────────────────────────────── */
+
+  --focus-outline-width: 3px;
+  --focus-outline-offset: 2px;
+  --focus-outline-color: var(--color-blue-700);
+  --focus-outline-style: solid;
+
+  /* ─────────────────────────────────────────────────────────────
+   * 10. Component Constraints
+   * Shared dimension constants used across components.
+   * ───────────────────────────────────────────────────────────── */
+
+  /* Borders */
+  --border-width-default: 1px;
+
+  /* Touch targets — WCAG 2.2 minimum interactive size (UXR-301) */
+  --touch-target-min: 44px;
+
+  /* Form layout */
+  --form-field-max-width-sm: 360px;
+
+  /* Grid — swatch gallery minimum column width */
+  --grid-col-min-swatch: 120px;
+
+  /* Screen reader only — fixed at 1px per WCAG C7 / CSS technique */
+  --sr-only-dimension: 1px;
+  --sr-only-margin: -1px;
+}

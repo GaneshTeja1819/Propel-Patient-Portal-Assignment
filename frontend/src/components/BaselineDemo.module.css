@@ -1,0 +1,353 @@
+/*
+ * BaselineDemo.module.css
+ * All values reference tokens from variables.css. No raw hex or px values.
+ */
+
+.page {
+  padding: var(--space-6);
+  max-width: var(--grid-max-width);
+  margin-inline: auto;
+  font-family: var(--font-family-default);
+}
+
+.header {
+  margin-bottom: var(--space-12);
+  border-bottom: var(--border-width-default) solid var(--color-border-default);
+  padding-bottom: var(--space-6);
+}
+
+.pageTitle {
+  font-size: var(--font-size-heading-xl);
+  font-weight: var(--font-weight-heading-xl);
+  line-height: var(--line-height-heading-xl);
+  letter-spacing: var(--letter-spacing-heading-xl);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.pageSubtitle {
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-secondary);
+}
+
+/* ── Sections ─────────────────────────────────────────────── */
+
+.section {
+  margin-bottom: var(--space-12);
+}
+
+.sectionHeading {
+  font-size: var(--font-size-heading-lg);
+  font-weight: var(--font-weight-heading-lg);
+  line-height: var(--line-height-heading-lg);
+  letter-spacing: var(--letter-spacing-heading-lg);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-width-default) solid var(--color-border-default);
+}
+
+/* ── Colour Swatches ──────────────────────────────────────── */
+
+.swatchGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--grid-col-min-swatch), 1fr));
+  gap: var(--space-4);
+}
+
+.swatchItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.swatchBox {
+  width: 100%;
+  height: var(--space-12);
+  border-radius: var(--radius-md);
+  border: var(--border-width-default) solid var(--color-border-default);
+  box-shadow: var(--shadow-sm);
+}
+
+.swatchLabelDark {
+  color: var(--color-text-secondary);
+}
+
+/* ── Typography Scale ─────────────────────────────────────── */
+
+.typeStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.typeHeadingXl {
+  font-size: var(--font-size-heading-xl);
+  line-height: var(--line-height-heading-xl);
+  font-weight: var(--font-weight-heading-xl);
+  letter-spacing: var(--letter-spacing-heading-xl);
+  color: var(--color-text-primary);
+}
+
+.typeHeadingLg {
+  font-size: var(--font-size-heading-lg);
+  line-height: var(--line-height-heading-lg);
+  font-weight: var(--font-weight-heading-lg);
+  letter-spacing: var(--letter-spacing-heading-lg);
+  color: var(--color-text-primary);
+}
+
+.typeHeadingMd {
+  font-size: var(--font-size-heading-md);
+  line-height: var(--line-height-heading-md);
+  font-weight: var(--font-weight-heading-md);
+  letter-spacing: var(--letter-spacing-heading-md);
+  color: var(--color-text-primary);
+}
+
+.typeHeadingSm {
+  font-size: var(--font-size-heading-sm);
+  line-height: var(--line-height-heading-sm);
+  font-weight: var(--font-weight-heading-sm);
+  letter-spacing: var(--letter-spacing-heading-sm);
+  color: var(--color-text-primary);
+}
+
+.typeBodyMd {
+  font-size: var(--font-size-body-md);
+  line-height: var(--line-height-body-md);
+  font-weight: var(--font-weight-body-md);
+  color: var(--color-text-primary);
+}
+
+.typeBodySm {
+  font-size: var(--font-size-body-sm);
+  line-height: var(--line-height-body-sm);
+  font-weight: var(--font-weight-body-sm);
+  color: var(--color-text-secondary);
+}
+
+.typeCaption {
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  font-weight: var(--font-weight-caption);
+  letter-spacing: var(--letter-spacing-caption);
+  color: var(--color-text-secondary);
+}
+
+.typeLabel {
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+/* ── Interactive Elements ─────────────────────────────────── */
+
+.interactiveRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.btnPrimary {
+  background-color: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  transition: background-color var(--duration-fast) var(--easing-default);
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background-color: var(--color-brand-primary-hover);
+}
+
+.btnPrimary:disabled {
+  background-color: var(--color-interactive-disabled);
+  cursor: not-allowed;
+}
+
+.btnSecondary {
+  background-color: var(--color-surface-default);
+  color: var(--color-brand-primary);
+  border: var(--border-width-default) solid var(--color-brand-primary);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  transition: background-color var(--duration-fast) var(--easing-default);
+}
+
+.btnSecondary:hover {
+  background-color: var(--color-brand-primary-light);
+}
+
+.btnDanger {
+  background-color: var(--color-danger);
+  color: var(--color-text-on-primary);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  transition: background-color var(--duration-fast) var(--easing-default);
+}
+
+.btnDanger:hover {
+  background-color: var(--color-red-700);
+}
+
+/* ── Form Elements ────────────────────────────────────────── */
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
+  max-width: var(--form-field-max-width-sm);
+}
+
+.formLabel {
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.formInput {
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-primary);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-default);
+  padding: var(--space-2) var(--space-3);
+  min-height: var(--touch-target-min);
+  width: 100%;
+  transition: border-color var(--duration-fast) var(--easing-default);
+}
+
+.formInput:focus-visible {
+  border-color: var(--color-border-focus);
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.formHint {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+}
+
+/* ── Links ────────────────────────────────────────────────── */
+
+.linkRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  margin-top: var(--space-4);
+}
+
+/* ── Spacing Grid ─────────────────────────────────────────── */
+
+.spacingGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  align-items: flex-end;
+}
+
+.spacingSample {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.spacingBlock {
+  background-color: var(--color-brand-primary);
+  border-radius: var(--radius-xs);
+}
+
+/* ── Elevation Row ────────────────────────────────────────── */
+
+.elevationRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+}
+
+.shadowSm,
+.shadowMd,
+.shadowLg {
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-default);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-md);
+  border: var(--border-width-default) solid var(--color-border-default);
+}
+
+.shadowSm {
+  box-shadow: var(--shadow-sm);
+}
+
+.shadowMd {
+  box-shadow: var(--shadow-md);
+}
+
+.shadowLg {
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── Status Banners ───────────────────────────────────────── */
+
+.bannerSuccess,
+.bannerWarning,
+.bannerDanger {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-body-md);
+  margin-bottom: var(--space-3);
+}
+
+.bannerSuccess {
+  background-color: var(--color-success-bg);
+  color: var(--color-green-700);
+  border: var(--border-width-default) solid var(--color-success);
+}
+
+.bannerWarning {
+  background-color: var(--color-warning-bg);
+  color: var(--color-amber-700);
+  border: var(--border-width-default) solid var(--color-warning);
+}
+
+.bannerDanger {
+  background-color: var(--color-danger-bg);
+  color: var(--color-red-700);
+  border: var(--border-width-default) solid var(--color-danger);
+}
+
+/* ── Screen-reader only utility ───────────────────────────── */
+
+.srOnly {
+  position: absolute;
+  width: var(--sr-only-dimension);
+  height: var(--sr-only-dimension);
+  padding: 0;
+  margin: var(--sr-only-margin);
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

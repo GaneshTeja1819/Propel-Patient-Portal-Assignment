@@ -126,11 +126,11 @@ Scaffold the React 18 SPA that serves as the frontend foundation for the entire 
 - [ ] Manual Tab-key navigation through BaselineDemo confirms focus ring is visible on all interactive elements
 
 ## Implementation Checklist
-- [ ] Initialise React 18 + Vite + TypeScript scaffold; ESLint (jsx-a11y) and Prettier configured (AC-001)
-- [ ] Create `variables.css` with all token groups (`--color-*`, `--spacing-*`, `--font-*`, `--radius-*`, `--elevation-*`); import globally in `main.tsx` (AC-002)
-- [ ] Add `ci:token-audit` npm script; verify zero raw hex/px violations in project source (AC-002)
-- [ ] Install `@axe-core/react`; wire into dev mode; run baseline scan against BaselineDemo — zero WCAG 2.2 AA colour-contrast violations (AC-003)
-- [ ] Define `:focus-visible` focus ring in `global.css` — 3 px offset, ≥ 3:1 contrast ratio (AC-004)
-- [ ] Add responsive breakpoints at 375 px, 768 px, 1280 px in `global.css`; verify no horizontal scroll at each viewport (AC-005)
-- [ ] Set touch-target minimum (`min-width: 44px; min-height: 44px`) on all interactive base styles; verify at 375 px (AC-005)
-- [ ] Confirm `npm run build` succeeds and dist/ artefact is within InfinityFree size threshold (AC-001)
+- [x] Initialise React 18 + Vite + TypeScript scaffold; ESLint (jsx-a11y) and Prettier configured (AC-001)
+- [x] Create `variables.css` with all token groups (`--color-*`, `--spacing-*`, `--font-*`, `--radius-*`, `--elevation-*`); import globally in `main.tsx` (AC-002)
+- [x] Add `ci:token-audit` npm script; verify zero raw hex/px violations in project source (AC-002)
+- [x] Install `@axe-core/react`; wire into dev mode; run baseline scan against BaselineDemo — zero WCAG 2.2 AA colour-contrast violations (AC-003)
+- [x] Define `:focus-visible` focus ring in `global.css` — 3 px offset, ≥ 3:1 contrast ratio (AC-004)
+- [x] Add responsive breakpoints at 375 px, 768 px, 1280 px in `global.css`; verify no horizontal scroll at each viewport (AC-005)
+- [x] Set touch-target minimum (`min-width: 44px; min-height: 44px`) on all interactive base styles; verify at 375 px (AC-005)
+- [x] Confirm `npm run build` succeeds and dist/ artefact is within InfinityFree size threshold (AC-001)
