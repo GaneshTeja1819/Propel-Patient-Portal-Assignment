@@ -108,8 +108,8 @@ frontend/           ← built by this pipeline
 - [ ] Pipeline completes within 10 minutes (verified from Actions run summary)
 
 ## Implementation Checklist
-- [ ] Create `.github/workflows/frontend.yml`; trigger on `push`/`pull_request` to `main`; set `ubuntu-latest` runner with `timeout-minutes: 10` (AC-005)
-- [ ] Add `actions/checkout@v4`, `actions/setup-node@v4` (Node 20 LTS), `npm ci`, `npm run build` steps (AC-001)
-- [ ] Add `npm test -- --watchAll=false` step; confirm exit code propagation (AC-001, AC-004)
-- [ ] Add FTP deploy step with `if: success()`; all FTP credentials reference `${{ secrets.* }}` only (AC-001, AC-003)
-- [ ] Verify zero raw credential values in `frontend.yml` via static scan step or grep assertion (AC-003)
+- [x] Create `.github/workflows/frontend.yml`; trigger on `push`/`pull_request` to `main`; set `ubuntu-latest` runner with `timeout-minutes: 10` (AC-005)
+- [x] Add `actions/checkout@v4`, `actions/setup-node@v4` (Node 20 LTS), `npm ci`, `npm run build` steps (AC-001)
+- [x] Add `npm test -- --watchAll=false` step; confirm exit code propagation (AC-001, AC-004)
+- [x] Add FTP deploy step with `if: success()`; all FTP credentials reference `${{ secrets.* }}` only (AC-001, AC-003)
+- [x] Verify zero raw credential values in `frontend.yml` via static scan step or grep assertion (AC-003)

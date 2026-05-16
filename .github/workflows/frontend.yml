@@ -1,0 +1,89 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Frontend CI/CD Pipeline
+# Implements: AC-001 (install → build → test → deploy), AC-003 (zero raw creds),
+#             AC-004 (test failure blocks deploy), AC-005 (≤ 10 min)
+# Runner:     ubuntu-latest (free-tier)
+# Deploy:     InfinityFree via FTP (push to main only)
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "20.x"
+
+jobs:
+  build-test-deploy:
+    name: "Build → Test → Deploy (frontend)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10  # AC-005 — pipeline must complete within 10 minutes
+
+    steps:
+      # ── Checkout ────────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Node.js setup with npm cache ────────────────────────────────────────
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      # ── Install (AC-001) ────────────────────────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+        working-directory: frontend
+
+      # ── Build (AC-001) ──────────────────────────────────────────────────────
+      - name: Build production artefact
+        run: npm run build
+        working-directory: frontend
+
+      # ── Test (AC-001, AC-004) ────────────────────────────────────────────────
+      # vitest run exits non-zero on any test failure; subsequent steps are
+      # skipped automatically, which blocks the deploy step (AC-004).
+      - name: Run frontend tests
+        run: npm test
+        working-directory: frontend
+
+      # ── Static secret scan (AC-003) ─────────────────────────────────────────
+      # Asserts that no raw credential values appear in this workflow file.
+      # Regex matches lines where a sensitive keyword is followed by a non-secret
+      # value (i.e. not wrapped in ${{ secrets.* }} or ${{ vars.* }} syntax).
+      # Fails the pipeline and surfaces an error annotation if a match is found.
+      - name: Static secret scan — assert zero raw credentials in workflow YAML
+        run: |
+          WORKFLOW=".github/workflows/frontend.yml"
+          if grep -Pn '(?i)(password|ftp_pass|api_key|token|secret)\s*:\s*(?!\$\{\{)[^\s#]' \
+               "$WORKFLOW"; then
+            echo "::error file=${WORKFLOW}::Raw credential detected. Use \${{ secrets.NAME }} syntax instead."
+            exit 1
+          fi
+          echo "Secret scan PASS — zero raw credentials found in ${WORKFLOW}."
+
+      # ── Deploy to InfinityFree (AC-001, AC-003, AC-004) ─────────────────────
+      # Runs only on push to main (not on pull_request) and only if all prior
+      # steps succeeded (AC-004). FTP credentials come exclusively from GitHub
+      # Secrets (AC-003). A missing secret causes this step to fail with a
+      # descriptive error rather than attempting a partial deployment.
+      - name: Deploy to InfinityFree via FTP
+        if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.INFINITYFREE_FTP_SERVER }}
+          username: ${{ secrets.INFINITYFREE_FTP_USER }}
+          password: ${{ secrets.INFINITYFREE_FTP_PASSWORD }}
+          local-dir: ./frontend/dist/
+          server-dir: /htdocs/
+          timeout: 60000  # 60 s connection timeout; pipeline-level timeout-minutes: 10 is the hard cap
+          dangerous-clean-slate: false

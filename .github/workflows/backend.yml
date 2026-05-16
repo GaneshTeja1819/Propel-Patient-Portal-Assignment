@@ -1,0 +1,138 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Backend CI/CD Pipeline
+# Implements: AC-002 (build → test → publish → deploy → health check),
+#             AC-003 (zero raw creds), AC-004 (test failure blocks deploy),
+#             AC-005 (≤ 10 min)
+# Runner:     ubuntu-latest (free-tier)
+# Deploy:     MonsterASP/IIS via FTP (push to main only)
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  checks: write  # required by dorny/test-reporter to post xUnit results as check annotations
+
+env:
+  DOTNET_VERSION: "8.0.x"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "true"
+  DOTNET_NOLOGO: "true"
+
+jobs:
+  build-test-deploy:
+    name: "Build → Test → Deploy (backend)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10  # AC-005 — pipeline must complete within 10 minutes
+
+    steps:
+      # ── Checkout ────────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── .NET SDK setup ──────────────────────────────────────────────────────
+      - name: Set up .NET ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      # ── Restore (AC-002) ────────────────────────────────────────────────────
+      - name: Restore NuGet packages
+        run: dotnet restore
+        working-directory: backend
+
+      # ── Build (AC-002) ──────────────────────────────────────────────────────
+      - name: Build (Release, no-restore)
+        run: dotnet build --no-restore -c Release
+        working-directory: backend
+
+      # ── Test (AC-002, AC-004) ────────────────────────────────────────────────
+      # dotnet test exits non-zero on any xUnit failure, which sets the job to
+      # "failed" and blocks all subsequent if: success() steps (AC-004).
+      # TRX files are written to backend/TestResults/ for dorny/test-reporter.
+      - name: Run xUnit tests
+        run: dotnet test --no-build -c Release --logger trx --results-dir ./TestResults
+        working-directory: backend
+
+      # ── Publish test results to CI summary ──────────────────────────────────
+      # Runs on success OR failure so the report is always visible in the PR.
+      # fail-on-error: false — dotnet test already set the job status; reporter
+      # just surfaces the TRX annotations without re-failing the job.
+      - name: Publish xUnit results to CI summary
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: xUnit Test Results
+          path: backend/TestResults/**/*.trx
+          reporter: dotnet-trx
+          fail-on-error: false
+
+      # ── Publish .NET artefact (win-x64, IIS) ────────────────────────────────
+      # Skipped automatically when dotnet test failed (success() is false).
+      - name: Publish .NET artefact (win-x64, self-contained false)
+        if: success()
+        run: dotnet publish -c Release --runtime win-x64 --self-contained false -o ./publish
+        working-directory: backend
+
+      # ── Static secret scan (AC-003) ─────────────────────────────────────────
+      # Asserts that no raw credential values appear in this workflow file.
+      # Regex matches lines where a sensitive keyword is followed by a non-secret
+      # value (i.e. not wrapped in ${{ secrets.* }} or ${{ vars.* }} syntax).
+      - name: Static secret scan — assert zero raw credentials in workflow YAML
+        if: success()
+        run: |
+          WORKFLOW=".github/workflows/backend.yml"
+          if grep -Pn '(?i)(password|api_key|token|secret)\s*:\s*(?!\$\{\{)[^\s#]' \
+               "$WORKFLOW"; then
+            echo "::error file=${WORKFLOW}::Raw credential detected. Use \${{ secrets.NAME }} syntax instead."
+            exit 1
+          fi
+          echo "Secret scan PASS — zero raw credentials found in ${WORKFLOW}."
+
+      # ── Deploy to MonsterASP (AC-002, AC-003, AC-004) ───────────────────────
+      # Runs only on push to main and only if all prior steps succeeded (AC-004).
+      # FTP credentials come exclusively from GitHub Secrets (AC-003).
+      # A missing secret causes this step to fail before any files are transferred.
+      - name: Deploy to MonsterASP via FTP
+        if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.MONSTERASP_FTP_SERVER }}
+          username: ${{ secrets.MONSTERASP_FTP_USER }}
+          password: ${{ secrets.MONSTERASP_FTP_PASSWORD }}
+          local-dir: ./backend/publish/
+          server-dir: /wwwroot/
+          timeout: 60000  # 60 s FTP connection timeout; job timeout-minutes: 10 is the hard cap
+          dangerous-clean-slate: false
+
+      # ── Post-deploy health check (AC-002) ────────────────────────────────────
+      # Retries GET /api/v1/health up to 3 times with 20-second intervals to
+      # allow IIS cold-start warm-up (60-second total window per AC-002 edge case).
+      # Fails the pipeline with an error annotation if HTTP 200 is not returned.
+      - name: Post-deploy health check — GET /api/v1/health
+        if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          MAX_RETRIES=3
+          RETRY_INTERVAL=20
+          URL="https://${{ secrets.MONSTERASP_HOST }}/api/v1/health"
+          echo "Health check target: ${URL}"
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt ${i} of ${MAX_RETRIES}..."
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$URL")
+            if [ "$HTTP_STATUS" = "200" ]; then
+              echo "Health check PASS — /api/v1/health returned HTTP 200."
+              exit 0
+            fi
+            echo "Got HTTP ${HTTP_STATUS}."
+            if [ "$i" -lt "$MAX_RETRIES" ]; then
+              echo "Retrying in ${RETRY_INTERVAL}s..."
+              sleep "$RETRY_INTERVAL"
+            fi
+          done
+          echo "::error::Health check failed after ${MAX_RETRIES} attempts (${URL} did not return HTTP 200)."
+          exit 1

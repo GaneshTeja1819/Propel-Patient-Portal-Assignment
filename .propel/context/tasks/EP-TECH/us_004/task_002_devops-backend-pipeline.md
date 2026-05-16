@@ -114,9 +114,9 @@ backend/        ← built and deployed by this pipeline
 - [ ] `.trx` test results file visible in CI summary via `dorny/test-reporter`
 
 ## Implementation Checklist
-- [ ] Create `.github/workflows/backend.yml`; trigger on `push`/`pull_request` to `main`; set `ubuntu-latest` with `timeout-minutes: 10` (AC-005)
-- [ ] Add `actions/setup-dotnet@v4` (SDK 8.0), `dotnet restore`, `dotnet build --no-restore -c Release` steps (AC-002)
-- [ ] Add `dotnet test --no-build -c Release --logger trx` step; attach `dorny/test-reporter` to publish results to CI summary (AC-002, AC-004)
-- [ ] Add `dotnet publish -c Release --runtime win-x64 --self-contained false` and deploy to MonsterASP with `if: success()`; all credentials from `${{ secrets.* }}` (AC-002, AC-003)
-- [ ] Add post-deploy health check `curl -f .../api/v1/health` with 3 retries / 20 s interval; fail pipeline if HTTP 200 not returned within 60 s (AC-002 edge case)
-- [ ] Verify zero raw credential values in `backend.yml` via static scan step (AC-003)
+- [x] Create `.github/workflows/backend.yml`; trigger on `push`/`pull_request` to `main`; set `ubuntu-latest` with `timeout-minutes: 10` (AC-005)
+- [x] Add `actions/setup-dotnet@v4` (SDK 8.0), `dotnet restore`, `dotnet build --no-restore -c Release` steps (AC-002)
+- [x] Add `dotnet test --no-build -c Release --logger trx` step; attach `dorny/test-reporter` to publish results to CI summary (AC-002, AC-004)
+- [x] Add `dotnet publish -c Release --runtime win-x64 --self-contained false` and deploy to MonsterASP with `if: success()`; all credentials from `${{ secrets.* }}` (AC-002, AC-003)
+- [x] Add post-deploy health check `curl -f .../api/v1/health` with 3 retries / 20 s interval; fail pipeline if HTTP 200 not returned within 60 s (AC-002 edge case)
+- [x] Verify zero raw credential values in `backend.yml` via static scan step (AC-003)
