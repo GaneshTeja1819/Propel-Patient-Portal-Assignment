@@ -2,6 +2,7 @@ using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Hangfire;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 using UPACIP.Infrastructure;
 using UPACIP.Infrastructure.BackgroundJobs;
 
@@ -40,6 +41,23 @@ builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
+
+// ── Redis startup PING (AC-002) ───────────────────────────────────────────────
+var redisMultiplexer = app.Services.GetService<IConnectionMultiplexer>();
+if (redisMultiplexer is not null)
+{
+    try
+    {
+        var pong = await redisMultiplexer.GetDatabase()
+            .ExecuteAsync("PING")
+            .WaitAsync(TimeSpan.FromSeconds(2));
+        app.Logger.LogInformation("Redis PING: {Pong} — connection healthy.", pong);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "Redis unavailable — falling back to database reads.");
+    }
+}
 
 // ── Swagger UI (development only — AC-004) ────────────────────────────────────
 if (app.Environment.IsDevelopment())

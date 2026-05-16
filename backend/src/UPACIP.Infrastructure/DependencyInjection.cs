@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UPACIP.Application.Interfaces;
 using UPACIP.Infrastructure.BackgroundJobs;
+using UPACIP.Infrastructure.Caching;
 using UPACIP.Infrastructure.Persistence;
 
 namespace UPACIP.Infrastructure;
@@ -26,6 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddHangfireWithPostgres(configuration);
+        services.AddRedis(configuration);
 
         return services;
     }

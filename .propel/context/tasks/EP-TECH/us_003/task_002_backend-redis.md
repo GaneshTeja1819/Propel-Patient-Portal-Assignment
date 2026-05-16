@@ -116,8 +116,8 @@ backend/
 - [ ] Simulated Redis failure (invalid connection string) results in API starting without crash; warning logged
 
 ## Implementation Checklist
-- [ ] Add StackExchange.Redis to Infrastructure; register `IConnectionMultiplexer` singleton from environment variable; log warning (not throw) on connection failure (AC-002)
-- [ ] Define `ISlotCacheService` in Application layer — `GetSlotAsync`, `SetSlotAsync`, `InvalidateSlotAsync` (AC-004)
-- [ ] Implement `SlotCacheService` with 5 s TTL on all `SetSlotAsync` writes; null fall-through on Redis unavailability (AC-004, AC-002 edge case)
-- [ ] Add startup PING — log `PONG` on success or warning on failure; no API crash on Redis unavailability (AC-002)
-- [ ] Confirm all Redis and Hangfire credentials are environment-variable-only; zero values in committed source files (AC-005)
+- [x] Add StackExchange.Redis to Infrastructure; register `IConnectionMultiplexer` singleton from environment variable; log warning (not throw) on connection failure (AC-002)
+- [x] Define `ISlotCacheService` in Application layer — `GetSlotAsync`, `SetSlotAsync`, `InvalidateSlotAsync` (AC-004)
+- [x] Implement `SlotCacheService` with 5 s TTL on all `SetSlotAsync` writes; null fall-through on Redis unavailability (AC-004, AC-002 edge case)
+- [x] Add startup PING — log `PONG` on success or warning on failure; no API crash on Redis unavailability (AC-002)
+- [x] Confirm all Redis and Hangfire credentials are environment-variable-only; zero values in committed source files (AC-005)
