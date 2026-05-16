@@ -12,6 +12,11 @@ publish/
 appsettings.Local.json
 appsettings.*.Local.json
 
+# Test results
+tests/results/
+*.trx
+*.coverage
+
 # NuGet
 *.nupkg
 .nuget/
