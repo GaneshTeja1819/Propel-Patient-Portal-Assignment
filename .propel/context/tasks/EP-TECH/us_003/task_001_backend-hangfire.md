@@ -117,9 +117,9 @@ backend/
 - [ ] A test job that throws an exception retries exactly 3 times and enters Failed state (no further retries)
 
 ## Implementation Checklist
-- [ ] Add Hangfire 1.8.x and Hangfire.PostgreSql to Infrastructure project; configure PostgreSQL job store from environment variable connection string (AC-001)
-- [ ] Implement `ExponentialBackOffRetryFilter` — 3 retries at 10 s / 60 s / 360 s; Failed state after third failure (AC-003)
-- [ ] Register retry filter as global job filter in `AddHangfire()` DI configuration (AC-003)
-- [ ] Register Hangfire server (`UseHangfireServer`) and dashboard (`UseHangfireDashboard`) in `Program.cs` middleware pipeline (AC-001)
-- [ ] Configure dashboard `BasicAuthAuthorizationFilter`; load credentials from environment variables only; verify HTTP 401 without credentials (AC-001 edge case)
-- [ ] Add startup log confirming schema migration success; exit with non-zero code on migration failure (AC-001 edge case)
+- [x] Add Hangfire 1.8.x and Hangfire.PostgreSql to Infrastructure project; configure PostgreSQL job store from environment variable connection string (AC-001)
+- [x] Implement `ExponentialBackOffRetryFilter` — 3 retries at 10 s / 60 s / 360 s; Failed state after third failure (AC-003)
+- [x] Register retry filter as global job filter in `AddHangfire()` DI configuration (AC-003)
+- [x] Register Hangfire server (`UseHangfireServer`) and dashboard (`UseHangfireDashboard`) in `Program.cs` middleware pipeline (AC-001)
+- [x] Configure dashboard `BasicAuthAuthorizationFilter`; load credentials from environment variables only; verify HTTP 401 without credentials (AC-001 edge case)
+- [x] Add startup log confirming schema migration success; exit with non-zero code on migration failure (AC-001 edge case)

@@ -1,7 +1,9 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using Hangfire;
 using Microsoft.OpenApi.Models;
 using UPACIP.Infrastructure;
+using UPACIP.Infrastructure.BackgroundJobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +60,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+// ── Hangfire Dashboard (all environments — Basic Auth required) ───────────────
+app.UseHangfireDashboard("/hangfire", HangfireServiceExtensions.BuildDashboardOptions(builder.Configuration));
 
 app.Run();
 

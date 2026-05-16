@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UPACIP.Application.Interfaces;
+using UPACIP.Infrastructure.BackgroundJobs;
 using UPACIP.Infrastructure.Persistence;
 
 namespace UPACIP.Infrastructure;
@@ -23,6 +24,8 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.AddHangfireWithPostgres(configuration);
 
         return services;
     }
