@@ -102,7 +102,7 @@ Supabase PostgreSQL:
 - [ ] `AuditPermissionTest.cs` xUnit test passes in CI
 
 ## Implementation Checklist
-- [ ] Create `scripts/audit-schema.sql`; run against Supabase; confirm `audit.audit_log` table created (AC-003)
-- [ ] REVOKE all privileges from PUBLIC; GRANT INSERT + SELECT to application role only (AC-003)
+- [x] Create `scripts/audit-schema.sql`; run against Supabase; confirm `audit.audit_log` table created (AC-003)
+- [x] REVOKE all privileges from PUBLIC; GRANT INSERT + SELECT to application role only (AC-003)
 - [ ] Verify application role UPDATE returns `42501` via Supabase SQL editor or psql (AC-003)
-- [ ] Create `AuditPermissionTest.cs` asserting `PostgresException` with `SqlState = "42501"` on UPDATE attempt; run in CI (AC-003 edge case)
+- [x] Create `AuditPermissionTest.cs` asserting `PostgresException` with `SqlState = "42501"` on UPDATE attempt; run in CI (AC-003 edge case)

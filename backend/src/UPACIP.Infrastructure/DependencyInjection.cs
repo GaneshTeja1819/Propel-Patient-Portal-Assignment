@@ -1,10 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 using UPACIP.Application.Interfaces;
+using UPACIP.Infrastructure.AI;
+using UPACIP.Infrastructure.Audit;
+using UPACIP.Infrastructure.Auth;
 using UPACIP.Infrastructure.BackgroundJobs;
 using UPACIP.Infrastructure.Caching;
+using UPACIP.Infrastructure.Documents;
 using UPACIP.Infrastructure.Persistence;
+using UPACIP.Infrastructure.Persistence.Interceptors;
+using UPACIP.Infrastructure.Security;
 
 namespace UPACIP.Infrastructure;
 
@@ -21,13 +29,52 @@ public static class DependencyInjection
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(connectionString));
+        // ── Security (PHI encryption) ────────────────────────────────────
+        // Singleton: key is loaded once at startup; constructor throws if
+        // PHI_ENCRYPTION_KEY is absent or not 32 decoded bytes (AC-002).
+        services.AddSingleton<IEncryptionService, AesEncryptionService>();
+
+        // ── Audit ────────────────────────────────────────────────────────
+        services.AddHttpContextAccessor();
+        services.AddScoped<IAuditLogService, AuditLogService>();
+        services.AddScoped<AuditSaveChangesInterceptor>();
+
+        // ── EF Core ──────────────────────────────────────────────────────
+        // The (sp, options) overload lets us resolve scoped interceptor per request.
+        services.AddDbContext<AppDbContext>((sp, options) =>
+        {
+            options.UseNpgsql(connectionString);
+            options.AddInterceptors(sp.GetRequiredService<AuditSaveChangesInterceptor>());
+        });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddHangfireWithPostgres(configuration);
         services.AddRedis(configuration);
+
+        // ── Auth (JWT + Redis sessions) ──────────────────────────────────
+        // RedisSessionStore takes IConnectionMultiplexer? (nullable) — resolves to
+        // null when Redis:ConnectionString is absent; operations throw at call-time.
+        services.AddScoped<RedisSessionStore>(sp => new RedisSessionStore(
+            sp.GetService<IConnectionMultiplexer>(),
+            sp.GetRequiredService<ILogger<RedisSessionStore>>()));
+
+        // JwtAuthService constructor validates JWT_SIGNING_KEY at startup.
+        services.AddScoped<IAuthService, JwtAuthService>();
+
+        // ── Documents ─────────────────────────────────────────────────────────
+        services.AddSingleton<IPdfTextExtractor, PdfTextExtractor>();
+
+        // ── AI (Gemini) ─────────────────────────────────────────────────────
+        // GeminiClient validates GEMINI_API_KEY at construction; singleton is safe
+        // because the SDK GenerativeModel is stateless and thread-safe.
+        // GeminiInvocationLogger wraps it as IGeminiClient and uses IServiceScopeFactory
+        // to create short-lived scopes for each IAuditLogService (scoped) write.
+        services.AddSingleton<GeminiClient>();
+        services.AddSingleton<IGeminiClient>(sp => new GeminiInvocationLogger(
+            sp.GetRequiredService<GeminiClient>(),
+            sp.GetRequiredService<IServiceScopeFactory>(),
+            sp.GetRequiredService<ILogger<GeminiInvocationLogger>>()));
 
         return services;
     }

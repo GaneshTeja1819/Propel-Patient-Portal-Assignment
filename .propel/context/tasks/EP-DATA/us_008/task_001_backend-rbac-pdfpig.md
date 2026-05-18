@@ -113,9 +113,9 @@ backend/
 - [ ] `PdfTextExtractor.ExtractText` with a corrupted PDF byte array returns `string.Empty`; error logged with document ID
 
 ## Implementation Checklist
-- [ ] Register PatientPolicy, StaffPolicy, AdminPolicy in `Program.cs`; each evaluates `role` JWT claim (AC-001, AC-002)
-- [ ] Apply `[Authorize]` baseline to all controllers; apply role-specific `[Authorize(Policy = "...")]` to actions (AC-002)
-- [ ] Verify Patient → StaffPolicy endpoint returns HTTP 403; role claim logged at Warning level (AC-001)
-- [ ] Verify unauthenticated → any protected endpoint returns HTTP 401 (AC-002)
-- [ ] Add PdfPig NuGet; define `IPdfTextExtractor` interface in Application layer (AC-005)
-- [ ] Implement `PdfTextExtractor`: extract text from all pages; return `string.Empty` and log on exception (AC-005)
+- [x] Register PatientPolicy, StaffPolicy, AdminPolicy in `Program.cs`; each evaluates `role` JWT claim (AC-001, AC-002)
+- [x] Apply `[Authorize]` baseline to all controllers; apply role-specific `[Authorize(Policy = "...")]` to actions (AC-002)
+- [x] Verify Patient → StaffPolicy endpoint returns HTTP 403; role claim logged at Warning level (AC-001)
+- [x] Verify unauthenticated → any protected endpoint returns HTTP 401 (AC-002)
+- [x] Add PdfPig NuGet; define `IPdfTextExtractor` interface in Application layer (AC-005)
+- [x] Implement `PdfTextExtractor`: extract text from all pages; return `string.Empty` and log on exception (AC-005)

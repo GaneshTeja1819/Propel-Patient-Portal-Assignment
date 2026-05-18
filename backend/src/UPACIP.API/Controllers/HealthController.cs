@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace UPACIP.API.Controllers;
@@ -9,6 +10,7 @@ namespace UPACIP.API.Controllers;
 /// </summary>
 [ApiController]
 [ApiVersion("1.0")]
+[Authorize]
 [Route("api/v{version:apiVersion}/[controller]")]
 public sealed class HealthController : ControllerBase
 {
