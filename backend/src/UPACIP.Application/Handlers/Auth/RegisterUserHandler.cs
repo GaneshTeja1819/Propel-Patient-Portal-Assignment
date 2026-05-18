@@ -41,7 +41,6 @@ public sealed class RegisterUserHandler
         {
             var user = new User
             {
-                Id = Guid.NewGuid(),
                 Email = normalizedEmail,
                 PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(command.Password, workFactor: PasswordWorkFactor),
                 Role = "Patient",
@@ -57,7 +56,6 @@ public sealed class RegisterUserHandler
 
             await _registrationStore.AddAuditLogAsync(new AuditLog
             {
-                Id = Guid.NewGuid(),
                 ActorId = user.Id,
                 ActorEmail = normalizedEmail,
                 Action = "USER_REGISTERED",

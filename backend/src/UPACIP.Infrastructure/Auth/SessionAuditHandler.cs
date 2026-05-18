@@ -38,7 +38,16 @@ public static class SessionAuditHandler
     }
 
     private static string? ResolveToken(AuthenticationFailedContext context)
-        => context.Token ?? context.Request.Cookies["__Host-access"];
+    {
+        var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
+        if (!string.IsNullOrWhiteSpace(authHeader)
+            && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            return authHeader["Bearer ".Length..].Trim();
+        }
+
+        return context.Request.Cookies["__Host-access"];
+    }
 
     private static void TryExtractActor(string token, out Guid actorId, out string actorRole)
     {
