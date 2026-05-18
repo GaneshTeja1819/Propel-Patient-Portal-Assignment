@@ -113,9 +113,9 @@ backend/
 - [ ] Simulated DB error (mocked `IUnitOfWork`) → HTTP 500 generic response; no User row created
 
 ## Implementation Checklist
-- [ ] Implement `RegisterUserCommand` + `RegisterUserHandler`; normalise email to lowercase; validate password complexity server-side (AC-003)
-- [ ] Check email uniqueness before insert; return HTTP 409 with "Email address already in use" — no role disclosure (AC-002)
-- [ ] Hash password with BCrypt work factor 12; store hash in `User.passwordHash` (AC-001)
-- [ ] Wrap User creation + audit write in a single DB transaction; rollback on any failure; no partial record (AC-004)
-- [ ] Write `USER_REGISTERED` audit entry with required fields on success only (AC-001, AC-004)
-- [ ] Add `POST /api/v1/auth/register` [AllowAnonymous] action; map exceptions to HTTP 409/422/500 with generic 500 body (AC-001, AC-002, AC-004)
+- [x] Implement `RegisterUserCommand` + `RegisterUserHandler`; normalise email to lowercase; validate password complexity server-side (AC-003)
+- [x] Check email uniqueness before insert; return HTTP 409 with "Email address already in use" — no role disclosure (AC-002)
+- [x] Hash password with BCrypt work factor 12; store hash in `User.passwordHash` (AC-001)
+- [x] Wrap User creation + audit write in a single DB transaction; rollback on any failure; no partial record (AC-004)
+- [x] Write `USER_REGISTERED` audit entry with required fields on success only (AC-001, AC-004)
+- [x] Add `POST /api/v1/auth/register` [AllowAnonymous] action; map exceptions to HTTP 409/422/500 with generic 500 body (AC-001, AC-002, AC-004)

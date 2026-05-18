@@ -114,10 +114,10 @@ frontend/
 - [ ] axe-core scan on `/login` reports zero violations
 
 ## Implementation Checklist
-- [ ] Create `AuthContext` with role, isAuthenticated, login(), logout() (AC-001)
-- [ ] Build `LoginForm.tsx` with email + password fields; visible labels, `aria-describedby` errors, keyboard operable (AC-005)
-- [ ] On HTTP 200, read `role` from response; navigate to role-specific dashboard (AC-001)
-- [ ] On HTTP 401, show generic "Invalid email or password" — no field-level disclosure (AC-002)
-- [ ] On HTTP 423, show "Account temporarily locked" message (feeds AC in task_002)
-- [ ] Detect missing cookie after login and show "Cookies required" banner (edge case)
+- [x] Create `AuthContext` with role, isAuthenticated, login(), logout() (AC-001)
+- [x] Build `LoginForm.tsx` with email + password fields; visible labels, `aria-describedby` errors, keyboard operable (AC-005)
+- [x] On HTTP 200, read `role` from response; navigate to role-specific dashboard (AC-001)
+- [x] On HTTP 401, show generic "Invalid email or password" — no field-level disclosure (AC-002)
+- [x] On HTTP 423, show "Account temporarily locked" message (feeds AC in task_002)
+- [x] Detect missing cookie after login and show "Cookies required" banner (edge case)
 - [ ] Run axe-core on `/login`; confirm zero label and aria violations (AC-005)
