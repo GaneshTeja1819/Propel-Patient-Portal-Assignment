@@ -99,6 +99,6 @@ backend/
 - [ ] Present a tampered JWT; confirm HTTP 401 returned and no `SESSION_TIMEOUT` row appears (only expired-token path triggers the event)
 
 ## Implementation Checklist
-- [ ] Implement `SessionAuditHandler` — write `SESSION_TIMEOUT` audit entry when `SecurityTokenExpiredException` is caught in `OnAuthenticationFailed` (AC-001)
-- [ ] Wire handler into `JwtBearerEvents.OnAuthenticationFailed` in `Program.cs`; guard: only for `SecurityTokenExpiredException` (AC-001)
-- [ ] Verify Redis session key TTL = 15 min (aligns with JWT expiry for multi-tab invalidation edge case) (AC-001 edge case)
+- [x] Implement `SessionAuditHandler` — write `SESSION_TIMEOUT` audit entry when `SecurityTokenExpiredException` is caught in `OnAuthenticationFailed` (AC-001)
+- [x] Wire handler into `JwtBearerEvents.OnAuthenticationFailed` in `Program.cs`; guard: only for `SecurityTokenExpiredException` (AC-001)
+- [x] Verify Redis session key TTL = 15 min (aligns with JWT expiry for multi-tab invalidation edge case) (AC-001 edge case)

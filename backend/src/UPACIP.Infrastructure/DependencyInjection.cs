@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
+using UPACIP.Application.Handlers.Auth;
 using UPACIP.Application.Interfaces;
 using UPACIP.Infrastructure.AI;
 using UPACIP.Infrastructure.Audit;
@@ -48,8 +49,14 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IRegistrationStore, RegistrationStore>();
+        services.AddScoped<ILoginUserStore, LoginUserStore>();
+        services.AddScoped<RegisterUserHandler>();
+        services.AddScoped<LoginUserHandler>();
 
         services.AddHangfireWithPostgres(configuration);
+        services.AddTransient<AccountLockoutNotificationJob>();
+        services.AddScoped<IAccountLockoutNotifier, HangfireAccountLockoutNotifier>();
         services.AddRedis(configuration);
 
         // ── Auth (JWT + Redis sessions) ──────────────────────────────────

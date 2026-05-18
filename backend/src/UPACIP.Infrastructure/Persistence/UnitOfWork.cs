@@ -13,6 +13,12 @@ internal sealed class UnitOfWork : IUnitOfWork
 
     public UnitOfWork(AppDbContext context) => _context = context;
 
+    public async Task<IUnitOfWorkTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        return new UnitOfWorkTransaction(transaction);
+    }
+
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         => _context.SaveChangesAsync(cancellationToken);
 

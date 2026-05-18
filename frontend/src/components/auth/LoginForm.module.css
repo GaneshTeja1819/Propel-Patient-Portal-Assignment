@@ -1,0 +1,285 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.cookiesBanner {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-warning);
+  background-color: var(--color-warning-bg);
+  border: var(--border-width-default) solid var(--color-warning);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+}
+
+.formAlert {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-danger);
+  background-color: var(--color-danger-bg);
+  border: var(--border-width-default) solid var(--color-danger);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.alertIcon {
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
+}
+
+.passwordWrapper {
+  position: relative;
+}
+
+.fieldLabel {
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.fieldInput {
+  width: 100%;
+  min-height: var(--touch-target-min);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-primary);
+}
+
+.passwordWrapper .fieldInput {
+  padding-right: var(--space-12);
+}
+
+.passwordToggle {
+  position: absolute;
+  right: var(--space-2);
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.passwordToggle:hover {
+  color: var(--color-text-primary);
+}
+
+.fieldInput[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+
+.fieldError {
+  min-height: calc(var(--space-4) + var(--space-3));
+  padding-top: var(--space-1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  color: var(--color-danger);
+}
+
+.fieldErrorIcon {
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+.fieldErrorIconTriangle {
+  width: var(--space-3);
+  height: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-danger);
+  color: var(--color-text-on-primary);
+  font-size: var(--font-size-caption);
+  font-weight: 700;
+  line-height: 1;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.checkboxRow input[type='checkbox'] {
+  width: 1.125rem;
+  height: 1.125rem;
+  min-width: 1.125rem;
+  min-height: 1.125rem;
+  display: inline-block;
+  accent-color: var(--color-brand-primary);
+  flex-shrink: 0;
+}
+
+.checkboxLabel {
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-primary);
+}
+
+.submitButton {
+  width: 100%;
+  min-height: var(--touch-target-min);
+  border: var(--border-width-default) solid var(--color-brand-primary);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+}
+
+.submitButton:hover:enabled {
+  background-color: var(--color-brand-primary-hover);
+}
+
+.submitButton:disabled {
+  background-color: var(--color-interactive-disabled);
+  border-color: var(--color-interactive-disabled);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  margin: var(--space-6) 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: var(--border-width-default);
+  background-color: var(--color-border-default);
+}
+
+.secondaryActionButton {
+  width: 100%;
+  min-height: var(--touch-target-min);
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--color-brand-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+.secondaryActionButton:hover {
+  background-color: var(--color-brand-primary-light);
+}
+
+.forgotPasswordRow {
+  margin: 0;
+  text-align: center;
+}
+
+.inlineLink {
+  color: var(--color-brand-primary);
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.inlineLink:hover {
+  text-decoration: underline;
+}
+
+.demoShortcuts {
+  margin-top: var(--space-6);
+  border: var(--border-width-default) dashed var(--color-border-default);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-subtle);
+  padding: var(--space-3) var(--space-4);
+}
+
+.demoLabel {
+  margin-bottom: var(--space-2);
+  color: var(--color-text-disabled);
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+}
+
+.demoRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.demoButton {
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-default);
+  color: var(--color-text-secondary);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-body-sm);
+  text-decoration: none;
+}
+
+.demoButton:hover {
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-primary);
+}
+
+.authFooter {
+  margin-top: var(--space-6);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-caption);
+  text-align: center;
+}
+
+.authFooter p {
+  margin: 0;
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+}
+
+.authFooter a {
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  text-decoration: none;
+}
+
+.authFooter a:hover {
+  text-decoration: underline;
+}
+
+.authFooter p + p {
+  margin-top: var(--space-2);
+}

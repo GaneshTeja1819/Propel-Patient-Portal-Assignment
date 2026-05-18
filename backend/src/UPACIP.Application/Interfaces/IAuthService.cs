@@ -20,6 +20,11 @@ public interface IAuthService
     Task<AuthResult?> LoginAsync(string email, string password, CancellationToken ct = default);
 
     /// <summary>
+    /// Issues JWT + server session for an already-authenticated principal.
+    /// </summary>
+    Task<AuthResult> IssueSessionAsync(Guid userId, string role, string email, CancellationToken ct = default);
+
+    /// <summary>
     /// Exchanges an existing Redis session for a fresh JWT.
     /// Returns <see langword="null"/> if the session has expired or does not exist.
     /// Throws <see cref="StackExchange.Redis.RedisConnectionException"/> when Redis

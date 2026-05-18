@@ -117,9 +117,9 @@ backend/
 - [ ] 5 consecutive failures → account `lockUntil` set; subsequent attempt returns HTTP 423; Hangfire job enqueued
 
 ## Implementation Checklist
-- [ ] Add `failedLoginCount` and `lockUntil` to User entity; create migration (AC-002, AC-004)
-- [ ] Implement `LoginUserHandler`: case-insensitive email lookup; BCrypt verify (AC-001, AC-002)
-- [ ] Inactive account path → HTTP 401 generic message; no counter increment (AC-003)
-- [ ] Failed-attempt threshold → set `lockUntil`; enqueue `AccountLockoutNotificationJob` (AC-004)
-- [ ] Successful login → reset counter; issue JWT cookie; write `USER_LOGIN` audit; return role (AC-001)
-- [ ] All failure paths return identical generic body "Invalid email or password" — no field disclosure (AC-002, OWASP A07)
+- [x] Add `failedLoginCount` and `lockUntil` to User entity; create migration (AC-002, AC-004)
+- [x] Implement `LoginUserHandler`: case-insensitive email lookup; BCrypt verify (AC-001, AC-002)
+- [x] Inactive account path → HTTP 401 generic message; no counter increment (AC-003)
+- [x] Failed-attempt threshold → set `lockUntil`; enqueue `AccountLockoutNotificationJob` (AC-004)
+- [x] Successful login → reset counter; issue JWT cookie; write `USER_LOGIN` audit; return role (AC-001)
+- [x] All failure paths return identical generic body "Invalid email or password" — no field disclosure (AC-002, OWASP A07)

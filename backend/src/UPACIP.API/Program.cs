@@ -12,6 +12,7 @@ using System.Text;
 using UPACIP.API.Filters;
 using UPACIP.Application.Interfaces;
 using UPACIP.Infrastructure;
+using UPACIP.Infrastructure.Auth;
 using UPACIP.Infrastructure.BackgroundJobs;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -83,6 +84,14 @@ builder.Services
                 // Read JWT from HttpOnly cookie — never from Authorization header.
                 context.Token = context.Request.Cookies["__Host-access"];
                 return Task.CompletedTask;
+            },
+            OnAuthenticationFailed = async context =>
+            {
+                if (context.Exception is SecurityTokenExpiredException)
+                {
+                    var auditLogService = context.HttpContext.RequestServices.GetRequiredService<IAuditLogService>();
+                    await SessionAuditHandler.WriteSessionTimeoutAuditAsync(context, auditLogService, context.HttpContext.RequestAborted);
+                }
             },
             OnChallenge = context =>
             {
