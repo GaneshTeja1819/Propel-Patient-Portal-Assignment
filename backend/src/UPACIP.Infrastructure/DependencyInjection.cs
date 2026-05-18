@@ -70,7 +70,8 @@ public static class DependencyInjection
         // because the SDK GenerativeModel is stateless and thread-safe.
         // GeminiInvocationLogger wraps it as IGeminiClient and uses IServiceScopeFactory
         // to create short-lived scopes for each IAuditLogService (scoped) write.
-        services.AddSingleton<GeminiClient>();
+        services.AddSingleton<GeminiClient>(sp => new GeminiClient(
+            sp.GetRequiredService<ILogger<GeminiClient>>()));
         services.AddSingleton<IGeminiClient>(sp => new GeminiInvocationLogger(
             sp.GetRequiredService<GeminiClient>(),
             sp.GetRequiredService<IServiceScopeFactory>(),

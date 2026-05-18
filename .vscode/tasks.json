@@ -1,25 +1,42 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "PropelIQ: Copilot pre-prompt submit",
-      "type": "shell",
-      "command": "python",
-      "args": [
-        ".propel/hooks/context_tracker_tiktoken/copilot.py",
-        "userPromptSubmitted"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "PropelIQ: Copilot session end",
-      "type": "shell",
-      "command": "python",
-      "args": [
-        ".propel/hooks/context_tracker_tiktoken/copilot.py",
-        "sessionEnd"
-      ],
-      "problemMatcher": []
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "PropelIQ: Copilot pre-prompt submit",
+			"type": "shell",
+			"command": "python",
+			"args": [
+				".propel/hooks/context_tracker_tiktoken/copilot.py",
+				"userPromptSubmitted"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "PropelIQ: Copilot session end",
+			"type": "shell",
+			"command": "python",
+			"args": [
+				".propel/hooks/context_tracker_tiktoken/copilot.py",
+				"sessionEnd"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Frontend: Dev Server",
+			"type": "shell",
+			"command": "npm run dev",
+			"args": [],
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Frontend: Vite Dev Server",
+			"type": "shell",
+			"command": "cd frontend ; npm run dev",
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
 }

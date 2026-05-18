@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Backend: API Dev Server",
+			"type": "shell",
+			"command": "cd src/UPACIP.API ; dotnet run",
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}
