@@ -127,11 +127,11 @@ backend/
 - [ ] `SELECT COUNT(*) FROM insurance_records` returns ≥ 3; `providerName` and `insuranceIdPattern` are non-null
 
 ## Implementation Checklist
-- [ ] Create all 15 entity classes in `UPACIP.Domain/Entities/`; each inherits `BaseEntity` with UUID `id` (AC-001)
-- [ ] Register all `DbSet<T>` in `AppDbContext`; configure column types, NOT NULL constraints, string max lengths via fluent API (AC-001)
-- [ ] Configure FK relationships with `DeleteBehavior.Restrict`; add `rowVersion` concurrency token on `Appointment` and `AppointmentSlot` (AC-003)
-- [ ] Add pgvector extension SQL migration step (`CREATE EXTENSION IF NOT EXISTS vector`) (AC-002 — consumed by task_002)
-- [ ] Seed ≥ 3 `InsuranceRecord` rows with non-null `providerName` and `insuranceIdPattern` via `HasData` (AC-004)
-- [ ] Create `InsuranceRecordSeeder.cs` and wire into `AppDbContext.OnModelCreating` (AC-004)
-- [ ] Run `dotnet ef migrations add InitialCreate`; review generated SQL for all 15 tables and constraints (AC-001)
-- [ ] Verify migration is idempotent: run `dotnet ef database update` twice; second run exits code 0 with "No pending migrations" (AC-001 edge case)
+- [x] Create all 15 entity classes in `UPACIP.Domain/Entities/`; each inherits `BaseEntity` with UUID `id` (AC-001)
+- [x] Register all `DbSet<T>` in `AppDbContext`; configure column types, NOT NULL constraints, string max lengths via fluent API (AC-001)
+- [x] Configure FK relationships with `DeleteBehavior.Restrict`; add `rowVersion` concurrency token on `Appointment` and `AppointmentSlot` (AC-003)
+- [x] Add pgvector extension SQL migration step (`CREATE EXTENSION IF NOT EXISTS vector`) (AC-002 — consumed by task_002)
+- [x] Seed ≥ 3 `InsuranceRecord` rows with non-null `providerName` and `insuranceIdPattern` via `HasData` (AC-004)
+- [x] Create `InsuranceRecordSeeder.cs` and wire into `AppDbContext.OnModelCreating` (AC-004)
+- [x] Run `dotnet ef migrations add InitialCreate`; review generated SQL for all 15 tables and constraints (AC-001)
+- [x] Verify migration is idempotent: run `dotnet ef database update` twice; second run exits code 0 with "No pending migrations" (AC-001 edge case)

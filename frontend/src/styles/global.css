@@ -1,0 +1,242 @@
+/*
+ * global.css — CSS Reset, Focus Ring, and Responsive Breakpoints
+ *
+ * All values reference tokens from variables.css via var(--token-name).
+ * The only raw numeric values permitted here are inside @media conditions,
+ * because CSS custom properties cannot be used in media query expressions.
+ * Those numeric values exactly mirror the --breakpoint-* tokens in variables.css.
+ */
+
+/* ─────────────────────────────────────────────────────────────
+ * Box Model Reset
+ * ───────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Base Document
+ * ───────────────────────────────────────────────────────────── */
+
+html {
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-md);
+  line-height: var(--line-height-body-md);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-default);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Typography Baseline
+ * ───────────────────────────────────────────────────────────── */
+
+h1 {
+  font-size: var(--font-size-heading-xl);
+  line-height: var(--line-height-heading-xl);
+  font-weight: var(--font-weight-heading-xl);
+  letter-spacing: var(--letter-spacing-heading-xl);
+}
+
+h2 {
+  font-size: var(--font-size-heading-lg);
+  line-height: var(--line-height-heading-lg);
+  font-weight: var(--font-weight-heading-lg);
+  letter-spacing: var(--letter-spacing-heading-lg);
+}
+
+h3 {
+  font-size: var(--font-size-heading-md);
+  line-height: var(--line-height-heading-md);
+  font-weight: var(--font-weight-heading-md);
+  letter-spacing: var(--letter-spacing-heading-md);
+}
+
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-heading-sm);
+  line-height: var(--line-height-heading-sm);
+  font-weight: var(--font-weight-heading-sm);
+  letter-spacing: var(--letter-spacing-heading-sm);
+}
+
+p {
+  font-size: var(--font-size-body-md);
+  line-height: var(--line-height-body-md);
+  color: var(--color-text-primary);
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Focus Ring — WCAG 2.2 SC 2.4.11 (UXR-202)
+ * 3 px solid outline, 2 px offset, ≥3:1 contrast against surface.
+ * :focus-visible prevents the ring on pointer-driven clicks
+ * while preserving keyboard-driven visibility.
+ * ───────────────────────────────────────────────────────────── */
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+  border-radius: var(--radius-sm);
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Interactive Element Base Styles
+ * ───────────────────────────────────────────────────────────── */
+
+a {
+  color: var(--color-brand-primary);
+  text-decoration: underline;
+  transition: color var(--duration-fast) var(--easing-default);
+}
+
+a:hover {
+  color: var(--color-brand-primary-hover);
+}
+
+button,
+[role='button'] {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  border: none;
+  background: none;
+  transition: background-color var(--duration-fast) var(--easing-default),
+    color var(--duration-fast) var(--easing-default);
+}
+
+button:disabled,
+[role='button'][aria-disabled='true'] {
+  cursor: not-allowed;
+  color: var(--color-text-disabled);
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-primary);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-default);
+  padding: var(--space-2) var(--space-3);
+  transition: border-color var(--duration-fast) var(--easing-default);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border-color: var(--color-border-focus);
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Touch Target Minimum — UXR-301 (44 × 44 px at 375 px)
+ * Applied globally so all interactive elements are reachable
+ * on touch devices. Larger surfaces on desktop are unaffected.
+ * ───────────────────────────────────────────────────────────── */
+
+button,
+a,
+[role='button'],
+[role='link'],
+input[type='checkbox'],
+input[type='radio'] {
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Inline anchor tags should not stretch the line height */
+a:not([role]) {
+  min-width: unset;
+  min-height: unset;
+  display: inline;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Lists
+ * ───────────────────────────────────────────────────────────── */
+
+ul,
+ol {
+  list-style: none;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Images
+ * ───────────────────────────────────────────────────────────── */
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Responsive Breakpoints — UXR-301
+ * Breakpoint values mirror --breakpoint-* tokens in variables.css:
+ *   xs = 375px (mobile)
+ *   md = 768px (tablet)
+ *   lg = 1280px (desktop)
+ *
+ * Raw px values are required here because CSS custom properties
+ * cannot be used inside @media conditions (CSS spec limitation).
+ * ───────────────────────────────────────────────────────────── */
+
+/* Mobile (375 px) — single-column layout */
+@media (max-width: 375px) {
+  body {
+    padding: var(--space-4);
+  }
+}
+
+/* Tablet and up (768 px) */
+@media (min-width: 768px) {
+  body {
+    padding: var(--space-6);
+  }
+}
+
+/* Desktop (1280 px) — constrained max-width */
+@media (min-width: 1280px) {
+  body {
+    padding: var(--space-8);
+    max-width: var(--grid-max-width);
+    margin-inline: auto;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Reduce Motion — Respect system preferences
+ * ───────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

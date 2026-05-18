@@ -126,11 +126,11 @@ Create the .NET 8 ASP.NET Core Web API solution following Clean Architecture lay
 - [ ] `dotnet publish -c Release` produces Windows-IIS-deployable artefact
 
 ## Implementation Checklist
-- [ ] Create solution with Domain, Application, Infrastructure, API projects; enforce layer reference direction (AC-002)
-- [ ] Implement `BaseEntity` (UUID id) in Domain; define `IRepository<T>` and `IUnitOfWork` interfaces in Domain/Application (AC-002)
-- [ ] Configure EF Core `AppDbContext` stub in Infrastructure; wire DI in `Program.cs` (AC-001)
-- [ ] Add Asp.Versioning 8.x; configure `/api/v1/` prefix; verify `/api/health` returns HTTP 404 (AC-003)
-- [ ] Add Swashbuckle 6.x; configure Swagger UI at `/swagger/index.html` for development environment (AC-004)
-- [ ] Implement `HealthController` with `GET /api/v1/health` returning HTTP 200 JSON body (AC-001)
-- [ ] Load connection string from environment variable only; verify no secrets in `appsettings.json` (DR-001)
-- [ ] `dotnet publish -c Release --runtime win-x64` produces IIS-deployable artefact (TR-018, AC-001)
+- [x] Create solution with Domain, Application, Infrastructure, API projects; enforce layer reference direction (AC-002)
+- [x] Implement `BaseEntity` (UUID id) in Domain; define `IRepository<T>` and `IUnitOfWork` interfaces in Domain/Application (AC-002)
+- [x] Configure EF Core `AppDbContext` stub in Infrastructure; wire DI in `Program.cs` (AC-001)
+- [x] Add Asp.Versioning 8.x; configure `/api/v1/` prefix; verify `/api/health` returns HTTP 404 (AC-003)
+- [x] Add Swashbuckle 6.x; configure Swagger UI at `/swagger/index.html` for development environment (AC-004)
+- [x] Implement `HealthController` with `GET /api/v1/health` returning HTTP 200 JSON body (AC-001)
+- [x] Load connection string from environment variable only; verify no secrets in `appsettings.json` (DR-001)
+- [x] `dotnet publish -c Release --runtime win-x64` produces IIS-deployable artefact (TR-018, AC-001)

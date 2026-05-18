@@ -123,11 +123,11 @@ backend/
 - [ ] CORS preflight from `http://attacker.com` → HTTP 403; no `Access-Control-Allow-Origin` header in response
 
 ## Implementation Checklist
-- [ ] Configure JWT bearer middleware: signing key from env var, 15-min expiry, `ValidateLifetime = true` (AC-001, AC-002)
-- [ ] Issue JWT in `__Host-access` cookie with HttpOnly, Secure, SameSite=Strict; never in response body (AC-001)
-- [ ] Store refresh token in Redis (`session:{sessionId}`) with 15-min TTL; never expose to client (AC-003)
-- [ ] Expired JWT (T+15min+1s) returns HTTP 401 without exposing expiry details (AC-002)
-- [ ] Redis session key TTL = 15 min; expired key → HTTP 401 on next request; redirect to login (AC-004)
-- [ ] Configure CORS: `AllowedOrigins` from env var (InfinityFree URL only); no wildcard; preflight from other origins → HTTP 403 (AC-005)
-- [ ] Handle Redis unavailability in `RefreshAsync`: return HTTP 503 with `Retry-After: 30` header (AC-003 edge case)
-- [ ] JWT tamper/forgery returns HTTP 401 with generic error message — no internal details disclosed (AC-001 edge case)
+- [x] Configure JWT bearer middleware: signing key from env var, 15-min expiry, `ValidateLifetime = true` (AC-001, AC-002)
+- [x] Issue JWT in `__Host-access` cookie with HttpOnly, Secure, SameSite=Strict; never in response body (AC-001)
+- [x] Store refresh token in Redis (`session:{sessionId}`) with 15-min TTL; never expose to client (AC-003)
+- [x] Expired JWT (T+15min+1s) returns HTTP 401 without exposing expiry details (AC-002)
+- [x] Redis session key TTL = 15 min; expired key → HTTP 401 on next request; redirect to login (AC-004)
+- [x] Configure CORS: `AllowedOrigins` from env var (InfinityFree URL only); no wildcard; preflight from other origins → HTTP 403 (AC-005)
+- [x] Handle Redis unavailability in `RefreshAsync`: return HTTP 503 with `Retry-After: 30` header (AC-003 edge case)
+- [x] JWT tamper/forgery returns HTTP 401 with generic error message — no internal details disclosed (AC-001 edge case)

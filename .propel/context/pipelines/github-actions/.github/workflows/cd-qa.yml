@@ -1,0 +1,345 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# CD Pipeline — Deploy to QA
+# Implements: CICD-031 (Integration Tests), CICD-032 (E2E Playwright),
+#             CICD-034 (Test Reports), CICD-040–043, CICD-050–052
+# Trigger: Deploy to Dev completes successfully on develop branch
+# Environments: qa (no approval required)
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Deploy to QA
+
+on:
+  workflow_run:
+    workflows: ["Deploy to Dev"]
+    types: [completed]
+    branches: [develop]
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  DOTNET_VERSION: "8.0.x"
+  NODE_VERSION: "20.x"
+
+jobs:
+  # ─── Guard: only proceed if dev deployment passed ────────────────────────
+  check-dev-deploy:
+    name: Verify Dev Deployment Passed
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Dev deployment confirmed
+        run: |
+          echo "Dev deployment passed. Proceeding with QA pipeline."
+          echo "Commit: ${{ github.event.workflow_run.head_sha }}"
+
+  # ─── CICD-040: Validate QA secrets ───────────────────────────────────────
+  validate-secrets:
+    name: "Validate Secrets (CICD-040)"
+    runs-on: ubuntu-latest
+    needs: [check-dev-deploy]
+    environment: qa
+    steps:
+      - name: Check required QA secrets
+        env:
+          CHECK_SUPABASE: ${{ secrets.QA_SUPABASE_CONNECTION_STRING }}
+          CHECK_REDIS: ${{ secrets.QA_UPSTASH_REDIS_URL }}
+          CHECK_GEMINI: ${{ secrets.GEMINI_API_KEY }}
+          CHECK_JWT: ${{ secrets.QA_JWT_SECRET_KEY }}
+          CHECK_DP: ${{ secrets.QA_DATA_PROTECTION_KEY }}
+          CHECK_FTP_USER: ${{ secrets.QA_INFINITYFREE_FTP_USERNAME }}
+          CHECK_FTP_PASS: ${{ secrets.QA_INFINITYFREE_FTP_PASSWORD }}
+          CHECK_WD_USER: ${{ secrets.QA_MONSTERAPSP_USERNAME }}
+          CHECK_WD_PASS: ${{ secrets.QA_MONSTERAPSP_PASSWORD }}
+          CHECK_BACKEND_URL: ${{ secrets.QA_BACKEND_URL }}
+          CHECK_FRONTEND_URL: ${{ secrets.QA_FRONTEND_URL }}
+        run: |
+          MISSING=()
+          [ -z "$CHECK_SUPABASE" ]    && MISSING+=("QA_SUPABASE_CONNECTION_STRING")
+          [ -z "$CHECK_REDIS" ]       && MISSING+=("QA_UPSTASH_REDIS_URL")
+          [ -z "$CHECK_GEMINI" ]      && MISSING+=("GEMINI_API_KEY")
+          [ -z "$CHECK_JWT" ]         && MISSING+=("QA_JWT_SECRET_KEY")
+          [ -z "$CHECK_DP" ]          && MISSING+=("QA_DATA_PROTECTION_KEY")
+          [ -z "$CHECK_FTP_USER" ]    && MISSING+=("QA_INFINITYFREE_FTP_USERNAME")
+          [ -z "$CHECK_FTP_PASS" ]    && MISSING+=("QA_INFINITYFREE_FTP_PASSWORD")
+          [ -z "$CHECK_WD_USER" ]     && MISSING+=("QA_MONSTERAPSP_USERNAME")
+          [ -z "$CHECK_WD_PASS" ]     && MISSING+=("QA_MONSTERAPSP_PASSWORD")
+          [ -z "$CHECK_BACKEND_URL" ] && MISSING+=("QA_BACKEND_URL")
+          [ -z "$CHECK_FRONTEND_URL" ] && MISSING+=("QA_FRONTEND_URL")
+
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "::error::CICD-040 FAILED: Missing required secrets: ${MISSING[*]}"
+            exit 1
+          fi
+          echo "CICD-040 PASSED: All QA secrets present."
+
+  # ─── Download and prepare artifacts ──────────────────────────────────────
+  download-artifacts:
+    name: "Prepare Deployment Artifacts (CICD-042)"
+    runs-on: ubuntu-latest
+    needs: [validate-secrets]
+    steps:
+      - name: Resolve CI workflow run ID for develop
+        id: resolve-ci
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ci.yml
+          branch: develop
+          name: backend-package
+          path: ./
+          search_artifacts: true
+
+      - name: Download frontend artifact from latest CI on develop
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ci.yml
+          branch: develop
+          name: frontend-dist
+          path: frontend-dist/
+          search_artifacts: true
+
+      - name: Generate deployment checksums (CICD-042)
+        run: |
+          sha256sum backend-package.zip > backend-package.zip.sha256
+          echo "CICD-042: Checksums generated."
+
+      - name: Cache artifacts for downstream jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-artifacts-qa-${{ github.run_id }}
+          path: |
+            backend-package.zip
+            frontend-dist/
+            backend-package.zip.sha256
+          retention-days: 30
+
+  # ─── CICD-041: Apply EF Core migrations ──────────────────────────────────
+  apply-migrations:
+    name: "Apply EF Core Migrations — QA (CICD-041)"
+    runs-on: ubuntu-latest
+    needs: [download-artifacts]
+    environment: qa
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Restore
+        run: dotnet restore
+        working-directory: backend
+
+      - name: Apply migrations to QA database (CICD-041)
+        run: |
+          dotnet ef database update \
+            --project src/Infrastructure \
+            --startup-project src/API \
+            --connection "${{ secrets.QA_SUPABASE_CONNECTION_STRING }}"
+        working-directory: backend
+        env:
+          ASPNETCORE_ENVIRONMENT: QA
+
+  # ─── CICD-050: Deploy backend and frontend to QA ─────────────────────────
+  deploy-backend:
+    name: "Deploy Backend → MonsterASP QA (CICD-050)"
+    runs-on: ubuntu-latest
+    needs: [apply-migrations]
+    environment: qa
+    steps:
+      - name: Download artifacts
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ${{ github.workflow }}
+          run_id: ${{ github.run_id }}
+          name: deploy-artifacts-qa-${{ github.run_id }}
+
+      - name: Extract backend package
+        run: |
+          mkdir -p backend-publish
+          unzip backend-package.zip -d backend-publish/
+
+      - name: Deploy backend via FTPS (CICD-050)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.QA_MONSTERAPSP_FTP_HOST }}
+          username: ${{ secrets.QA_MONSTERAPSP_USERNAME }}
+          password: ${{ secrets.QA_MONSTERAPSP_PASSWORD }}
+          local-dir: backend-publish/
+          server-dir: /wwwroot/api/
+          protocol: ftps
+          port: 21
+
+  deploy-frontend:
+    name: "Deploy Frontend → InfinityFree QA (CICD-050)"
+    runs-on: ubuntu-latest
+    needs: [apply-migrations]
+    environment: qa
+    steps:
+      - name: Download artifacts
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ${{ github.workflow }}
+          run_id: ${{ github.run_id }}
+          name: deploy-artifacts-qa-${{ github.run_id }}
+
+      - name: Deploy frontend via FTPS (CICD-050)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.QA_INFINITYFREE_FTP_HOST }}
+          username: ${{ secrets.QA_INFINITYFREE_FTP_USERNAME }}
+          password: ${{ secrets.QA_INFINITYFREE_FTP_PASSWORD }}
+          local-dir: frontend-dist/
+          server-dir: /htdocs/
+          protocol: ftps
+          port: 21
+
+  # ─── CICD-031: Integration tests ─────────────────────────────────────────
+  integration-tests:
+    name: "Integration Tests (CICD-031)"
+    runs-on: ubuntu-latest
+    needs: [deploy-backend, deploy-frontend]
+    environment: qa
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore
+        working-directory: backend
+
+      - name: Wait for deployment propagation
+        run: sleep 20
+
+      - name: Run integration tests — API endpoints (CICD-031)
+        run: |
+          dotnet test --no-restore --configuration Release \
+            --logger "junit;LogFilePath=../TestResults/integration-results.xml" \
+            --results-directory TestResults \
+            --filter "Category=Integration"
+        working-directory: backend
+        env:
+          ASPNETCORE_ENVIRONMENT: QA
+          QA_SUPABASE_CONNECTION_STRING: ${{ secrets.QA_SUPABASE_CONNECTION_STRING }}
+          QA_BACKEND_URL: ${{ secrets.QA_BACKEND_URL }}
+
+      - name: Upload integration test results (CICD-034)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-test-results-${{ github.run_id }}
+          path: backend/TestResults/
+          retention-days: 30
+
+  # ─── CICD-032: E2E Playwright tests ──────────────────────────────────────
+  e2e-playwright:
+    name: "E2E Tests — Playwright (CICD-032)"
+    runs-on: ubuntu-latest
+    needs: [integration-tests]
+    environment: qa
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Install Playwright dependencies
+        run: npm ci
+        working-directory: e2e
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox
+        working-directory: e2e
+
+      - name: Run E2E tests — critical user journeys (CICD-032)
+        # Covers: FR-001 (registration), FR-005 (booking), FR-011 (slot swap),
+        #         FR-015 (AI intake), FR-032 (clinical doc), FR-037–039 (ICD-10)
+        run: npx playwright test --reporter=html --reporter=junit
+        working-directory: e2e
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ secrets.QA_FRONTEND_URL }}
+          API_BASE_URL: ${{ secrets.QA_BACKEND_URL }}
+          TEST_PATIENT_EMAIL: ${{ secrets.QA_TEST_PATIENT_EMAIL }}
+          TEST_PATIENT_PASSWORD: ${{ secrets.QA_TEST_PATIENT_PASSWORD }}
+          TEST_STAFF_EMAIL: ${{ secrets.QA_TEST_STAFF_EMAIL }}
+          TEST_STAFF_PASSWORD: ${{ secrets.QA_TEST_STAFF_PASSWORD }}
+
+      - name: Upload Playwright report (CICD-034)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-qa-${{ github.run_id }}
+          path: |
+            e2e/playwright-report/
+            e2e/test-results/
+          retention-days: 30
+
+  # ─── CICD-052: Smoke tests ─────────────────────────────────────────────────
+  smoke-test:
+    name: "Smoke Tests (CICD-052)"
+    runs-on: ubuntu-latest
+    needs: [e2e-playwright]
+    environment: qa
+    steps:
+      - name: Smoke test — Backend health
+        env:
+          BACKEND_URL: ${{ secrets.QA_BACKEND_URL }}
+        run: |
+          HTTP_STATUS=$(curl -sf -o /dev/null -w "%{http_code}" --max-time 15 "${BACKEND_URL}/api/v1/health" || echo "000")
+          [ "$HTTP_STATUS" = "200" ] && echo "✓ /api/v1/health → 200" || { echo "::error::Health check failed HTTP $HTTP_STATUS"; exit 1; }
+
+          HTTP_STATUS=$(curl -sf -o /dev/null -w "%{http_code}" --max-time 15 "${BACKEND_URL}/api/v1/health/db" || echo "000")
+          [ "$HTTP_STATUS" = "200" ] && echo "✓ /api/v1/health/db → 200" || { echo "::error::DB health check failed HTTP $HTTP_STATUS"; exit 1; }
+
+      - name: Smoke test — Frontend root
+        env:
+          FRONTEND_URL: ${{ secrets.QA_FRONTEND_URL }}
+        run: |
+          HTTP_STATUS=$(curl -sf -o /dev/null -w "%{http_code}" --max-time 15 "${FRONTEND_URL}" || echo "000")
+          [ "$HTTP_STATUS" = "200" ] && echo "✓ Frontend root → 200" || { echo "::error::Frontend smoke test failed HTTP $HTTP_STATUS"; exit 1; }
+
+      - name: Notify QA deployment success
+        if: success()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          payload: |
+            {
+              "text": "✅ *QA deployment successful* — commit ${{ github.event.workflow_run.head_sha }}\nAll integration and E2E tests passed."
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+      - name: Notify QA deployment failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          payload: |
+            {
+              "text": "❌ *QA pipeline FAILED* — commit ${{ github.event.workflow_run.head_sha }}\nAction required: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

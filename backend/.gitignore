@@ -1,0 +1,29 @@
+# Build output
+bin/
+obj/
+publish/
+
+# User-specific files
+*.user
+*.suo
+.vs/
+
+# Local environment overrides (never commit secrets)
+appsettings.Local.json
+appsettings.*.Local.json
+
+# Test results
+tests/results/
+*.trx
+*.coverage
+
+# NuGet
+*.nupkg
+.nuget/
+
+# Rider / JetBrains
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

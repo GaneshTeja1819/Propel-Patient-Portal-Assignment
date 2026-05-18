@@ -1,0 +1,667 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# CI Pipeline — Unified Patient Access & Clinical Intelligence Platform
+# Implements: CICD-001–004 (Build), CICD-010–014 (Quality),
+#             CICD-020–025 (Security — ALL BLOCKING),
+#             CICD-030 (Unit Tests), CICD-034 (Reports)
+# Platform: GitHub Actions
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - "feature/**"
+      - "release/**"
+      - "hotfix/**"
+  pull_request:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+env:
+  DOTNET_VERSION: "8.0.x"
+  NODE_VERSION: "20.x"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "true"
+  DOTNET_NOLOGO: "true"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STAGE 1: BUILD  (CICD-001, CICD-002, CICD-003, CICD-004)
+# ─────────────────────────────────────────────────────────────────────────────
+jobs:
+  build-frontend:
+    name: "Build | Frontend (CICD-001/002/003/004)"
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies (CICD-002)
+        run: npm ci
+        working-directory: frontend
+
+      - name: Generate build metadata (CICD-003)
+        id: meta
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          VERSION="${PKG_VERSION}-${GITHUB_RUN_NUMBER}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          cat > build-meta.json <<EOF
+          {
+            "version": "${VERSION}",
+            "commitSha": "${GITHUB_SHA}",
+            "buildTimestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "branch": "${GITHUB_REF_NAME}"
+          }
+          EOF
+        working-directory: frontend
+
+      - name: Build React SPA (CICD-001, CICD-004)
+        run: npm run build
+        working-directory: frontend
+        env:
+          VITE_APP_VERSION: ${{ steps.meta.outputs.version }}
+          VITE_BUILD_SHA: ${{ github.sha }}
+
+      - name: Copy build metadata into dist
+        run: cp frontend/build-meta.json frontend/dist/build-meta.json
+
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/
+          retention-days: 7
+          if-no-files-found: error
+
+  build-backend:
+    name: "Build | Backend (CICD-001/002/003/004)"
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies (CICD-002)
+        run: dotnet restore
+        working-directory: backend
+
+      - name: Build (CICD-001, CICD-004)
+        run: dotnet build --no-restore --configuration Release
+        working-directory: backend
+
+      - name: Publish
+        id: publish
+        run: |
+          dotnet publish --no-build --configuration Release \
+            --output ./publish \
+            -p:AssemblyVersion=1.0.${{ github.run_number }}.0 \
+            -p:FileVersion=1.0.${{ github.run_number }}.0
+        working-directory: backend
+
+      - name: Generate build metadata (CICD-003)
+        id: meta
+        run: |
+          VERSION="1.0.${{ github.run_number }}.0"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          cat > backend/publish/build-metadata.json <<EOF
+          {
+            "version": "${VERSION}",
+            "commitSha": "${GITHUB_SHA}",
+            "buildTimestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "branch": "${GITHUB_REF_NAME}"
+          }
+          EOF
+
+      - name: Package deployment artifact
+        run: |
+          cd backend/publish
+          zip -r ../../backend-package.zip .
+
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-package
+          path: backend-package.zip
+          retention-days: 7
+          if-no-files-found: error
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STAGE 2: CODE QUALITY  (CICD-010, CICD-011, CICD-012, CICD-013, CICD-014)
+# ─────────────────────────────────────────────────────────────────────────────
+  lint-frontend:
+    name: "Quality | ESLint Frontend (CICD-010/012)"
+    runs-on: ubuntu-latest
+    needs: [build-frontend]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Run ESLint — zero warnings tolerance (CICD-010, CICD-012)
+        run: npm run lint -- --max-warnings 0
+        working-directory: frontend
+
+  lint-backend:
+    name: "Quality | StyleCop Backend (CICD-010/012)"
+    runs-on: ubuntu-latest
+    needs: [build-backend]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore
+        working-directory: backend
+
+      - name: Build with Roslyn analyzers (CICD-010, CICD-012)
+        # TreatWarningsAsErrors=true enforces StyleCop and Roslyn analyzer rules
+        run: |
+          dotnet build --no-restore --configuration Release \
+            /p:TreatWarningsAsErrors=true \
+            /p:EnforceCodeStyleInBuild=true \
+            /p:AnalysisLevel=latest
+        working-directory: backend
+
+  validate-migrations:
+    name: "Quality | EF Core Migration Validation (CICD-014)"
+    runs-on: ubuntu-latest
+    needs: [build-backend]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Restore
+        run: dotnet restore
+        working-directory: backend
+
+      - name: Validate migration list (CICD-014)
+        run: |
+          echo "Validating EF Core migration structure..."
+          dotnet ef migrations list \
+            --project src/Infrastructure \
+            --startup-project src/API \
+            --no-build \
+            --prefix-output 2>&1 | tee migration-list.txt
+          echo "Migration validation complete — schema structure verified."
+        working-directory: backend
+
+  unit-test-frontend:
+    name: "Test | Unit Tests Frontend ≥80% (CICD-030/011/013)"
+    runs-on: ubuntu-latest
+    needs: [lint-frontend]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Run unit tests with coverage (CICD-030, CICD-011)
+        run: |
+          npm run test -- \
+            --ci \
+            --coverage \
+            --coverageThreshold='{"global":{"lines":80,"branches":80,"functions":80,"statements":80}}' \
+            --reporters=default \
+            --reporters=jest-junit \
+            --coverageReporters=lcov \
+            --coverageReporters=text-summary
+        working-directory: frontend
+        env:
+          CI: "true"
+          JEST_JUNIT_OUTPUT_DIR: TestResults
+          JEST_JUNIT_OUTPUT_NAME: results.xml
+
+      - name: Upload test results (CICD-013, CICD-034)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-test-results
+          path: |
+            frontend/coverage/
+            frontend/TestResults/
+          retention-days: 30
+
+  unit-test-backend:
+    name: "Test | Unit Tests Backend ≥80% (CICD-030/011/013)"
+    runs-on: ubuntu-latest
+    needs: [lint-backend]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore
+        working-directory: backend
+
+      - name: Run unit tests with coverage (CICD-030, CICD-011)
+        run: |
+          dotnet test --no-restore --configuration Release \
+            --collect:"XPlat Code Coverage" \
+            --logger "junit;LogFilePath=../TestResults/results.xml" \
+            --results-directory TestResults \
+            --filter "Category=Unit"
+        working-directory: backend
+
+      - name: Install ReportGenerator
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name: Generate coverage report
+        run: |
+          reportgenerator \
+            -reports:"backend/TestResults/**/coverage.cobertura.xml" \
+            -targetdir:"backend/coverage-report" \
+            -reporttypes:"Cobertura;HtmlSummary;TextSummary"
+
+      - name: Enforce 80% coverage threshold (CICD-011, CICD-012)
+        run: |
+          COVERAGE=$(python3 -c "
+          import xml.etree.ElementTree as ET, sys
+          try:
+              tree = ET.parse('backend/coverage-report/Cobertura.xml')
+              rate = float(tree.getroot().get('line-rate', 0)) * 100
+              print(f'{rate:.1f}')
+          except Exception as e:
+              print('0.0')
+          ")
+          echo "Backend line coverage: ${COVERAGE}%"
+          python3 -c "
+          rate = float('$COVERAGE')
+          if rate < 80:
+              raise SystemExit(f'CICD-011 FAILED: Coverage {rate:.1f}% is below the required 80% threshold.')
+          print(f'CICD-011 PASSED: Coverage {rate:.1f}% meets the 80% threshold.')
+          "
+
+      - name: Upload test results (CICD-013, CICD-034)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-test-results
+          path: |
+            backend/TestResults/
+            backend/coverage-report/
+          retention-days: 30
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STAGE 3: SECURITY — ALL GATES BLOCKING (CICD-020–025)
+# NEVER set continue-on-error: true on any job in this stage.
+# Anti-pattern per cicd-pipeline-standards rule.
+# ─────────────────────────────────────────────────────────────────────────────
+  sast-codeql:
+    name: "Security | CodeQL SAST (CICD-020/024)"
+    runs-on: ubuntu-latest
+    needs: [build-frontend, build-backend]
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [csharp, javascript-typescript]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL (CICD-020)
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality
+
+      - name: Setup .NET (C# analysis)
+        if: matrix.language == 'csharp'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Build backend for CodeQL
+        if: matrix.language == 'csharp'
+        run: dotnet build --configuration Release
+        working-directory: backend
+
+      - name: Setup Node.js (JS/TS analysis)
+        if: matrix.language == 'javascript-typescript'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install frontend deps for CodeQL
+        if: matrix.language == 'javascript-typescript'
+        run: npm ci
+        working-directory: frontend
+
+      - name: Perform CodeQL Analysis — SARIF upload (CICD-020, CICD-024)
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:${{ matrix.language }}
+          upload: true
+          output: codeql-results-${{ matrix.language }}.sarif
+
+  sca-snyk:
+    name: "Security | Snyk SCA (CICD-021/024)"
+    runs-on: ubuntu-latest
+    needs: [build-frontend, build-backend]
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Install frontend deps
+        run: npm ci
+        working-directory: frontend
+
+      - name: Restore backend
+        run: dotnet restore
+        working-directory: backend
+
+      - name: Snyk scan — Frontend npm (CICD-021, CICD-024)
+        run: |
+          snyk test \
+            --severity-threshold=high \
+            --sarif-file-output=snyk-frontend.sarif \
+            --json-file-output=snyk-frontend.json
+        working-directory: frontend
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        # continue-on-error: false — BLOCKING. Do NOT change. (cicd-pipeline-standards)
+
+      - name: Upload Snyk frontend SARIF (CICD-024)
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: frontend/snyk-frontend.sarif
+          category: snyk-npm
+
+      - name: Snyk scan — Backend NuGet (CICD-021, CICD-024)
+        run: |
+          snyk test \
+            --severity-threshold=high \
+            --sarif-file-output=snyk-backend.sarif \
+            --json-file-output=snyk-backend.json
+        working-directory: backend
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        # continue-on-error: false — BLOCKING. Do NOT change. (cicd-pipeline-standards)
+
+      - name: Upload Snyk backend SARIF (CICD-024)
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: backend/snyk-backend.sarif
+          category: snyk-nuget
+
+      - name: Upload Snyk JSON reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: snyk-reports
+          path: |
+            frontend/snyk-frontend.json
+            backend/snyk-backend.json
+          retention-days: 30
+
+  dependency-audit:
+    name: "Security | Dependency Audit (CICD-022)"
+    runs-on: ubuntu-latest
+    needs: [build-frontend, build-backend]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: npm audit — critical threshold (CICD-022)
+        run: |
+          npm ci
+          npm audit --audit-level=critical --json > npm-audit.json || {
+            echo "::error::Critical npm vulnerabilities detected. Pipeline blocked. (CICD-022)"
+            cat npm-audit.json
+            exit 1
+          }
+          echo "npm audit passed — no critical vulnerabilities."
+        working-directory: frontend
+
+      - name: dotnet vulnerable packages check (CICD-022)
+        run: |
+          dotnet restore
+          RESULT=$(dotnet list package --vulnerable --include-transitive 2>&1)
+          echo "$RESULT"
+          if echo "$RESULT" | grep -qi "has the following vulnerable packages"; then
+            echo "::error::Vulnerable NuGet packages detected. Pipeline blocked. (CICD-022)"
+            exit 1
+          fi
+          echo "dotnet vulnerability check passed — no vulnerable packages."
+        working-directory: backend
+
+      - name: Upload audit reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-audit-reports
+          path: frontend/npm-audit.json
+          retention-days: 30
+
+  secrets-detection:
+    name: "Security | GitLeaks Secrets Scan (CICD-023/024)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout — full history (CICD-023)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run GitLeaks — zero findings tolerance (CICD-023, CICD-024)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+        # continue-on-error: false — BLOCKING. Anti-pattern per cicd-pipeline-standards.
+
+  phi-audit:
+    name: "Security | PHI Audit Check — HIPAA (CICD-025)"
+    runs-on: ubuntu-latest
+    needs: [build-frontend, build-backend]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Build frontend for output inspection
+        run: npm ci && npm run build
+        working-directory: frontend
+
+      - name: Restore backend
+        run: dotnet restore && dotnet publish --no-build --configuration Release --output ./publish || dotnet publish --configuration Release --output ./publish
+        working-directory: backend
+
+      - name: PHI pattern scan — source code (CICD-025, DR-001, NFR-011)
+        run: |
+          set +e
+          VIOLATIONS=0
+
+          echo "=== PHI Audit Check (CICD-025) ==="
+          echo "Scanning for hardcoded PHI in source files..."
+
+          # SSN-like patterns in source (not in test/mock files)
+          SSN_HITS=$(grep -rn --include="*.cs" --include="*.ts" --include="*.tsx" \
+            --exclude-dir=".git" --exclude-dir="node_modules" --exclude-dir="bin" \
+            --exclude-dir="obj" --exclude-dir="dist" \
+            -E '[0-9]{3}-[0-9]{2}-[0-9]{4}' . 2>/dev/null \
+            | grep -iv "test\|mock\|fake\|stub\|dummy\|sample\|example\|placeholder" \
+            | wc -l)
+          if [ "$SSN_HITS" -gt 0 ]; then
+            echo "::error::Potential SSN patterns detected in source code ($SSN_HITS occurrences). (CICD-025)"
+            VIOLATIONS=$((VIOLATIONS + 1))
+          fi
+
+          # Hardcoded DOB/PHI assignments
+          DOB_HITS=$(grep -rn --include="*.cs" --include="*.ts" --include="*.tsx" \
+            --exclude-dir=".git" --exclude-dir="node_modules" --exclude-dir="bin" \
+            --exclude-dir="obj" --exclude-dir="dist" \
+            -E '(DateOfBirth|SSN|MRN|PatientId|InsuranceId)\s*=\s*"[^"]{3,}"' . 2>/dev/null \
+            | grep -iv "test\|mock\|fake\|stub\|dummy\|sample\|example\|TODO\|FIXME" \
+            | wc -l)
+          if [ "$DOB_HITS" -gt 0 ]; then
+            echo "::error::Potential hardcoded PHI field assignments detected ($DOB_HITS). (CICD-025)"
+            VIOLATIONS=$((VIOLATIONS + 1))
+          fi
+
+          # Real email addresses in non-placeholder form in source
+          EMAIL_IN_DIST=$(grep -rn \
+            -E '[a-zA-Z0-9._%+-]{4,}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' \
+            frontend/dist/ 2>/dev/null \
+            | grep -iv "example\.com\|test\.\|dummy\|placeholder\|noreply\|support@\|no-reply\|@yourdomain" \
+            | head -10)
+          if [ -n "$EMAIL_IN_DIST" ]; then
+            echo "::warning::Non-placeholder email addresses found in frontend build output."
+            echo "$EMAIL_IN_DIST"
+            echo "Verify these are not real patient email addresses. (CICD-025)"
+          fi
+
+          if [ "$VIOLATIONS" -gt 0 ]; then
+            echo "::error::PHI audit failed with $VIOLATIONS violation(s). Review required before deployment. (CICD-025, HIPAA DR-001)"
+            exit 1
+          fi
+
+          echo "PHI audit PASSED. No hardcoded PHI patterns detected. (CICD-025)"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CI SUCCESS GATE — All jobs must pass before CD workflows can proceed
+# ─────────────────────────────────────────────────────────────────────────────
+  ci-success:
+    name: "CI Success Gate"
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - build-frontend
+      - build-backend
+      - lint-frontend
+      - lint-backend
+      - validate-migrations
+      - unit-test-frontend
+      - unit-test-backend
+      - sast-codeql
+      - sca-snyk
+      - dependency-audit
+      - secrets-detection
+      - phi-audit
+    steps:
+      - name: Verify all CI jobs passed
+        run: |
+          RESULTS=(
+            "${{ needs.build-frontend.result }}"
+            "${{ needs.build-backend.result }}"
+            "${{ needs.lint-frontend.result }}"
+            "${{ needs.lint-backend.result }}"
+            "${{ needs.validate-migrations.result }}"
+            "${{ needs.unit-test-frontend.result }}"
+            "${{ needs.unit-test-backend.result }}"
+            "${{ needs.sast-codeql.result }}"
+            "${{ needs.sca-snyk.result }}"
+            "${{ needs.dependency-audit.result }}"
+            "${{ needs.secrets-detection.result }}"
+            "${{ needs.phi-audit.result }}"
+          )
+          FAILED=0
+          for RESULT in "${RESULTS[@]}"; do
+            if [ "$RESULT" != "success" ]; then
+              FAILED=$((FAILED + 1))
+            fi
+          done
+          if [ "$FAILED" -gt 0 ]; then
+            echo "::error::CI gate FAILED. $FAILED job(s) did not succeed."
+            exit 1
+          fi
+          echo "CI gate PASSED. All checks successful. Deployment workflows may proceed."

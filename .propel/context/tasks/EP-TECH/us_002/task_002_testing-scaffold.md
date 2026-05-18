@@ -106,6 +106,6 @@ backend/
 - [ ] No direct references to Infrastructure or API layer exist in the test project
 
 ## Implementation Checklist
-- [ ] Create `UPACIP.Tests.csproj` with xUnit, xUnit.runner.visualstudio, Moq references; add project reference to Application layer only (AC-005)
-- [ ] Write `ApplicationLayerSmokeTest.cs` — one `[Fact]` asserting Application assembly loads (AC-005)
-- [ ] Add test project to `UPACIP.sln`; confirm `dotnet build` of the solution includes test project (AC-005)
+- [x] Create `UPACIP.Tests.csproj` with xUnit, xUnit.runner.visualstudio, Moq references; add project reference to Application layer only (AC-005)
+- [x] Write `ApplicationLayerSmokeTest.cs` — one `[Fact]` asserting Application assembly loads (AC-005)
+- [x] Add test project to `UPACIP.sln`; confirm `dotnet build` of the solution includes test project (AC-005)

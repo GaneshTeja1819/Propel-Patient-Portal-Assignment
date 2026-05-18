@@ -1,0 +1,451 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# CD Pipeline — Deploy to Staging
+# Implements: CICD-033 (k6 Performance), CICD-040–043, CICD-050–053,
+#             CICD-060 (1 approval), CICD-062–063 (timeout + notifications)
+# Trigger: push to release/** (after CI passes)
+# Environment: staging — requires 1 reviewer approval
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - "release/**"
+      - "hotfix/**"
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  DOTNET_VERSION: "8.0.x"
+  NODE_VERSION: "20.x"
+
+jobs:
+  # ─── CICD-040: Validate staging secrets ──────────────────────────────────
+  validate-secrets:
+    name: "Validate Secrets (CICD-040)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check required staging secrets
+        env:
+          CHECK_SUPABASE: ${{ secrets.STAGING_SUPABASE_CONNECTION_STRING }}
+          CHECK_REDIS: ${{ secrets.STAGING_UPSTASH_REDIS_URL }}
+          CHECK_GEMINI: ${{ secrets.GEMINI_API_KEY }}
+          CHECK_JWT: ${{ secrets.STAGING_JWT_SECRET_KEY }}
+          CHECK_DP: ${{ secrets.STAGING_DATA_PROTECTION_KEY }}
+          CHECK_FTP_USER: ${{ secrets.STAGING_INFINITYFREE_FTP_USERNAME }}
+          CHECK_FTP_PASS: ${{ secrets.STAGING_INFINITYFREE_FTP_PASSWORD }}
+          CHECK_WD_USER: ${{ secrets.STAGING_MONSTERAPSP_USERNAME }}
+          CHECK_WD_PASS: ${{ secrets.STAGING_MONSTERAPSP_PASSWORD }}
+          CHECK_BACKEND_URL: ${{ secrets.STAGING_BACKEND_URL }}
+          CHECK_FRONTEND_URL: ${{ secrets.STAGING_FRONTEND_URL }}
+        run: |
+          MISSING=()
+          [ -z "$CHECK_SUPABASE" ]    && MISSING+=("STAGING_SUPABASE_CONNECTION_STRING")
+          [ -z "$CHECK_REDIS" ]       && MISSING+=("STAGING_UPSTASH_REDIS_URL")
+          [ -z "$CHECK_GEMINI" ]      && MISSING+=("GEMINI_API_KEY")
+          [ -z "$CHECK_JWT" ]         && MISSING+=("STAGING_JWT_SECRET_KEY")
+          [ -z "$CHECK_DP" ]          && MISSING+=("STAGING_DATA_PROTECTION_KEY")
+          [ -z "$CHECK_FTP_USER" ]    && MISSING+=("STAGING_INFINITYFREE_FTP_USERNAME")
+          [ -z "$CHECK_FTP_PASS" ]    && MISSING+=("STAGING_INFINITYFREE_FTP_PASSWORD")
+          [ -z "$CHECK_WD_USER" ]     && MISSING+=("STAGING_MONSTERAPSP_USERNAME")
+          [ -z "$CHECK_WD_PASS" ]     && MISSING+=("STAGING_MONSTERAPSP_PASSWORD")
+          [ -z "$CHECK_BACKEND_URL" ] && MISSING+=("STAGING_BACKEND_URL")
+          [ -z "$CHECK_FRONTEND_URL" ] && MISSING+=("STAGING_FRONTEND_URL")
+
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "::error::CICD-040 FAILED: Missing required secrets: ${MISSING[*]}"
+            exit 1
+          fi
+          echo "CICD-040 PASSED: All staging secrets present."
+
+  # ─── CICD-060: Approval gate (1 reviewer) — staging environment ───────────
+  # GitHub Environment 'staging' must be configured with:
+  #   - Required reviewers: 1
+  #   - Wait timer: 0 minutes
+  #   - Deployment branch: release/**
+  #   - Timeout: 24 hours (CICD-062) — set via environment protection rule
+  # ─────────────────────────────────────────────────────────────────────────
+  approval-gate:
+    name: "Approval Gate — 1 Reviewer Required (CICD-060)"
+    runs-on: ubuntu-latest
+    needs: [validate-secrets]
+    environment:
+      name: staging
+      url: ${{ secrets.STAGING_FRONTEND_URL }}
+    steps:
+      - name: Deployment approved
+        run: |
+          echo "CICD-060: Staging deployment approved by reviewer."
+          echo "Approval recorded in GitHub Actions audit log. (CICD-064)"
+          echo "Deploying commit: ${{ github.sha }}"
+
+      - name: Notify approval granted
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          payload: |
+            {
+              "text": "🟡 *Staging deployment approved* — commit ${{ github.sha }}\nBranch: ${{ github.ref_name }}\nDeployment starting now."
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+  # ─── CICD-043: Pre-deploy archive (enables rollback) ─────────────────────
+  pre-deploy-archive:
+    name: "Pre-Deploy Archive (CICD-043)"
+    runs-on: ubuntu-latest
+    needs: [approval-gate]
+    steps:
+      - name: Download current staging backend (pre-deploy snapshot)
+        # Archive existing deployment for rollback capability (CICD-043, CICD-053)
+        run: |
+          echo "CICD-043: Archiving current staging deployment before overwrite."
+          # Download current backend package if it exists from previous deployment
+          mkdir -p pre-deploy-backup
+
+      - name: Download previous staging artifacts for backup
+        continue-on-error: true
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: cd-staging.yml
+          name: staging-backend-package
+          path: pre-deploy-backup/backend/
+          search_artifacts: true
+
+      - name: Download previous staging frontend for backup
+        continue-on-error: true
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: cd-staging.yml
+          name: staging-frontend-dist
+          path: pre-deploy-backup/frontend/
+          search_artifacts: true
+
+      - name: Archive pre-deploy backup (CICD-043)
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-pre-deploy-backup-${{ github.run_id }}
+          path: pre-deploy-backup/
+          retention-days: 90
+          if-no-files-found: warn
+
+      - name: Download new CI artifacts
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ci.yml
+          branch: ${{ github.ref_name }}
+          name: backend-package
+          path: ./
+          search_artifacts: true
+
+      - name: Download new CI frontend artifact
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ci.yml
+          branch: ${{ github.ref_name }}
+          name: frontend-dist
+          path: frontend-dist/
+          search_artifacts: true
+
+      - name: Generate deployment checksums (CICD-042)
+        run: |
+          sha256sum backend-package.zip > backend-package.zip.sha256
+          echo "CICD-042: Pre-deploy checksums generated."
+
+      - name: Store new artifacts for deployment jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-backend-package
+          path: backend-package.zip
+          retention-days: 90
+
+      - name: Store frontend for deployment jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-frontend-dist
+          path: frontend-dist/
+          retention-days: 90
+
+      - name: Store checksums
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-checksums-${{ github.run_id }}
+          path: backend-package.zip.sha256
+          retention-days: 90
+
+  # ─── CICD-041: Apply EF Core migrations ──────────────────────────────────
+  apply-migrations:
+    name: "Apply EF Core Migrations — Staging (CICD-041)"
+    runs-on: ubuntu-latest
+    needs: [pre-deploy-archive]
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Restore
+        run: dotnet restore
+        working-directory: backend
+
+      - name: Apply migrations to staging database (CICD-041)
+        run: |
+          dotnet ef database update \
+            --project src/Infrastructure \
+            --startup-project src/API \
+            --connection "${{ secrets.STAGING_SUPABASE_CONNECTION_STRING }}"
+        working-directory: backend
+        env:
+          ASPNETCORE_ENVIRONMENT: Staging
+
+  # ─── CICD-051: Prerequisite check ────────────────────────────────────────
+  prerequisite-check:
+    name: "Prerequisite Check (CICD-051)"
+    runs-on: ubuntu-latest
+    needs: [apply-migrations]
+    steps:
+      - name: Verify staging endpoints reachable
+        env:
+          BACKEND_URL: ${{ secrets.STAGING_BACKEND_URL }}
+        run: |
+          HTTP=$(curl -sf -o /dev/null -w "%{http_code}" --max-time 15 "${BACKEND_URL}/api/v1/health" || echo "000")
+          if [ "$HTTP" = "200" ]; then
+            echo "CICD-051: Staging backend reachable. Prerequisites met."
+          else
+            echo "::warning::Staging backend health endpoint not yet reachable (HTTP $HTTP). Continuing — may be first deployment."
+          fi
+
+  # ─── CICD-050: Deploy backend to staging ─────────────────────────────────
+  deploy-backend:
+    name: "Deploy Backend → MonsterASP Staging (CICD-050)"
+    runs-on: ubuntu-latest
+    needs: [prerequisite-check]
+    environment: staging
+    steps:
+      - name: Download backend artifact
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ${{ github.workflow }}
+          run_id: ${{ github.run_id }}
+          name: staging-backend-package
+
+      - name: Extract backend package
+        run: |
+          mkdir -p backend-publish
+          unzip backend-package.zip -d backend-publish/
+
+      - name: Deploy backend via FTPS (CICD-050)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.STAGING_MONSTERAPSP_FTP_HOST }}
+          username: ${{ secrets.STAGING_MONSTERAPSP_USERNAME }}
+          password: ${{ secrets.STAGING_MONSTERAPSP_PASSWORD }}
+          local-dir: backend-publish/
+          server-dir: /wwwroot/api/
+          protocol: ftps
+          port: 21
+
+  # ─── CICD-050: Deploy frontend to staging ────────────────────────────────
+  deploy-frontend:
+    name: "Deploy Frontend → InfinityFree Staging (CICD-050)"
+    runs-on: ubuntu-latest
+    needs: [prerequisite-check]
+    environment: staging
+    steps:
+      - name: Download frontend artifact
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ${{ github.workflow }}
+          run_id: ${{ github.run_id }}
+          name: staging-frontend-dist
+          path: frontend-dist/
+
+      - name: Deploy frontend via FTPS (CICD-050)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.STAGING_INFINITYFREE_FTP_HOST }}
+          username: ${{ secrets.STAGING_INFINITYFREE_FTP_USERNAME }}
+          password: ${{ secrets.STAGING_INFINITYFREE_FTP_PASSWORD }}
+          local-dir: frontend-dist/
+          server-dir: /htdocs/
+          protocol: ftps
+          port: 21
+
+  # ─── CICD-052: Smoke tests ─────────────────────────────────────────────────
+  smoke-test:
+    name: "Smoke Tests (CICD-052)"
+    runs-on: ubuntu-latest
+    needs: [deploy-backend, deploy-frontend]
+    environment: staging
+    outputs:
+      smoke-result: ${{ steps.smoke.outputs.result }}
+    steps:
+      - name: Wait for propagation
+        run: sleep 30
+
+      - name: Run smoke tests (CICD-052)
+        id: smoke
+        env:
+          BACKEND_URL: ${{ secrets.STAGING_BACKEND_URL }}
+          FRONTEND_URL: ${{ secrets.STAGING_FRONTEND_URL }}
+        run: |
+          FAILED=0
+
+          HTTP=$(curl -sf -o /dev/null -w "%{http_code}" --max-time 15 "${BACKEND_URL}/api/v1/health" || echo "000")
+          if [ "$HTTP" = "200" ]; then echo "✓ /api/v1/health → 200"; else echo "::error::FAILED /api/v1/health → $HTTP"; FAILED=1; fi
+
+          HTTP=$(curl -sf -o /dev/null -w "%{http_code}" --max-time 15 "${BACKEND_URL}/api/v1/health/db" || echo "000")
+          if [ "$HTTP" = "200" ]; then echo "✓ /api/v1/health/db → 200"; else echo "::error::FAILED /api/v1/health/db → $HTTP"; FAILED=1; fi
+
+          HTTP=$(curl -sf -o /dev/null -w "%{http_code}" --max-time 15 "${FRONTEND_URL}" || echo "000")
+          if [ "$HTTP" = "200" ]; then echo "✓ Frontend root → 200"; else echo "::error::FAILED Frontend root → $HTTP"; FAILED=1; fi
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo "result=failed" >> "$GITHUB_OUTPUT"
+            echo "::error::CICD-052: Smoke tests FAILED — triggering automated rollback (CICD-053)"
+            exit 1
+          fi
+          echo "result=passed" >> "$GITHUB_OUTPUT"
+          echo "CICD-052: All smoke tests PASSED."
+
+  # ─── CICD-033: Performance tests (k6) ────────────────────────────────────
+  performance-test:
+    name: "Performance Tests — k6 (CICD-033)"
+    runs-on: ubuntu-latest
+    needs: [smoke-test]
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run k6 performance tests (CICD-033)
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: tests/performance/smoke.js
+          flags: --env BASE_URL=${{ secrets.STAGING_BACKEND_URL }}
+
+      - name: Run k6 slot availability load test (NFR-002 ≤100ms)
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: tests/performance/slot-availability.js
+          flags: |
+            --env BASE_URL=${{ secrets.STAGING_BACKEND_URL }}
+            --env P95_THRESHOLD=500
+            --env SLOT_READ_THRESHOLD=100
+
+      - name: Upload k6 results (CICD-034)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: k6-results-staging-${{ github.run_id }}
+          path: tests/performance/results/
+          retention-days: 90
+
+  # ─── CICD-053: Automated rollback on smoke test failure ──────────────────
+  rollback:
+    name: "Automated Rollback (CICD-053)"
+    runs-on: ubuntu-latest
+    needs: [smoke-test]
+    if: failure()
+    environment: staging
+    steps:
+      - name: Download pre-deploy backup (CICD-043)
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ${{ github.workflow }}
+          run_id: ${{ github.run_id }}
+          name: staging-pre-deploy-backup-${{ github.run_id }}
+          path: rollback-assets/
+
+      - name: Rollback backend — restore previous package (CICD-053)
+        if: hashFiles('rollback-assets/backend/backend-package.zip') != ''
+        run: |
+          mkdir -p rollback-backend
+          unzip rollback-assets/backend/backend-package.zip -d rollback-backend/
+
+      - name: Restore previous backend via FTPS
+        if: hashFiles('rollback-assets/backend/backend-package.zip') != ''
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.STAGING_MONSTERAPSP_FTP_HOST }}
+          username: ${{ secrets.STAGING_MONSTERAPSP_USERNAME }}
+          password: ${{ secrets.STAGING_MONSTERAPSP_PASSWORD }}
+          local-dir: rollback-backend/
+          server-dir: /wwwroot/api/
+          protocol: ftps
+          port: 21
+
+      - name: Rollback frontend — restore previous dist (CICD-053)
+        if: hashFiles('rollback-assets/frontend/**') != ''
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.STAGING_INFINITYFREE_FTP_HOST }}
+          username: ${{ secrets.STAGING_INFINITYFREE_FTP_USERNAME }}
+          password: ${{ secrets.STAGING_INFINITYFREE_FTP_PASSWORD }}
+          local-dir: rollback-assets/frontend/
+          server-dir: /htdocs/
+          protocol: ftps
+          port: 21
+
+      - name: Verify rollback via smoke test
+        env:
+          BACKEND_URL: ${{ secrets.STAGING_BACKEND_URL }}
+        run: |
+          sleep 20
+          HTTP=$(curl -sf -o /dev/null -w "%{http_code}" --max-time 15 "${BACKEND_URL}/api/v1/health" || echo "000")
+          if [ "$HTTP" = "200" ]; then
+            echo "CICD-053: Rollback successful — health check passed."
+          else
+            echo "::error::CICD-053: Rollback verification FAILED (HTTP $HTTP). Manual intervention required."
+          fi
+
+      - name: Create GitHub Issue on rollback
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🔴 Staging Rollback Executed — ${context.sha.substring(0, 7)}`,
+              body: `## Automated Rollback — Staging (CICD-053)\n\n**Commit:** ${context.sha}\n**Branch:** ${context.ref}\n**Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}\n\n### Reason\nSmoke tests failed after staging deployment.\n\n### Action Required\n- [ ] Investigate smoke test failures\n- [ ] Review deployment logs\n- [ ] Verify rollback was successful\n- [ ] Fix root cause before re-deploying`,
+              labels: ['rollback', 'staging', 'incident']
+            })
+
+      - name: Send critical rollback notification
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          payload: |
+            {
+              "text": "🔴 *STAGING ROLLBACK EXECUTED* (CICD-053)\nCommit: ${{ github.sha }}\nBranch: ${{ github.ref_name }}\nReason: Smoke tests failed post-deployment.\nAction required: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+  # ─── Notify successful staging deployment ────────────────────────────────
+  notify-success:
+    name: Notify Staging Success
+    runs-on: ubuntu-latest
+    needs: [performance-test]
+    if: success()
+    steps:
+      - name: Notify staging deployment complete
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          payload: |
+            {
+              "text": "✅ *Staging deployment complete* — commit ${{ github.sha }}\nBranch: ${{ github.ref_name }}\nAll smoke tests and performance tests passed.\nReady for production promotion after 2-reviewer approval."
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

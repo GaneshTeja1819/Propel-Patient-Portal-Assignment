@@ -103,8 +103,8 @@ backend/
 - [ ] Deployment checklist entry confirms PITR enabled with ≥ 1 day recovery window
 
 ## Implementation Checklist
-- [ ] Apply `InitialCreate` migration to Supabase with `dotnet ef database update`; confirm exit code 0 (AC-001)
-- [ ] Verify pgvector extension active: `SELECT * FROM pg_extension WHERE extname = 'vector'` returns one row (AC-002)
-- [ ] Verify FK constraint: invalid FK insert rejected with PostgreSQL error `23503` (AC-003)
-- [ ] Create `scripts/db-check.sh`; verify script runs and prints storage usage; warns at ≥ 80% of 500 MB limit (AC-001 edge case)
+- [x] Apply `InitialCreate` migration to Supabase with `dotnet ef database update`; confirm exit code 0 (AC-001)
+- [x] Verify pgvector extension active: `SELECT * FROM pg_extension WHERE extname = 'vector'` returns one row (AC-002)
+- [x] Verify FK constraint: invalid FK insert rejected with PostgreSQL error `23503` (AC-003)
+- [x] Create `scripts/db-check.sh`; verify script runs and prints storage usage; warns at ≥ 80% of 500 MB limit (AC-001 edge case)
 - [ ] Confirm Supabase PITR is active (≥ 1 day window); record confirmation in deployment checklist (AC-005)

@@ -112,9 +112,9 @@ backend/
 - [ ] `promptHash` in the audit entry matches `SHA256(prompt)` computed independently
 
 ## Implementation Checklist
-- [ ] Add Google.Ai.Generativelanguage 1.x to Infrastructure; configure `GenerativeModel` with `gemini-1.5-pro` and structured output JSON schema mode (AC-003)
-- [ ] Validate `GEMINI_API_KEY` env var at client construction; throw `InvalidOperationException` and exit non-zero if absent (AC-003 edge case)
-- [ ] Implement `GeminiInvocationLogger` decorator: compute `promptHash` (SHA-256), capture latency, token counts, HTTP status (AC-004)
-- [ ] Write `AI_INVOCATION` audit entry via `IAuditLogService` in `finally` block — runs on both success and failure (AC-004)
-- [ ] Register `IGeminiClient` (decorated with logger) as singleton in `Program.cs` DI (AC-003, AC-004)
-- [ ] Smoke test confirms structured response deserialises to target C# type without regex parsing (AC-003)
+- [x] Add Google.Ai.Generativelanguage 1.x to Infrastructure; configure `GenerativeModel` with `gemini-1.5-pro` and structured output JSON schema mode (AC-003)
+- [x] Validate `GEMINI_API_KEY` env var at client construction; throw `InvalidOperationException` and exit non-zero if absent (AC-003 edge case)
+- [x] Implement `GeminiInvocationLogger` decorator: compute `promptHash` (SHA-256), capture latency, token counts, HTTP status (AC-004)
+- [x] Write `AI_INVOCATION` audit entry via `IAuditLogService` in `finally` block — runs on both success and failure (AC-004)
+- [x] Register `IGeminiClient` (decorated with logger) as singleton in `Program.cs` DI (AC-003, AC-004)
+- [x] Smoke test confirms structured response deserialises to target C# type without regex parsing (AC-003)

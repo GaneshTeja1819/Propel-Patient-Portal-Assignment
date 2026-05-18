@@ -125,11 +125,11 @@ backend/
 - [ ] `DELETE /api/v1/patients/{id}/data` returns HTTP 202; audit row written
 
 ## Implementation Checklist
-- [ ] Implement `AesEncryptionService` with AES-256-GCM; load key from env var; throw at startup if key absent or wrong length (AC-001, AC-002)
-- [ ] Create `EncryptedStringConverter` and apply to all PHI columns in `AppDbContext.OnModelCreating` (AC-001)
+- [x] Implement `AesEncryptionService` with AES-256-GCM; load key from env var; throw at startup if key absent or wrong length (AC-001, AC-002)
+- [x] Create `EncryptedStringConverter` and apply to all PHI columns in `AppDbContext.OnModelCreating` (AC-001)
 - [ ] Verify ciphertext at rest: save entity, read raw column — confirm unreadable without decryption (AC-001)
-- [ ] Implement `AuditLogService` with ADO.NET INSERT into `audit.audit_log`; wire `AuditSaveChangesInterceptor` (AC-004)
-- [ ] Confirm `storagePath` column stores encrypted path string; no binary content in DB row (AC-005)
-- [ ] Scaffold `DELETE /api/v1/patients/{id}/data`; return HTTP 202; write audit entry with actorId, timestamp, targetId (AC-006)
-- [ ] Verify encryption key not in any committed source file (AC-002)
-- [ ] Add `DbUpdateException` handler for ciphertext column overflow; return HTTP 422 with field-level error (AC-001 edge case)
+- [x] Implement `AuditLogService` with ADO.NET INSERT into `audit.audit_log`; wire `AuditSaveChangesInterceptor` (AC-004)
+- [x] Confirm `storagePath` column stores encrypted path string; no binary content in DB row (AC-005)
+- [x] Scaffold `DELETE /api/v1/patients/{id}/data`; return HTTP 202; write audit entry with actorId, timestamp, targetId (AC-006)
+- [x] Verify encryption key not in any committed source file (AC-002)
+- [x] Add `DbUpdateException` handler for ciphertext column overflow; return HTTP 422 with field-level error (AC-001 edge case)

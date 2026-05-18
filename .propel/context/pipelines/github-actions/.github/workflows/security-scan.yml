@@ -1,0 +1,309 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Security Scan — Scheduled Deep Security Analysis
+# Implements: CICD-020 (SAST), CICD-021 (SCA), CICD-022 (Dep Audit),
+#             CICD-023 (Secrets), CICD-024 (SARIF), CICD-025 (PHI Audit)
+# Triggers: Weekly schedule (Sunday 00:00 UTC) + push to main/develop +
+#           manual dispatch
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Security Scan
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"  # Weekly: Sunday 00:00 UTC
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+    inputs:
+      scan-depth:
+        description: "Scan depth: full | quick"
+        required: false
+        default: "full"
+        type: choice
+        options: [full, quick]
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+env:
+  DOTNET_VERSION: "8.0.x"
+  NODE_VERSION: "20.x"
+
+jobs:
+  # ─── CICD-020: Full CodeQL SAST scan ─────────────────────────────────────
+  sast-codeql-full:
+    name: "SAST | CodeQL Full Scan (CICD-020/024)"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [csharp, javascript-typescript]
+    steps:
+      - name: Checkout — full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Initialize CodeQL (CICD-020)
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality,security-extended
+
+      - name: Setup .NET (C# build)
+        if: matrix.language == 'csharp'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Build backend for CodeQL
+        if: matrix.language == 'csharp'
+        run: dotnet build --configuration Release
+        working-directory: backend
+
+      - name: Setup Node.js (JS/TS)
+        if: matrix.language == 'javascript-typescript'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install frontend deps
+        if: matrix.language == 'javascript-typescript'
+        run: npm ci
+        working-directory: frontend
+
+      - name: Perform CodeQL Analysis + SARIF upload (CICD-020, CICD-024)
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:${{ matrix.language }}
+          upload: true
+
+  # ─── CICD-021: Comprehensive Snyk SCA scan ───────────────────────────────
+  sca-snyk-full:
+    name: "SCA | Snyk Comprehensive Scan (CICD-021/024)"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Install frontend deps
+        run: npm ci
+        working-directory: frontend
+
+      - name: Restore backend
+        run: dotnet restore
+        working-directory: backend
+
+      - name: Snyk test — Frontend (CICD-021)
+        run: |
+          snyk test \
+            --severity-threshold=high \
+            --all-projects \
+            --sarif-file-output=snyk-frontend-full.sarif \
+            --json-file-output=snyk-frontend-full.json
+        working-directory: frontend
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: false
+
+      - name: Snyk test — Backend (CICD-021)
+        run: |
+          snyk test \
+            --severity-threshold=high \
+            --all-projects \
+            --sarif-file-output=snyk-backend-full.sarif \
+            --json-file-output=snyk-backend-full.json
+        working-directory: backend
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: false
+
+      - name: Snyk monitor — track dependencies over time
+        run: |
+          snyk monitor --project-name="patient-portal-frontend"
+        working-directory: frontend
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
+
+      - name: Upload Snyk SARIF reports (CICD-024)
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: frontend/snyk-frontend-full.sarif
+          category: snyk-scheduled-npm
+
+      - name: Upload Snyk backend SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: backend/snyk-backend-full.sarif
+          category: snyk-scheduled-nuget
+
+      - name: Upload Snyk JSON results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: snyk-full-scan-${{ github.run_id }}
+          path: |
+            frontend/snyk-frontend-full.json
+            backend/snyk-backend-full.json
+          retention-days: 90
+
+  # ─── CICD-022: Deep dependency audit ─────────────────────────────────────
+  dependency-audit-full:
+    name: "Dependency Audit | npm + dotnet (CICD-022)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: npm audit — all severity levels (CICD-022)
+        run: |
+          npm ci
+          npm audit --audit-level=high --json > npm-audit-full.json || {
+            CRITICAL=$(cat npm-audit-full.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('metadata',{}).get('vulnerabilities',{}).get('critical',0))" 2>/dev/null || echo "unknown")
+            HIGH=$(cat npm-audit-full.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('metadata',{}).get('vulnerabilities',{}).get('high',0))" 2>/dev/null || echo "unknown")
+            echo "::error::npm audit found critical=$CRITICAL high=$HIGH vulnerabilities (CICD-022)"
+            exit 1
+          }
+          echo "npm audit PASSED (CICD-022)"
+        working-directory: frontend
+
+      - name: dotnet vulnerable packages — full transitive scan (CICD-022)
+        run: |
+          dotnet restore
+          RESULT=$(dotnet list package --vulnerable --include-transitive 2>&1)
+          echo "$RESULT"
+          if echo "$RESULT" | grep -qi "has the following vulnerable packages"; then
+            echo "::error::Vulnerable NuGet packages detected (CICD-022)"
+            exit 1
+          fi
+          echo "dotnet vulnerability scan PASSED (CICD-022)"
+        working-directory: backend
+
+      - name: Upload audit reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-audit-scheduled-${{ github.run_id }}
+          path: frontend/npm-audit-full.json
+          retention-days: 90
+
+  # ─── CICD-023: GitLeaks — full repository history scan ───────────────────
+  secrets-detection-full:
+    name: "Secrets Detection | GitLeaks Full History (CICD-023/024)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout — complete history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run GitLeaks — full repo scan (CICD-023)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+  # ─── CICD-025: Scheduled PHI audit ───────────────────────────────────────
+  phi-audit-scheduled:
+    name: "PHI Audit | Scheduled HIPAA Check (CICD-025)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: PHI pattern scan — full codebase (CICD-025, DR-001, NFR-011)
+        run: |
+          set +e
+          VIOLATIONS=0
+
+          echo "=== Scheduled PHI Audit (CICD-025) ==="
+
+          # SSN-like patterns
+          SSN=$(grep -rn --include="*.cs" --include="*.ts" --include="*.tsx" --include="*.json" \
+            --exclude-dir=".git" --exclude-dir="node_modules" --exclude-dir="bin" --exclude-dir="obj" \
+            -E '[0-9]{3}-[0-9]{2}-[0-9]{4}' . 2>/dev/null \
+            | grep -iv "test\|mock\|fake\|stub\|dummy\|sample\|example\|placeholder" | wc -l)
+          [ "$SSN" -gt 0 ] && { echo "::error::SSN patterns found: $SSN occurrences"; VIOLATIONS=$((VIOLATIONS+1)); }
+
+          # Hardcoded PHI field assignments
+          PHI=$(grep -rn --include="*.cs" --include="*.ts" \
+            --exclude-dir=".git" --exclude-dir="node_modules" --exclude-dir="bin" --exclude-dir="obj" \
+            -E '(DateOfBirth|SSN|MRN|PatientId|InsuranceId|NPI|DEA)\s*=\s*"[^"]{3,}"' . 2>/dev/null \
+            | grep -iv "test\|mock\|fake\|stub\|dummy\|sample\|TODO\|FIXME" | wc -l)
+          [ "$PHI" -gt 0 ] && { echo "::error::Hardcoded PHI field assignments found: $PHI occurrences"; VIOLATIONS=$((VIOLATIONS+1)); }
+
+          # Encryption keys or connection strings in source
+          KEYS=$(grep -rn --include="*.cs" --include="*.ts" --include="*.json" \
+            --exclude-dir=".git" --exclude-dir="node_modules" --exclude-dir="bin" --exclude-dir="obj" \
+            --exclude="*.test.*" --exclude="*.spec.*" \
+            -E '(password|connectionstring|apikey|secretkey|privatekey)\s*[=:]\s*"[A-Za-z0-9+/]{16,}"' . 2>/dev/null \
+            | grep -iv "placeholder\|example\|your_\|xxx\|changeme\|todo" | wc -l)
+          [ "$KEYS" -gt 0 ] && { echo "::error::Potential hardcoded credentials detected: $KEYS occurrences"; VIOLATIONS=$((VIOLATIONS+1)); }
+
+          if [ "$VIOLATIONS" -gt 0 ]; then
+            echo "::error::Scheduled PHI audit FAILED: $VIOLATIONS violation(s). (CICD-025, HIPAA)"
+            exit 1
+          fi
+          echo "Scheduled PHI audit PASSED. No violations detected. (CICD-025)"
+
+  # ─── Notify on any security scan failure ─────────────────────────────────
+  notify-security-failure:
+    name: Notify Security Failure
+    runs-on: ubuntu-latest
+    if: failure()
+    needs:
+      - sast-codeql-full
+      - sca-snyk-full
+      - dependency-audit-full
+      - secrets-detection-full
+      - phi-audit-scheduled
+    steps:
+      - name: Send critical security alert
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          payload: |
+            {
+              "text": "🚨 *Security scan FAILED* — scheduled scan on ${{ github.ref_name }}\nOne or more security gates failed.\nAction required: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nReview findings in GitHub Security tab."
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
