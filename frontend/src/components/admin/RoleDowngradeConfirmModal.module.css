@@ -1,0 +1,102 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--color-surface-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  max-width: calc(var(--auth-card-max-width-login) + var(--space-8) + var(--space-2));
+  width: 100%;
+  padding: var(--space-8);
+  margin: var(--space-4);
+}
+
+.title {
+  font-size: var(--font-size-heading-md);
+  font-weight: var(--font-weight-heading-md);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.body {
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-body-md);
+  margin-bottom: var(--space-2);
+}
+
+.detail {
+  background: var(--color-surface-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-6);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+.btnCancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--touch-target-min);
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  border: var(--border-width-default) solid var(--color-border-default);
+  background: transparent;
+  color: var(--color-brand-primary);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--easing-default);
+}
+
+.btnCancel:hover {
+  background: var(--color-brand-primary-light);
+}
+
+.btnCancel:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.btnConfirm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--touch-target-min);
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  border: var(--border-width-default) solid var(--color-brand-primary);
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--easing-default),
+    border-color var(--duration-fast) var(--easing-default);
+}
+
+.btnConfirm:hover {
+  background: var(--color-brand-primary-hover);
+  border-color: var(--color-brand-primary-hover);
+}
+
+.btnConfirm:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
