@@ -12,7 +12,7 @@
  */
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuthContext } from '../context/AuthContext';
 import type {
   MedicalCodeSuggestionDto,
   VerifyDecision,
@@ -40,7 +40,7 @@ export interface UseCodeVerificationReturn {
 }
 
 export function useCodeVerification(encounterId: string): UseCodeVerificationReturn {
-  const { token } = useAuth();
+  useAuthContext();
   const navigate  = useNavigate();
 
   const [suggestions,  setSuggestions]  = useState<MedicalCodeSuggestionDto[]>([]);
@@ -50,13 +50,9 @@ export function useCodeVerification(encounterId: string): UseCodeVerificationRet
   const [rowErrors,    setRowErrors]    = useState<Record<string, string>>({});
   const [finalized,    setFinalized]    = useState(false);
 
-  // Stable auth header derived from token (avoids auth header in dep array).
   const buildHeaders = useCallback(
-    (): Record<string, string> =>
-      token
-        ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
-        : { 'Content-Type': 'application/json' },
-    [token],
+    (): Record<string, string> => ({ 'Content-Type': 'application/json' }),
+    [],
   );
 
   // ── Fetch suggestions on mount ──────────────────────────────────────────────

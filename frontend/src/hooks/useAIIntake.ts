@@ -20,7 +20,7 @@ import {
   ChatMessage,
   IntakeSessionState,
 } from '../types/intake';
-import { useAuth } from '../context/AuthContext';
+import { useAuthContext } from '../context/AuthContext';
 
 const API_BASE = '/api/v1/intake';
 const SESSION_STORAGE_PREFIX = 'intake-session-';
@@ -78,7 +78,7 @@ function loadFromStorage(appointmentId: string): Partial<IntakeSessionState> | n
 }
 
 export function useAIIntake(appointmentId: string): UseAIIntakeReturn {
-  const { token } = useAuth();
+  useAuthContext();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [capturedFields, setCapturedFields] = useState<CapturedField[]>([]);
   const [currentFieldKey, setCurrentFieldKey] = useState<string | null>(null);
@@ -94,11 +94,9 @@ export function useAIIntake(appointmentId: string): UseAIIntakeReturn {
     return String(messageIdRef.current);
   }
 
-  const buildHeaders = useCallback((): Record<string, string> => {
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    return headers;
-  }, [token]);
+  const buildHeaders = useCallback((): Record<string, string> => ({
+    'Content-Type': 'application/json',
+  }), []);
 
   const clearError = useCallback((): void => {
     setErrorMessage(null);

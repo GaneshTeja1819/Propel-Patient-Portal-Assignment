@@ -1,23 +1,11 @@
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuthContext } from '../../context/AuthContext';
 
-/**
- * ProtectedRoute — H-002: redirects unauthenticated users to /login.
- *
- * Preserves the intended destination in router state so the login page can
- * redirect back after a successful login (react-router-dom v6 pattern).
- *
- * Usage:
- *   <Route path="/intake/:id" element={<ProtectedRoute><IntakePage /></ProtectedRoute>} />
- */
 export function ProtectedRoute({ children }: { children: JSX.Element }): JSX.Element {
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuthContext();
   const location = useLocation();
 
-  // DEV bypass: allow access without login until US_010 login page is built.
-  if (import.meta.env.DEV) return children;
-
-  if (!token) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

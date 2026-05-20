@@ -13,10 +13,10 @@
  *   - useAIIntake (this task)
  *   - react-router-dom v6 useParams
  */
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAIIntake } from '../hooks/useAIIntake';
-import { useAuth } from '../context/AuthContext';
+import { useAuthContext } from '../context/AuthContext';
 import { AIIntakeChat } from '../components/intake/AIIntakeChat';
 import { IntakeProgressBar } from '../components/intake/IntakeProgressBar';
 import { IntakeSummaryReview } from '../components/intake/IntakeSummaryReview';
@@ -51,12 +51,14 @@ function saveMode(appointmentId: string, mode: IntakeMode): void {
 
 export function IntakePage(): JSX.Element {
   const { appointmentId = '' } = useParams<{ appointmentId: string }>();
-  const { user } = useAuth();
+  const { role } = useAuthContext();
   const navigate = useNavigate();
   const [mode, setMode] = useState<IntakeMode>(() => loadMode(appointmentId));
   const [confirmed, setConfirmed] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const [modeAnnouncement, setModeAnnouncement] = useState('');
+
+  const displayInitials = (role ?? 'P').slice(0, 1).toUpperCase();
 
   // B-001: update document.title on mount and when submission or mode changes (WCAG 2.4.2)
   useEffect(() => {
@@ -154,28 +156,10 @@ export function IntakePage(): JSX.Element {
    * Convert capturedFields array to a flat Record<fieldKey, value> for ManualIntakeForm
    * defaultValues (AC-004 — AI answers pre-populate the manual form).
    */
-  const capturedFieldsMap = useMemo<Record<string, string>>(
-    () =>
-      capturedFields.reduce<Record<string, string>>((acc, f) => {
-        acc[f.fieldKey] = f.value;
-        return acc;
-      }, {}),
-    [capturedFields],
-  );
-
-  const displayInitials = useMemo(
-    () =>
-      user?.displayName
-        ? user.displayName
-            .split(' ')
-            .map((n) => n?.[0] ?? '')
-            .filter(Boolean)
-            .join('')
-            .toUpperCase()
-            .slice(0, 2)
-        : 'P',
-    [user?.displayName],
-  );
+  const capturedFieldsMap = capturedFields.reduce<Record<string, string>>((acc, f) => {
+    acc[f.fieldKey] = f.value;
+    return acc;
+  }, {});
 
   if (confirmed) {
     return (
@@ -262,7 +246,7 @@ export function IntakePage(): JSX.Element {
 
           <div
             className={styles.userAvatar}
-            aria-label={user?.displayName ?? 'Patient'}
+            aria-label="Patient"
             role="img"
           >
             {displayInitials}

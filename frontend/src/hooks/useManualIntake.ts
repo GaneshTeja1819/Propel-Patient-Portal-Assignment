@@ -6,7 +6,7 @@
  * shape expected by the backend.
  */
 import { useCallback, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuthContext } from '../context/AuthContext';
 import type { CapturedField } from '../types/intake';
 
 const API_BASE = '/api/v1/intake';
@@ -34,15 +34,13 @@ export interface UseManualIntakeReturn {
 }
 
 export function useManualIntake(): UseManualIntakeReturn {
-  const { token } = useAuth();
+  useAuthContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const buildHeaders = useCallback((): Record<string, string> => {
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    return headers;
-  }, [token]);
+  const buildHeaders = useCallback((): Record<string, string> => ({
+    'Content-Type': 'application/json',
+  }), []);
 
   const submitManualIntake = useCallback(
     async (appointmentId: string, values: Record<string, string>): Promise<void> => {

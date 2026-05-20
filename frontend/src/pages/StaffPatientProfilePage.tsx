@@ -12,7 +12,7 @@
  */
 import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuthContext } from '../context/AuthContext';
 import { usePatientProfile } from '../hooks/usePatientProfile';
 import { ClinicalSections } from '../components/profile/ClinicalSections';
 import { ConflictsSection } from '../components/profile/ConflictsSection';
@@ -20,7 +20,7 @@ import styles from './PatientProfilePage.module.css';
 
 export function StaffPatientProfilePage(): JSX.Element {
   const { id: patientId = '' } = useParams<{ id: string }>();
-  const { user } = useAuth();
+  const { role } = useAuthContext();
   const { data, loadState, errorMessage, refetch: refetchProfile } = usePatientProfile(patientId);
 
   const isLoading = loadState === 'loading' || loadState === 'idle';
@@ -59,7 +59,7 @@ export function StaffPatientProfilePage(): JSX.Element {
             className={styles.staffRoleBadge}
             aria-label="Logged in as Staff"
           >
-            {user?.displayName ?? 'Staff'} · Staff
+            {role ?? 'Staff'} · Staff
           </div>
         </div>
       </nav>

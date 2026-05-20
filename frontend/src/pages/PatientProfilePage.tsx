@@ -11,16 +11,19 @@
  * Route: /profile  (PatientPolicy — accessible to Patient role only)
  */
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuthContext } from '../context/AuthContext';
 import { usePatientProfile } from '../hooks/usePatientProfile';
 import { ClinicalSections } from '../components/profile/ClinicalSections';
 import styles from './PatientProfilePage.module.css';
 
 export function PatientProfilePage(): JSX.Element {
-  const { user } = useAuth();
+  const { role } = useAuthContext();
   const { data, loadState, errorMessage } = usePatientProfile('me');
 
   const isLoading = loadState === 'loading' || loadState === 'idle';
+
+  const displayName = role ?? 'User';
+  const initials = displayName.slice(0, 2).toUpperCase();
 
   return (
     <div className={styles.page}>
@@ -39,8 +42,8 @@ export function PatientProfilePage(): JSX.Element {
             </Link>
             <Link to="/documents/upload" className={styles.navLink}>📄 Documents</Link>
           </nav>
-          <div className={styles.avatarSm} aria-label={user?.displayName ?? 'User'} aria-hidden="true">
-            {user?.displayName.slice(0, 2).toUpperCase() ?? 'U'}
+          <div className={styles.avatarSm} aria-label="User" aria-hidden="true">
+            {data?.initials ?? initials}
           </div>
         </div>
       </nav>
@@ -67,11 +70,11 @@ export function PatientProfilePage(): JSX.Element {
         <div className={styles.profileHeader}>
           <div className={styles.profileIdentity}>
             <div className={styles.avatarLg} aria-hidden="true">
-              {data?.initials ?? user?.displayName.slice(0, 2).toUpperCase() ?? 'U'}
+              {data?.initials ?? initials}
             </div>
             <div>
               <div className={styles.profileName}>
-                {data?.displayName ?? user?.displayName ?? 'Loading…'}
+                {data?.displayName ?? 'Loading…'}
               </div>
               {data && (
                 <div className={styles.profileMeta}>
