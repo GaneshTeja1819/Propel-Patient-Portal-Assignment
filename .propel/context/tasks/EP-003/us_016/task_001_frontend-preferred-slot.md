@@ -107,16 +107,16 @@ frontend/
 - Refer to [frontend build commands](.propel/build/)
 
 ## Implementation Validation Strategy
-- [ ] Unavailable slot card shows "Register Preferred" button; clicking it applies `--color-slot-preferred` styling
-- [ ] Selecting the same slot as preferred and booked → inline validation clears preferred selection
-- [ ] Skip preferred slot → booking completes; no preferred acknowledgement shown in confirmation
-- [ ] Preferred slot selected → confirmation state shows acknowledgement text
+- [x] Unavailable slot card shows "Register Preferred" button; clicking it applies `--color-slot-preferred` styling
+- [x] Selecting the same slot as preferred and booked → inline validation clears preferred selection
+- [x] Skip preferred slot → booking completes; no preferred acknowledgement shown in confirmation
+- [x] Preferred slot selected → confirmation state shows acknowledgement text
 
 ## Implementation Checklist
-- [ ] Add `--color-slot-preferred` CSS token to `variables.css` (AC-001)
-- [ ] Extend `SlotCard` with "Register Preferred" button for unavailable cards; keyboard-accessible (AC-001)
-- [ ] Manage `preferredSlotId` state in `SlotGrid`; only one preferred selectable at a time (AC-001, AC-004)
-- [ ] Client-side guard: preferred ≠ booked slot; inline validation on mismatch (edge case)
-- [ ] Include `preferredSlotId` (nullable) in `useBooking` POST payload (AC-002 enabler)
-- [ ] Render preferred-slot acknowledgement in booking confirmation state (AC-002)
-- [ ] Booking without preferred slot proceeds normally; no error (AC-003)
+- [x] Add `--color-slot-preferred` CSS token to `variables.css` (AC-001)
+- [x] Extend `SlotCard` with "Register Preferred" button for unavailable cards; keyboard-accessible (AC-001)
+- [x] Manage `preferredSlotId` state in `SlotGrid`; only one preferred selectable at a time (AC-001, AC-004)
+- [x] Client-side guard: preferred ≠ booked slot; inline validation on mismatch (edge case)
+- [x] Include `preferredSlotId` (nullable) in `useBooking` POST payload (AC-002 enabler)
+- [x] Render preferred-slot acknowledgement in booking confirmation state (AC-002)
+- [x] Booking without preferred slot proceeds normally; no error (AC-003)

@@ -117,10 +117,10 @@ backend/
 - [ ] Simulate risk scorer exception → appointment still created with `noShowRiskScore = 0`; Warning logged
 
 ## Implementation Checklist
-- [ ] Implement `BookAppointmentCommand` + `BookAppointmentHandler` with EF Core optimistic concurrency (`DbUpdateConcurrencyException` → HTTP 409) (AC-001, AC-004)
-- [ ] Soft insurance validation: query InsuranceRecord; regex match; set validation status; blank → NotProvided (AC-003)
-- [ ] Implement `NoShowRiskScorer` with safe try/catch default 0; log exception at Warning (AC-002)
-- [ ] Call `ISlotCacheService.InvalidateSlotAsync` after successful booking (US_012 AC-002 consistency)
-- [ ] Write `APPOINTMENT_CREATED` audit entry (AC-001)
-- [ ] Enqueue `GeneratePdfConfirmationJob` (US_015 trigger)
-- [ ] Return HTTP 201 with `{ appointmentId, insuranceValidationStatus }` (AC-001, AC-003)
+- [x] Implement `BookAppointmentCommand` + `BookAppointmentHandler` with EF Core optimistic concurrency (`DbUpdateConcurrencyException` → HTTP 409) (AC-001, AC-004)
+- [x] Soft insurance validation: query InsuranceRecord; regex match; set validation status; blank → NotProvided (AC-003)
+- [x] Implement `NoShowRiskScorer` with safe try/catch default 0; log exception at Warning (AC-002)
+- [x] Call `ISlotCacheService.InvalidateSlotAsync` after successful booking (US_012 AC-002 consistency)
+- [x] Write `APPOINTMENT_CREATED` audit entry (AC-001)
+- [x] Enqueue `GeneratePdfConfirmationJob` (US_015 trigger)
+- [x] Return HTTP 201 with `{ appointmentId, insuranceValidationStatus }` (AC-001, AC-003)

@@ -1,6 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import BaselineDemo from './components/BaselineDemo';
 import { AuthProvider } from './context/AuthContext';
+import AppointmentDetailPage from './pages/AppointmentDetailPage';
+import BookingPage from './pages/BookingPage';
+import DashboardPage from './pages/DashboardPage';
 import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
 
@@ -12,7 +15,9 @@ function App() {
           <Route path="/" element={<BaselineDemo />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegistrationPage />} />
-          <Route path="/dashboard" element={<PageStub title="Patient Dashboard" />} />
+          <Route path="/booking" element={<BookingPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/appointments/:id" element={<AppointmentDetailPage />} />
           <Route path="/staff/queue" element={<PageStub title="Staff Queue" />} />
           <Route path="/admin/users" element={<PageStub title="Admin Users" />} />
           <Route path="*" element={<Navigate to="/login" replace />} />

@@ -32,8 +32,26 @@ namespace UPACIP.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("InsuranceId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("InsuranceProvider")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("InsuranceValidationStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasDefaultValue("NotProvided")
+                        .HasColumnType("character varying(50)");
+
                     b.Property<string>("Notes")
                         .HasColumnType("text");
+
+                    b.Property<int>("NoShowRiskScore")
+                        .HasDefaultValue(0)
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uuid");

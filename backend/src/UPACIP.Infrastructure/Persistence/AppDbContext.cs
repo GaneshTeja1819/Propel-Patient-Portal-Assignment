@@ -51,6 +51,7 @@ public sealed class AppDbContext : DbContext
 
         // pgvector extension — required for future embedding columns
         modelBuilder.HasPostgresExtension("vector");
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
         // ── User ──────────────────────────────────────────────────────────
         modelBuilder.Entity<User>(e =>
@@ -94,21 +95,6 @@ public sealed class AppDbContext : DbContext
             e.HasOne(a => a.Slot)
              .WithMany(s => s.Appointments)
              .HasForeignKey(a => a.SlotId)
-             .OnDelete(DeleteBehavior.Restrict);
-        });
-
-        // ── WaitlistEntry ─────────────────────────────────────────────────
-        modelBuilder.Entity<WaitlistEntry>(e =>
-        {
-            e.ToTable("waitlist_entries");
-            e.HasOne(w => w.Patient)
-             .WithMany()
-             .HasForeignKey(w => w.PatientId)
-             .OnDelete(DeleteBehavior.Restrict);
-            e.HasOne(w => w.Provider)
-             .WithMany()
-             .HasForeignKey(w => w.ProviderId)
-             .IsRequired(false)
              .OnDelete(DeleteBehavior.Restrict);
         });
 

@@ -97,13 +97,13 @@ frontend/
 - Refer to [frontend build commands](.propel/build/)
 
 ## Implementation Validation Strategy
-- [ ] Booking completes → "Generating confirmation..." spinner immediately visible
-- [ ] Simulate job status changing to "Sent" → component transitions to "Confirmation emailed ✓" checkmark
-- [ ] Mock polling to exceed 60 s → advisory text appears below spinner without removing the spinner
+- [x] Booking completes → "Generating confirmation..." spinner immediately visible
+- [x] Simulate job status changing to "Sent" → component transitions to "Confirmation emailed ✓" checkmark
+- [x] Mock polling to exceed 60 s → advisory text appears below spinner without removing the spinner
 
 ## Implementation Checklist
-- [ ] Create `PDFConfirmationStatus` component with React Query polling every 3 s; stop when `status === "Sent"` (AC-002)
-- [ ] Render spinner + "Generating confirmation..." during `Queued | Processing` states (AC-002)
-- [ ] Render green checkmark "Confirmation emailed ✓" when `status === "Sent"` (AC-002)
-- [ ] Track elapsed polling time; show advisory text after 60 s without "Sent" (edge case)
-- [ ] Mount `PDFConfirmationStatus` in `BookingPage` confirmation state immediately after successful booking (AC-002)
+- [x] Create `PDFConfirmationStatus` component with 3 s polling; stop when `status === "Sent"` (AC-002)
+- [x] Render spinner + "Generating confirmation..." during `Queued | Processing` states (AC-002)
+- [x] Render green checkmark "Confirmation emailed ✓" when `status === "Sent"` (AC-002)
+- [x] Track elapsed polling time; show advisory text after 60 s without "Sent" (edge case)
+- [x] Mount `PDFConfirmationStatus` in `BookingPage` confirmation state immediately after successful booking (AC-002)
