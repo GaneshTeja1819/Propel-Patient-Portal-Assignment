@@ -96,12 +96,12 @@ backend/
 - Refer to [backend build commands](.propel/build/)
 
 ## Implementation Validation Strategy
-- [ ] Successful swap → email received with new date/time; `Notification.status = "Sent"`
-- [ ] Force SMTP failure → Notification `status = "Failed"` after retries; `SLOT_SWAP_NOTIFICATION_FAILED` audit; swap appointment unchanged
+- [x] Successful swap → email received with new date/time; `Notification.status = "Sent"`
+- [x] Force SMTP failure → Notification `status = "Failed"` after retries; `SLOT_SWAP_NOTIFICATION_FAILED` audit; swap appointment unchanged
 
 ## Implementation Checklist
-- [ ] Create `SlotSwapNotificationJob` with appointment data load and email dispatch via `IEmailService` (AC-003)
-- [ ] Create `Notification` record: Queued → Sent / Failed lifecycle (AC-003)
-- [ ] On SMTP failure → `Notification.status = "Failed"`; write audit entry; swap unaffected (AC-004)
-- [ ] `[AutomaticRetry(Attempts = 3)]` on job; back-off 10 s / 60 s / 360 s (AC-004)
-- [ ] Credentials from env vars only — no hardcoded SMTP secrets (OWASP A02)
+- [x] Create `SlotSwapNotificationJob` with appointment data load and email dispatch via `IEmailService` (AC-003)
+- [x] Create `Notification` record: Queued → Sent / Failed lifecycle (AC-003)
+- [x] On SMTP failure → `Notification.status = "Failed"`; write audit entry; swap unaffected (AC-004)
+- [x] `[AutomaticRetry(Attempts = 3)]` on job; back-off 10 s / 60 s / 360 s (AC-004)
+- [x] Credentials from env vars only — no hardcoded SMTP secrets (OWASP A02)

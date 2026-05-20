@@ -13,7 +13,10 @@ using UPACIP.Application.Handlers.Conflicts;
 using UPACIP.Infrastructure.Handlers.Codes;
 using UPACIP.Infrastructure.Handlers.Profile;
 using UPACIP.Infrastructure.Reference;
+using UPACIP.Application.Handlers.Appointments;
+using UPACIP.Application.Handlers.Slots;
 using UPACIP.Application.Interfaces;
+using UPACIP.Application.Services;
 using UPACIP.Infrastructure.AI;
 using UPACIP.Infrastructure.Audit;
 using UPACIP.Infrastructure.Auth;
@@ -23,6 +26,7 @@ using UPACIP.Infrastructure.Documents;
 using UPACIP.Infrastructure.Persistence;
 using UPACIP.Infrastructure.Persistence.Interceptors;
 using UPACIP.Infrastructure.Repositories;
+using UPACIP.Infrastructure.Persistence.QueryServices;
 using UPACIP.Infrastructure.Security;
 
 namespace UPACIP.Infrastructure;
@@ -62,6 +66,9 @@ public static class DependencyInjection
         services.AddScoped<IRegistrationStore, RegistrationStore>();
         services.AddScoped<ILoginUserStore, LoginUserStore>();
         services.AddScoped<IAdminUserStore, AdminUserStore>();
+        services.AddScoped<ISlotQueryService, SlotQueryService>();
+        services.AddScoped<IAppointmentBookingStore, BookingStore>();
+        services.AddScoped<IAppointmentManagementStore, AppointmentManagementStore>();
         services.AddScoped<RegisterUserHandler>();
         services.AddScoped<LoginUserHandler>();
         services.AddScoped<CreateUserHandler>();
@@ -89,10 +96,23 @@ public static class DependencyInjection
         services.AddScoped<IConflictRepository, ConflictRepository>();
         services.AddScoped<ResolveConflictHandler>();
         services.AddScoped<MarkReviewedHandler>();
+        services.AddScoped<GetSlotsHandler>();
+        services.AddScoped<BookAppointmentHandler>();
+        services.AddScoped<CancelAppointmentHandler>();
+        services.AddScoped<RescheduleAppointmentHandler>();
+        services.AddSingleton<INoShowRiskScorer, NoShowRiskScorer>();
 
         services.AddHangfireWithPostgres(configuration);
         services.AddTransient<AccountLockoutNotificationJob>();
+        services.AddTransient<GeneratePdfConfirmationJob>();
+        services.AddTransient<WaitlistNotificationJob>();
+        services.AddTransient<SlotSwapJob>();
+        services.AddTransient<SlotSwapNotificationJob>();
+        services.AddScoped<IEmailService, SmtpEmailService>();
         services.AddScoped<IAccountLockoutNotifier, HangfireAccountLockoutNotifier>();
+        services.AddScoped<IPdfConfirmationJobEnqueuer, HangfirePdfConfirmationJobEnqueuer>();
+        services.AddScoped<ISlotSwapJobEnqueuer, HangfireSlotSwapJobEnqueuer>();
+        services.AddScoped<IWaitlistNotificationJobEnqueuer, HangfireWaitlistNotificationJobEnqueuer>();
         services.AddRedis(configuration);
 
         // ── Auth (JWT + Redis sessions) ──────────────────────────────────

@@ -109,6 +109,8 @@
   --color-danger-text: var(--color-red-700);
   /* --color-warning-text: amber-700 achieves 5.33:1 on warning-bg — WCAG AA compliant */
   --color-warning-text: var(--color-amber-700);
+  --color-error: var(--color-danger);
+  --color-neutral: var(--color-text-secondary);
 
   /* Semantic — AI & Conflicts */
   --color-ai-accent: var(--color-purple-600);
@@ -192,6 +194,8 @@
   --space-8: 32px;
   --space-12: 48px;
   --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
 
   /* ─────────────────────────────────────────────────────────────
    * 5. Border Radius
@@ -286,6 +290,14 @@
 
   /* Content column — max-width shared by chat, progress bar, and intake layout */
   --layout-content-max-width: 760px;
+
+  /* Slot booking */
+  --color-slot-available: var(--color-surface-default);
+  --color-slot-selected: var(--color-brand-primary);
+  --color-slot-unavailable: var(--color-surface-subtle);
+  --color-slot-preferred: var(--color-amber-100);
+  --spinner-size: var(--space-4);
+  --spinner-border-width: 2px;
 
   /* Grid — swatch gallery minimum column width */
   --grid-col-min-swatch: 120px;

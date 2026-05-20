@@ -1,0 +1,293 @@
+.page {
+  min-height: 100vh;
+  padding: var(--space-6);
+  background-color: var(--color-surface-default);
+}
+
+.container {
+  max-width: var(--grid-max-width);
+  margin-inline: auto;
+}
+
+.title {
+  font-size: var(--font-size-heading-xl);
+  font-weight: var(--font-weight-heading-xl);
+  line-height: var(--line-height-heading-xl);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.subtitle {
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-8);
+}
+
+.bookingGrid {
+  display: grid;
+  grid-template-columns: 1fr calc(var(--space-8) * 9 + var(--space-4));
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.formSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.card {
+  background-color: var(--color-surface-default);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-6);
+}
+
+.cardTitle {
+  font-size: var(--font-size-heading-md);
+  font-weight: var(--font-weight-heading-md);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.dateInput {
+  width: 100%;
+  padding: var(--space-3);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-body-md);
+  background-color: var(--color-surface-default);
+}
+
+.dateInput:focus-visible {
+  border-color: var(--color-border-focus);
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.errorMessage {
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-danger-bg);
+  border: var(--border-width-default) solid var(--color-danger);
+  border-radius: var(--radius-sm);
+  color: var(--color-danger);
+  font-size: var(--font-size-body-sm);
+  margin-bottom: var(--space-4);
+}
+
+.summary {
+  position: sticky;
+  top: var(--space-8);
+}
+
+.summaryCard {
+  background-color: var(--color-surface-default);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-6);
+}
+
+.summaryTitle {
+  font-size: var(--font-size-heading-md);
+  font-weight: var(--font-weight-heading-md);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-width-default) solid var(--color-border-default);
+  font-size: var(--font-size-body-md);
+}
+
+.summaryRow:last-of-type {
+  border-bottom: none;
+  margin-bottom: var(--space-6);
+}
+
+.summaryLabel {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.summaryValue {
+  font-weight: 600;
+  text-align: right;
+}
+
+.confirmButton {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--easing-default);
+  min-height: var(--touch-target-min);
+}
+
+.confirmButton:hover:not(:disabled) {
+  background-color: var(--color-brand-primary-hover);
+}
+
+.confirmButton:disabled {
+  background-color: var(--color-interactive-disabled);
+  cursor: not-allowed;
+}
+
+.backButton {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-surface-subtle);
+  color: var(--color-text-primary);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--easing-default);
+  min-height: var(--touch-target-min);
+  margin-top: var(--space-4);
+}
+
+.backButton:hover {
+  background-color: var(--color-border-default);
+}
+
+.confirmationCard {
+  max-width: calc(var(--space-8) * 18.75);
+  margin: 0 auto;
+  padding: var(--space-12);
+  background-color: var(--color-surface-default);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.confirmationIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-20);
+  height: var(--space-20);
+  margin: 0 auto var(--space-6);
+  background-color: var(--color-success-bg);
+  border-radius: var(--radius-full);
+  font-size: calc(var(--space-8) / 4 * 5);
+  color: var(--color-success);
+}
+
+.confirmationTitle {
+  font-size: var(--font-size-heading-lg);
+  font-weight: var(--font-weight-heading-lg);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.confirmationText {
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-8);
+}
+
+.confirmationDetails {
+  background-color: var(--color-surface-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-6);
+  margin-bottom: var(--space-8);
+  text-align: left;
+}
+
+.preferredAcknowledgement {
+  margin: 0 0 var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-full);
+  border: var(--border-width-default) solid var(--color-warning);
+  background-color: var(--color-slot-preferred);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: var(--font-size-body-md);
+}
+
+.detailValue {
+  font-family: monospace;
+  font-weight: 600;
+  color: var(--color-brand-primary);
+}
+
+.primaryButton {
+  width: 100%;
+  padding: var(--space-4) var(--space-6);
+  background-color: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--easing-default);
+  min-height: var(--touch-target-min);
+}
+
+.primaryButton:hover {
+  background-color: var(--color-brand-primary-hover);
+}
+
+.primaryButton:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.toastContainer {
+  position: fixed;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.toastContainer > * {
+  pointer-events: auto;
+}
+
+/* Tablet — collapse right sidebar */
+@media (max-width: 1024px) {
+  .bookingGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary {
+    position: static;
+  }
+}
+
+/* Mobile — full width */
+@media (max-width: 640px) {
+  .page {
+    padding: var(--space-4);
+  }
+
+  .title {
+    font-size: var(--font-size-heading-lg);
+  }
+}

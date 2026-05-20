@@ -110,14 +110,14 @@ backend/
 - Refer to [backend build commands](.propel/build/)
 
 ## Implementation Validation Strategy
-- [ ] Cancel appointment → `SlotSwapJob` enqueued within 5 s; WaitlistEntry patient swapped atomically; old WaitlistEntry deleted
-- [ ] Force concurrency conflict on swap → retry once; second failure → skip to next WaitlistEntry; `SLOT_SWAP_FAILED` audit written
-- [ ] No WaitlistEntry for released slot → job no-ops; no audit entry written; slot available
+- [x] Cancel appointment → `SlotSwapJob` enqueued within 5 s; WaitlistEntry patient swapped atomically; old WaitlistEntry deleted
+- [x] Force concurrency conflict on swap → retry once; second failure → skip to next WaitlistEntry; `SLOT_SWAP_FAILED` audit written
+- [x] No WaitlistEntry for released slot → job no-ops; no audit entry written; slot available
 
 ## Implementation Checklist
-- [ ] Implement `SlotSwapJob` with Hangfire distributed lock to prevent double-evaluation (AC-001, edge case)
-- [ ] Load WaitlistEntries ordered by `registeredAt` (FIFO); no entries → return (AC-001, AC-005)
-- [ ] Atomic EF Core transaction: swap slots + delete WaitlistEntry + enqueue notification (AC-002)
-- [ ] On `DbUpdateConcurrencyException` → rollback → retry once; second failure → log `SLOT_SWAP_FAILED` audit; skip entry; evaluate next (AC-004)
-- [ ] Enqueue `SlotSwapJob` from `CancelAppointmentHandler` after slot release (AC-001)
-- [ ] Enqueue `SlotSwapJob` from `RescheduleAppointmentCommand` after old slot release (AC-001)
+- [x] Implement `SlotSwapJob` with Hangfire distributed lock to prevent double-evaluation (AC-001, edge case)
+- [x] Load WaitlistEntries ordered by `registeredAt` (FIFO); no entries → return (AC-001, AC-005)
+- [x] Atomic EF Core transaction: swap slots + delete WaitlistEntry + enqueue notification (AC-002)
+- [x] On `DbUpdateConcurrencyException` → rollback → retry once; second failure → log `SLOT_SWAP_FAILED` audit; skip entry; evaluate next (AC-004)
+- [x] Enqueue `SlotSwapJob` from `CancelAppointmentHandler` after slot release (AC-001)
+- [x] Enqueue `SlotSwapJob` from `RescheduleAppointmentCommand` after old slot release (AC-001)
