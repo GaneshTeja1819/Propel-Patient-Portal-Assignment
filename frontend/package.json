@@ -13,7 +13,6 @@
     "ci:token-audit": "node scripts/token-audit.js"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.90.3",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "react-hook-form": "^7.62.0",
