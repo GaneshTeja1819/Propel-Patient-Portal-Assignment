@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SlotGrid } from '../components/booking/SlotGrid';
 import { BookingForm } from '../components/booking/BookingForm';
 import { PDFConfirmationStatus } from '../components/booking/PDFConfirmationStatus';
@@ -28,6 +29,7 @@ function BookingPage() {
   const { slots, isLoading, isError, isCachedData } = useSlots(selectedDate);
   const { book, isSubmitting } = useBooking();
   const { toasts, removeToast } = useToast();
+  const navigate = useNavigate();
 
   const selectedSlot = slots.find((s) => s.id === selectedSlotId);
 
@@ -85,6 +87,14 @@ function BookingPage() {
               </p>
             )}
             <PDFConfirmationStatus appointmentId={confirmedAppointmentId} />
+            {/* US_021, AC-005: Optional calendar sync CTA — booking confirmed without it */}
+            <button
+              className={styles.secondaryButton}
+              onClick={() => navigate(`/calendar-sync?appointmentId=${confirmedAppointmentId}`)}
+              aria-label="Sync this appointment to your Google or Outlook calendar (optional)"
+            >
+              Sync to calendar (optional)
+            </button>
             <button
               className={styles.primaryButton}
               onClick={() => {

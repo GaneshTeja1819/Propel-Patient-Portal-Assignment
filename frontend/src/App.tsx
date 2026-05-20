@@ -11,6 +11,7 @@ import AdminAuditLogPage from './pages/AdminAuditLogPage';
 import AdminUserManagementPage from './pages/AdminUserManagementPage';
 import AppointmentDetailPage from './pages/AppointmentDetailPage';
 import BookingPage from './pages/BookingPage';
+import CalendarSyncPage from './pages/CalendarSyncPage';
 import DashboardPage from './pages/DashboardPage';
 import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
@@ -28,6 +29,7 @@ function App() {
           <Route path="/documents/upload" element={<ProtectedRoute><DocumentUploadPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><PatientProfilePage /></ProtectedRoute>} />
           <Route path="/booking" element={<BookingPage />} />
+          <Route path="/calendar-sync" element={<ProtectedRoute><CalendarSyncPage /></ProtectedRoute>} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/appointments/:id" element={<AppointmentDetailPage />} />
           <Route path="/staff/queue" element={<PageStub title="Staff Queue" />} />

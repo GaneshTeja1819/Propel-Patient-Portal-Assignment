@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 using UPACIP.Application.Commands.Appointments;
 using UPACIP.Application.Interfaces;
 
@@ -29,6 +30,8 @@ public sealed class RescheduleAppointmentHandler
     private readonly IAuditLogService _auditLogService;
     private readonly ISlotSwapJobEnqueuer _slotSwapJobEnqueuer;
     private readonly IPdfConfirmationJobEnqueuer _pdfJobEnqueuer;
+    private readonly IReminderJobEnqueuer _reminderJobEnqueuer;
+    private readonly ICalendarSyncService _calendarSyncService;
     private readonly ILogger<RescheduleAppointmentHandler> _logger;
 
     public RescheduleAppointmentHandler(
@@ -38,15 +41,19 @@ public sealed class RescheduleAppointmentHandler
         IAuditLogService auditLogService,
         ISlotSwapJobEnqueuer slotSwapJobEnqueuer,
         IPdfConfirmationJobEnqueuer pdfJobEnqueuer,
+        IReminderJobEnqueuer reminderJobEnqueuer,
+        ICalendarSyncService calendarSyncService,
         ILogger<RescheduleAppointmentHandler> logger)
     {
-        _managementStore = managementStore;
-        _unitOfWork = unitOfWork;
-        _slotCacheService = slotCacheService;
-        _auditLogService = auditLogService;
+        _managementStore     = managementStore;
+        _unitOfWork          = unitOfWork;
+        _slotCacheService    = slotCacheService;
+        _auditLogService     = auditLogService;
         _slotSwapJobEnqueuer = slotSwapJobEnqueuer;
-        _pdfJobEnqueuer = pdfJobEnqueuer;
-        _logger = logger;
+        _pdfJobEnqueuer      = pdfJobEnqueuer;
+        _reminderJobEnqueuer = reminderJobEnqueuer;
+        _calendarSyncService = calendarSyncService;
+        _logger              = logger;
     }
 
     public async Task<RescheduleAppointmentResult> HandleAsync(
@@ -117,6 +124,40 @@ public sealed class RescheduleAppointmentHandler
 
         _pdfJobEnqueuer.Enqueue(appointment.Id, isReschedule: true);
         _slotSwapJobEnqueuer.Enqueue(oldSlotId);
+
+        // US_020: Cancel old reminder jobs; enqueue new ones for the updated appointment time (edge case)
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(appointment.ReminderJobIds))
+            {
+                var oldJobIds = JsonSerializer.Deserialize<List<string>>(appointment.ReminderJobIds) ?? [];
+                _reminderJobEnqueuer.Cancel(oldJobIds);
+            }
+
+            var newJobIds = _reminderJobEnqueuer.Schedule(appointment.Id, newSlot.StartTime);
+            if (newJobIds.Count > 0)
+            {
+                appointment.ReminderJobIds = JsonSerializer.Serialize(newJobIds);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Reminder job rescheduling failed for {AppointmentId}; reschedule preserved.", appointment.Id);
+        }
+
+        // US_021, AC-002: Update calendar event non-blocking (failure must not roll back reschedule)
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await _calendarSyncService.UpdateEventAsync(appointment.Id, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Calendar sync update failed for rescheduled appointment {AppointmentId}.", appointment.Id);
+            }
+        });
 
         return new RescheduleAppointmentResult
         {

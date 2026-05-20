@@ -1,0 +1,126 @@
+.page {
+  min-height: 100vh;
+  padding: var(--space-6);
+  background-color: var(--color-surface-default);
+}
+
+.container {
+  max-width: 480px;
+  margin-inline: auto;
+}
+
+.title {
+  font-size: var(--font-size-heading-xl);
+  font-weight: var(--font-weight-heading-xl);
+  line-height: var(--line-height-heading-xl);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.subtitle {
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-6);
+}
+
+.providerGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.providerButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.providerButton:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  border-color: var(--color-interactive-default);
+}
+
+.providerButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.providerIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.successCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-success-subtle, #f0fdf4);
+  border: 1px solid var(--color-success, #16a34a);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-6);
+}
+
+.successIcon {
+  font-size: 1.5rem;
+  color: var(--color-success, #16a34a);
+}
+
+.successMessage {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-body-md);
+}
+
+.advisory {
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-sm);
+  margin-bottom: var(--space-6);
+}
+
+.loading {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-md);
+  text-align: center;
+  padding: var(--space-4);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.skipButton {
+  background: none;
+  border: none;
+  color: var(--color-interactive-default);
+  font-size: var(--font-size-body-sm);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: var(--space-2);
+}
+
+.skipButton:hover {
+  color: var(--color-interactive-hover);
+}
+
+.missingId {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-sm);
+  text-align: center;
+}

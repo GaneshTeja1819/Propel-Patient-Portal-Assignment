@@ -14,6 +14,12 @@ public class Appointment : BaseEntity
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 
+    /// <summary>
+    /// JSON-serialised array of Hangfire job IDs for scheduled reminder jobs.
+    /// Stored so reminders can be cancelled on reschedule (US_020, AC-001).
+    /// </summary>
+    public string? ReminderJobIds { get; set; }
+
     // Navigation
     public User Patient { get; set; } = null!;
     public User Provider { get; set; } = null!;
