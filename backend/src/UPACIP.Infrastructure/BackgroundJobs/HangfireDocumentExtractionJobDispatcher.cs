@@ -19,5 +19,5 @@ public sealed class HangfireDocumentExtractionJobDispatcher : IDocumentExtractio
     /// <inheritdoc />
     public void Dispatch(Guid clinicalDocumentId)
         => _client.Enqueue<ClinicalDataExtractionJob>(
-            j => j.ExecuteAsync(clinicalDocumentId));
+            j => j.ExecuteAsync(clinicalDocumentId, null));
 }
