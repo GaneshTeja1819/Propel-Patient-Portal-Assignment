@@ -55,9 +55,10 @@
 | Layer | Technology | Version | Justification |
 |-------|------------|---------|---------------|
 | Background Jobs | Hangfire (PostgreSQL storage) | 1.8.x | TR-004 — async extraction job |
-| PDF | PdfPig | Latest stable | TR-007 — PDF text extraction |
-| AI | Google Gemini API (gemini-1.5-pro) | Google.Ai.Generativelanguage 1.x | TR-008, AIR-002 — structured clinical data extraction |
-| Security | AES-256-GCM (.NET 8 built-in) | .NET 8 | NFR-001 — PHI encryption before persistence |
+| PDF | PdfPig | 0.1.x | TR-017 — open-source .NET PDF text extractor |
+| AI | Google Gemini API (gemini-1.5-pro) | Google.Ai.Generativelanguage 1.x | AIR-002 — structured clinical data extraction with schema validation |
+| Security | AES-256-GCM (.NET 8 built-in) | .NET 8 | NFR-005 — PHI encryption before persistence |
+| Database | PostgreSQL via Supabase | 15 | DR-001; TR-003 — ClinicalDocument and ExtractedClinicalData persistence via EF Core |
 
 ---
 
@@ -94,6 +95,7 @@ Implement `ClinicalDataExtractionJob`, the core extraction Hangfire job. On exec
    - Call `GeminiExtractionAdapter.CallExtractionAsync`; compute `promptHash = SHA-256(prompt)`
    - On success: encrypt PHI fields; create `ExtractedClinicalData`; set `extractionStatus = "Completed"`
    - Write `AI_INVOCATION` audit: `modelVersion`, `promptHash`, `inputTokenCount`, `outputTokenCount`, `responseLatencyMs`, `httpStatusCode`
+   - **Rate-limit guard (F008)**: check HTTP 429 response from Gemini; treat as transient failure; re-throw so Hangfire retry handles back-off (do not swallow 429 silently)
 
 ## Current Project State
 ```
@@ -111,6 +113,7 @@ backend/
 | CREATE | backend/src/UPACIP.Infrastructure/BackgroundJobs/ClinicalDataExtractionJob.cs | Core extraction Hangfire job |
 | CREATE | backend/src/UPACIP.Infrastructure/AI/ClinicalExtractionPrompt.json | Structured prompt + schema definition |
 | CREATE | backend/src/UPACIP.Infrastructure/AI/GeminiExtractionAdapter.cs | Gemini structured output adapter for clinical extraction |
+| MODIFY | backend/src/UPACIP.Infrastructure/DependencyInjection.cs | Register GeminiExtractionAdapter (scoped) and ClinicalDataExtractionJob with Hangfire server |
 
 ## External References
 - [PdfPig — Text extraction](https://github.com/UglyToad/PdfPig)
@@ -125,9 +128,9 @@ backend/
 - [ ] Verify AI_INVOCATION audit entry written after each Gemini call with all required fields
 
 ## Implementation Checklist
-- [ ] Create `ClinicalExtractionPrompt.json` with schema version field (edge case — schema evolution)
-- [ ] Implement `GeminiExtractionAdapter`: structured output call; schema validation; timing measurement (AC-001, AC-003)
-- [ ] `ClinicalDataExtractionJob`: set Processing on start; PdfPig text extraction; empty text → Failed + note (AC-001, edge case)
-- [ ] Encrypt PHI fields before persistence; create `ExtractedClinicalData` (AC-002)
-- [ ] Set `extractionStatus = "Completed"` after successful persistence (AC-001)
-- [ ] Write `AI_INVOCATION` audit with all required fields (AC-003, AIR-006)
+- [x] Create `ClinicalExtractionPrompt.json` with schema version field (edge case — schema evolution)
+- [x] Implement `GeminiExtractionAdapter`: structured output call; schema validation; timing measurement (AC-001, AC-003)
+- [x] `ClinicalDataExtractionJob`: set Processing on start; PdfPig text extraction; empty text → Failed + note (AC-001, edge case)
+- [x] Encrypt PHI fields before persistence; create `ExtractedClinicalData` (AC-002)
+- [x] Set `extractionStatus = "Completed"` after successful persistence (AC-001)
+- [x] Write `AI_INVOCATION` audit with all required fields (AC-003, AIR-006)

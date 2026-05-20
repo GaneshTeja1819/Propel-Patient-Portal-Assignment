@@ -20,4 +20,11 @@ public class User : BaseEntity
     public ICollection<Notification> Notifications { get; set; } = [];
     public ICollection<CalendarSync> CalendarSyncs { get; set; } = [];
     public PatientProfile360? PatientProfile { get; set; }
+
+    /// <summary>
+    /// Used to compute the <c>isNew</c> flag on DataConflict records.
+    /// Null means the patient has never reviewed any conflicts.
+    /// Updated to UtcNow after each Staff resolve or mark-reviewed action.
+    /// </summary>
+    public DateTimeOffset? LastConflictReviewedAt { get; set; }
 }

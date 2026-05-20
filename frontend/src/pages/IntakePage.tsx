@@ -13,27 +13,18 @@
  *   - useAIIntake (this task)
  *   - react-router-dom v6 useParams
  */
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAIIntake } from '../hooks/useAIIntake';
 import { useAuth } from '../context/AuthContext';
 import { AIIntakeChat } from '../components/intake/AIIntakeChat';
 import { IntakeProgressBar } from '../components/intake/IntakeProgressBar';
 import { IntakeSummaryReview } from '../components/intake/IntakeSummaryReview';
+import { ManualIntakeForm } from '../components/intake/ManualIntakeForm';
 import styles from './IntakePage.module.css';
 
 /** Visually hidden but accessible to assistive technology. */
-const srOnly: React.CSSProperties = {
-  position: 'absolute',
-  width: '1px',
-  height: '1px',
-  padding: 0,
-  margin: '-1px',
-  overflow: 'hidden',
-  clip: 'rect(0,0,0,0)',
-  whiteSpace: 'nowrap',
-  border: 0,
-};
+// NOTE: replaced by global .sr-only class — this const removed (F015)
 
 type IntakeMode = 'ai' | 'manual';
 
@@ -58,27 +49,6 @@ function saveMode(appointmentId: string, mode: IntakeMode): void {
   }
 }
 
-/** Minimal placeholder rendered until US_019 delivers ManualIntakeForm. */
-function ManualIntakeFormPlaceholder(): JSX.Element {
-  return (
-    <div
-      style={{
-        flex: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 'var(--space-12)',
-        flexDirection: 'column',
-        gap: 'var(--space-4)',
-      }}
-    >
-      <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-body-md)' }}>
-        Manual intake form will be available in US_019.
-      </p>
-    </div>
-  );
-}
-
 export function IntakePage(): JSX.Element {
   const { appointmentId = '' } = useParams<{ appointmentId: string }>();
   const { user } = useAuth();
@@ -86,6 +56,21 @@ export function IntakePage(): JSX.Element {
   const [mode, setMode] = useState<IntakeMode>(() => loadMode(appointmentId));
   const [confirmed, setConfirmed] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
+  const [modeAnnouncement, setModeAnnouncement] = useState('');
+
+  // B-001: update document.title on mount and when submission or mode changes (WCAG 2.4.2)
+  useEffect(() => {
+    if (confirmed) {
+      document.title = 'Intake Submitted | Patient Portal';
+    } else if (mode === 'manual') {
+      document.title = 'Manual Intake | Patient Portal';
+    } else {
+      document.title = 'AI Intake | Patient Portal';
+    }
+    return () => {
+      document.title = 'Patient Portal';
+    };
+  }, [confirmed, mode]);
 
   const {
     messages,
@@ -115,6 +100,11 @@ export function IntakePage(): JSX.Element {
       if (next === mode) return;
       saveMode(appointmentId, next);
       setMode(next);
+      setModeAnnouncement(
+        next === 'manual'
+          ? 'Switched to manual intake form. Your AI answers have been carried over.'
+          : 'Switched to AI-assisted intake. Your entered answers have been carried over.',
+      );
       // M-004: clear AI session error when switching away — it's not relevant in manual mode
       if (next === 'manual') clearError();
       // capturedFields are preserved in useAIIntake state — no data loss (UXR-103)
@@ -146,21 +136,54 @@ export function IntakePage(): JSX.Element {
     navigate('/');
   }, [navigate]);
 
-  const displayInitials = user?.displayName
-    ? user.displayName
-        .split(' ')
-        .map((n) => n?.[0] ?? '')
-        .filter(Boolean)
-        .join('')
-        .toUpperCase()
-        .slice(0, 2)
-    : 'P';
+  /**
+   * AC-004/AC-005: when switching manual → AI, sync any manually-entered values
+   * back into the AI session's capturedFields state so no data is lost (UXR-103).
+   */
+  const handleSwitchToAI = useCallback(
+    (currentManualValues: Record<string, string>): void => {
+      Object.entries(currentManualValues).forEach(([key, value]) => {
+        if (value) updateFieldValue(key, value);
+      });
+      handleModeSwitch('ai');
+    },
+    [updateFieldValue, handleModeSwitch],
+  );
+
+  /**
+   * Convert capturedFields array to a flat Record<fieldKey, value> for ManualIntakeForm
+   * defaultValues (AC-004 — AI answers pre-populate the manual form).
+   */
+  const capturedFieldsMap = useMemo<Record<string, string>>(
+    () =>
+      capturedFields.reduce<Record<string, string>>((acc, f) => {
+        acc[f.fieldKey] = f.value;
+        return acc;
+      }, {}),
+    [capturedFields],
+  );
+
+  const displayInitials = useMemo(
+    () =>
+      user?.displayName
+        ? user.displayName
+            .split(' ')
+            .map((n) => n?.[0] ?? '')
+            .filter(Boolean)
+            .join('')
+            .toUpperCase()
+            .slice(0, 2)
+        : 'P',
+    [user?.displayName],
+  );
 
   if (confirmed) {
     return (
       <div className={styles.page}>
-        {/* N-001: Screen-specific page title */}
-        <title>Intake Submitted | Patient Portal</title>
+        {/* WCAG 2.4.1 — skip link to main content */}
+        <a href="#main-intake" className={styles.skipLink}>
+          Skip to main content
+        </a>
         <nav className={styles.topnav} aria-label="Main navigation">
           <div className={styles.topnavInner}>
             <Link to="/" className={styles.navBack} aria-label="Back to dashboard">
@@ -171,9 +194,9 @@ export function IntakePage(): JSX.Element {
             </Link>
           </div>
         </nav>
-        {/* A-002: page-level heading (screen reader visible only) */}
-        <h1 style={srOnly}>Intake Submitted</h1>
-        <main className={styles.confirmedBanner}>
+        <main id="main-intake" className={styles.confirmedBanner}>
+          {/* A-002: page-level heading (screen reader visible only) */}
+          <h1 className="sr-only">Intake Submitted</h1>
           <p className={styles.confirmedHeading}>✓ Intake Submitted</p>
           <p className={styles.confirmedSub}>
             Your intake information has been securely submitted. Your care team will review it
@@ -189,9 +212,14 @@ export function IntakePage(): JSX.Element {
 
   return (
     <div className={styles.page}>
-      {/* N-001: Screen-specific page title */}
-      <title>AI Intake | Patient Portal</title>
-
+      {/* WCAG 2.4.1 — skip navigation link */}
+      <a href="#main-intake" className={styles.skipLink}>
+        Skip to main content
+      </a>
+      {/* WCAG 4.1.3 — ARIA live region announces mode switch to screen readers */}
+      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {modeAnnouncement}
+      </div>
       {/* ── Top nav ────────────────────────────────────────── */}
       <nav className={styles.topnav} aria-label="Main navigation">
         <div className={styles.topnavInner}>
@@ -242,9 +270,6 @@ export function IntakePage(): JSX.Element {
         </div>
       </nav>
 
-      {/* A-002: visually-hidden h1 for screen-reader heading navigation */}
-      <h1 style={srOnly}>AI Conversational Intake — complete your pre-visit questionnaire</h1>
-
       {/* ── Error banner ──────────────────────────────────── */}
       {errorMessage && (
         <div className={styles.errorBanner} role="alert" aria-live="assertive">
@@ -261,17 +286,23 @@ export function IntakePage(): JSX.Element {
       )}
 
       {/* A-003: <main> wraps the primary content at all phases */}
-      <main className={styles.mainContent}>
+      <main id="main-intake" className={styles.mainContent}>
+        {/* B-002: h1 inside main for correct landmark association (WCAG 1.3.1) */}
+        <h1 className="sr-only">
+          {mode === 'manual'
+            ? 'Manual Intake — complete your pre-visit questionnaire'
+            : 'AI Conversational Intake — complete your pre-visit questionnaire'}
+        </h1>
+
         {/* ── AI path ───────────────────────────────────────── */}
         {mode === 'ai' && (phase === 'conversation' || phase === 'loading' || phase === 'error') && (
           <>
-            {totalQuestions > 0 && (
-              <IntakeProgressBar
-                current={questionNumber}
-                total={totalQuestions}
-                data-uxr="UXR-502"
-              />
-            )}
+            {/* H-001: render progress bar even during error state using constant total (UXR-502) */}
+            <IntakeProgressBar
+              current={questionNumber}
+              total={totalQuestions || 8}
+              data-uxr="UXR-502"
+            />
             <AIIntakeChat
               messages={messages}
               isLoading={phase === 'loading'}
@@ -294,8 +325,16 @@ export function IntakePage(): JSX.Element {
           />
         )}
 
-        {/* ── Manual path placeholder (US_019) ─────────────── */}
-        {mode === 'manual' && <ManualIntakeFormPlaceholder />}
+        {/* ── Manual path (US_019 task_001) ────────────────── */}
+        {mode === 'manual' && (
+          <ManualIntakeForm
+            appointmentId={appointmentId}
+            defaultValues={capturedFieldsMap}
+            onSwitchToAI={handleSwitchToAI}
+            onSaveLater={handleSaveLater}
+            onSubmitSuccess={() => setConfirmed(true)}
+          />
+        )}
       </main>
     </div>
   );

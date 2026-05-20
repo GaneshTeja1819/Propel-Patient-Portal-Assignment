@@ -1,0 +1,354 @@
+/**
+ * PatientProfilePage.module.css — SCR-009 Patient 360° Profile page styles (US_027).
+ * All values reference semantic tokens from variables.css. No raw hex/px.
+ * Wireframe: wireframe-SCR-009-patient-profile.html
+ */
+
+/* Page wrapper */
+.page {
+  min-height: 100vh;
+  background: var(--color-surface-muted);
+  font-family: var(--font-family-default);
+  color: var(--color-text-primary);
+}
+
+/* Top navigation bar */
+.topNav {
+  height: 64px;
+  background: var(--color-surface-default);
+  border-bottom: 1px solid var(--color-border-default);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.topNavInner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-8);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.navLogo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--font-weight-heading-lg);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-heading-sm);
+  text-decoration: none;
+}
+
+.navLogoMark {
+  width: 32px;
+  height: 32px;
+  background: var(--color-brand-primary);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-on-primary);
+  font-weight: var(--font-weight-heading-lg);
+  font-size: var(--font-size-body-md);
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.navLink {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-body-md);
+  text-decoration: none;
+  transition: background 0.1s;
+}
+
+.navLink:hover {
+  background: var(--color-surface-subtle);
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.navLinkActive {
+  background: var(--color-brand-primary-light);
+  color: var(--color-brand-primary);
+  font-weight: var(--font-weight-heading-sm);
+}
+
+.avatarSm {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-heading-lg);
+  flex-shrink: 0;
+}
+
+/* Main content area */
+.main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-8);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-6);
+}
+
+.breadcrumb a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: var(--color-brand-primary);
+}
+
+.breadcrumbSep {
+  color: var(--color-text-disabled);
+}
+
+/* Profile header card */
+.profileHeader {
+  background: var(--color-surface-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.profileIdentity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.avatarLg {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-heading-lg);
+  font-weight: var(--font-weight-heading-lg);
+  flex-shrink: 0;
+}
+
+.profileName {
+  font-size: var(--font-size-heading-lg);
+  font-weight: var(--font-weight-heading-lg);
+  margin-bottom: var(--space-1);
+  color: var(--color-text-primary);
+}
+
+.profileMeta {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-secondary);
+}
+
+.profileBadges {
+  margin-top: var(--space-2);
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-label);
+  white-space: nowrap;
+}
+
+.badgePhi {
+  background: var(--color-surface-phi);
+  color: var(--color-brand-primary);
+}
+
+.badgeAi {
+  background: var(--color-ai-accent-bg);
+  color: var(--color-ai-accent);
+  border: 1px solid var(--color-ai-accent-bg);
+}
+
+/* Patient view badge (AC-002) */
+.badgePatientView {
+  background: var(--color-surface-subtle);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-default);
+}
+
+/* Staff role badge (SCR-013) */
+.staffRoleBadge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-success-bg);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-heading-sm);
+  color: var(--color-success-text);
+}
+
+/* Profile actions */
+.profileActions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  height: 44px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-md);
+  font-weight: var(--font-weight-heading-sm);
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  border: 1.5px solid var(--color-brand-primary);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.btnPrimary:hover {
+  background: var(--color-brand-primary-hover);
+  text-decoration: none;
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  height: 44px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-md);
+  font-weight: var(--font-weight-heading-sm);
+  background: var(--color-surface-default);
+  color: var(--color-text-primary);
+  border: 1.5px solid var(--color-border-default);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.btnSecondary:hover {
+  background: var(--color-surface-subtle);
+  text-decoration: none;
+}
+
+/* Deduplication-in-progress banner (edge case) */
+.dedupBanner {
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning);
+  border-left: 4px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-warning-text);
+}
+
+/* Empty / no-documents state (AC-004) */
+.emptyProfile {
+  background: var(--color-surface-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-8);
+  text-align: center;
+}
+
+.emptyTitle {
+  font-size: var(--font-size-heading-md);
+  font-weight: var(--font-weight-heading-md);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.emptyDescription {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-6);
+}
+
+/* Error / forbidden state */
+.errorBanner {
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  color: var(--color-danger-text);
+  font-size: var(--font-size-body-sm);
+  margin-bottom: var(--space-4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profileHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .main {
+    padding: var(--space-4);
+  }
+
+  .topNavInner {
+    padding: 0 var(--space-4);
+  }
+
+  .navLinks {
+    display: none;
+  }
+}

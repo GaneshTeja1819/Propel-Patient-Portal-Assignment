@@ -8,7 +8,7 @@
   - AC-002: decision="Accepted" → VerifiedMedicalCode with original suggestedCode; immutable `CODE_VERIFIED` audit; row unchangeable after this
   - AC-003: decision="Modified" → validate `verifiedCode` against ICD-10/CPT codeset; if valid → VerifiedMedicalCode with decision="Modified"; if invalid → HTTP 422 "Code not found in codeset"; no record created
   - AC-004: decision="Rejected" → VerifiedMedicalCode with decision="Rejected"; immutable audit
-  - AC-005: All suggestions for encounter rejected → `Encounter.status = "PendingManualCoding"`; immutable mass-rejection audit entry; no billing processing until a code is verified
+  - AC-005: All suggestions for encounter rejected → `ExtractedClinicalData.CodingStatus = "PendingManualCoding"`; immutable mass-rejection audit entry; no billing processing until a code is verified
 - **Edge Cases:**
   - Encounter already "Finalized" → HTTP 422 "This encounter has been finalised"; no new VerifiedMedicalCode
   - Patient POSTs to verify endpoint → HTTP 403
@@ -67,6 +67,7 @@ Implement the Staff-only `POST /api/v1/codes/verify` endpoint that creates immut
 A companion `GET /api/v1/code-suggestions?encounterId=` endpoint is added to the existing `CodeSuggestionsController` so SCR-014 can load rows.
 
 ## Dependent Tasks
+- `task_003_database-verified-medical-code.md` (US_030) — `VerifiedMedicalCode.Decision`, `VerifiedMedicalCode.OriginalSuggestedCode`, and `ExtractedClinicalData.CodingStatus` columns must be applied via migration before handler logic references them
 - `task_001_ai-code-suggestion.md` (US_029) — `MedicalCodeSuggestion` entity exists; `CodeSuggestionsController` exists
 - `task_001_backend-jwt-auth.md` (US_007) — `StaffPolicy` must be registered
 
@@ -84,7 +85,7 @@ A companion `GET /api/v1/code-suggestions?encounterId=` endpoint is added to the
    - If `Decision == "Modified"`: validate `VerifiedCode` against reference codeset (`IcdCptReferenceService.IsValidCodeAsync(code, codeType)`); if invalid → HTTP 422 "Code not found in codeset"
    - Create `VerifiedMedicalCode` (INSERT only; no UPDATE/DELETE logic in handler; DB column `is_immutable = true` or trigger-based):
      - `suggestionId`, `decision`, `verifiedCode` (VerifiedCode for Modified; suggestedCode for Accepted; null for Rejected), `verifiedAt`, `verifiedById`, `originalSuggestedCode`
-   - Check "all rejected" condition: count `MedicalCodeSuggestion` for encounter where no "Accepted" or "Modified" `VerifiedMedicalCode` exists; if all have Rejected → set `Encounter.status = "PendingManualCoding"`; write `MASS_REJECTION` audit
+   - Check "all rejected" condition: count `MedicalCodeSuggestion` for the same `ClinicalDataId` where no "Accepted" or "Modified" `VerifiedMedicalCode` exists; if all have Rejected → set `ExtractedClinicalData.CodingStatus = "PendingManualCoding"` (column added by task_003); write `MASS_REJECTION` audit
    - Write immutable `CODE_VERIFIED` audit: `actorRole = "Staff"`, `actorId`, `suggestionId`, `decision`, `verifiedCode`, `originalSuggestedCode`, `timestamp`
 3. Create `CodeVerificationController`:
    - `POST /api/v1/codes/verify` — `[Authorize(Policy = "StaffPolicy")]`; HTTP 403 for Patient
@@ -127,11 +128,11 @@ backend/
 - [ ] Verify immutable audit: no UPDATE or DELETE permitted on VerifiedMedicalCode or CODE_VERIFIED audit rows at DB level
 
 ## Implementation Checklist
-- [ ] Duplicate verification check: HTTP 409 if VerifiedMedicalCode already exists for suggestionId (edge case)
-- [ ] Finalized encounter guard: HTTP 422 (edge case)
-- [ ] Codeset validation for "Modified" decision: HTTP 422 on invalid; no record (AC-003)
-- [ ] VerifiedMedicalCode INSERT-only; no UPDATE/DELETE handler logic (AC-002, AC-004, AIR-005)
-- [ ] Immutable CODE_VERIFIED audit with all required fields (AC-002, AC-004, AIR-005)
-- [ ] All-rejected → Encounter.status = "PendingManualCoding" + MASS_REJECTION audit (AC-005)
-- [ ] HTTP 403 for Patient on POST /verify (AC-005 edge case, OWASP A01)
-- [ ] GET /validate utility endpoint for frontend codeset validation (AC-003 support)
+- [x] Duplicate verification check: HTTP 409 if VerifiedMedicalCode already exists for suggestionId (edge case)
+- [x] Finalized encounter guard: HTTP 422 (edge case)
+- [x] Codeset validation for "Modified" decision: HTTP 422 on invalid; no record (AC-003)
+- [x] VerifiedMedicalCode INSERT-only; no UPDATE/DELETE handler logic (AC-002, AC-004, AIR-005)
+- [x] Immutable CODE_VERIFIED audit with all required fields (AC-002, AC-004, AIR-005)
+- [x] All-rejected → Encounter.status = "PendingManualCoding" + MASS_REJECTION audit (AC-005)
+- [x] HTTP 403 for Patient on POST /verify (AC-005 edge case, OWASP A01)
+- [x] GET /validate utility endpoint for frontend codeset validation (AC-003 support)

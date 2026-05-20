@@ -31,11 +31,15 @@ internal sealed class RedisSessionStore
     /// <summary>Stores session data and returns a new opaque session ID.</summary>
     public async Task<string> CreateAsync(SessionData data, CancellationToken ct = default)
     {
-        RequireMultiplexer();
+        if (_multiplexer is null)
+        {
+            _logger.LogWarning("Redis is not configured — refresh tokens are disabled. Set Redis__ConnectionString for full session support.");
+            return GenerateSessionId(); // Dummy session; refresh will fail gracefully.
+        }
 
         var sessionId = GenerateSessionId();
         var json = JsonSerializer.Serialize(data);
-        await _multiplexer!.GetDatabase()
+        await _multiplexer.GetDatabase()
             .StringSetAsync(KeyPrefix + sessionId, json, SessionTtl);
 
         return sessionId;

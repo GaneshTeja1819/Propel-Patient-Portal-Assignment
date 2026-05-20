@@ -14,6 +14,9 @@ export function ProtectedRoute({ children }: { children: JSX.Element }): JSX.Ele
   const { token } = useAuth();
   const location = useLocation();
 
+  // DEV bypass: allow access without login until US_010 login page is built.
+  if (import.meta.env.DEV) return children;
+
   if (!token) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }

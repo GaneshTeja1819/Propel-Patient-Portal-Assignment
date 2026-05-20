@@ -66,29 +66,31 @@
 Implement `CodeSuggestionJob` as a Hangfire job with an idempotency guard (exit if any `MedicalCodeSuggestion` exists with status Pending/Processing for the same `ExtractedClinicalDataId`). The job calls Gemini with a structured prompt to extract ICD-10 and CPT codes from the clinical text, validates each `suggestedCode` against a reference codeset loaded from a static JSON or DB table, stores ranked `MedicalCodeSuggestion` records, and writes an `AI_INVOCATION` audit entry. The on-demand trigger is exposed via `POST /api/v1/code-suggestions/generate`. `[AutomaticRetry(Attempts = 1)]` is applied; failure sets `MedicalCodeSuggestion` batch status to "Failed" and writes a `CODE_SUGGESTION_FAILED` audit entry.
 
 ## Dependent Tasks
-- `task_001_ai-clinical-extraction-job.md` (US_026) — `ClinicalDataExtractionJob` enqueues `CodeSuggestionJob` after successful extraction
-- `task_002_ai-gemini-sdk.md` (US_008) — `IGeminiService` registered
+- `task_001_ai-clinical-extraction-job.md` (US_026) — `ClinicalDataExtractionJob` enqueues `CodeSuggestionJob` as a Hangfire continuation after persisting `ExtractedClinicalData`
+- `task_002_database-medical-code-suggestion.md` (US_029) — `MedicalCodeSuggestion` entity extended with `Rank`, `Status`, `ModelVersion`, `PromptHash` columns; migration applied before job can store ranked records
+- `IGeminiClient` DI registration — already wired via `DependencyInjection.cs`; `GeminiInvocationLogger` decorator auto-writes `AI_INVOCATION` audit for every call
 
 ## Impacted Components
-- `backend/src/UPACIP.Infrastructure/BackgroundJobs/CodeSuggestionJob.cs` — new Hangfire job
-- `backend/src/UPACIP.Infrastructure/AI/CodeSuggestionPrompt.json` — structured prompt + ICD-10/CPT schema
-- `backend/src/UPACIP.Infrastructure/AI/CodeSuggestionAdapter.cs` — new Gemini adapter
+- `backend/src/UPACIP.Infrastructure/BackgroundJobs/CodeSuggestionJob.cs` — new Hangfire job (idempotency, Gemini call, DB write)
+- `backend/src/UPACIP.Infrastructure/AI/CodeSuggestionPrompt.json` — structured ICD-10/CPT prompt + output schema
+- `backend/src/UPACIP.Infrastructure/AI/GeminiCodingAdapter.cs` — new Gemini adapter (same pattern as `GeminiExtractionAdapter`)
 - `backend/src/UPACIP.API/Controllers/CodeSuggestionsController.cs` — on-demand trigger endpoint
+- `backend/src/UPACIP.Infrastructure/BackgroundJobs/ClinicalDataExtractionJob.cs` — extend to enqueue `CodeSuggestionJob` as continuation
 
 ## Implementation Plan
 1. Create `CodeSuggestionPrompt.json`: defines output schema `{ suggestions: [{ codeType: "ICD10|CPT", code, rank, confidenceScore, derivedFromField }] }`; instructs Gemini to use recognised ICD-10/CPT codes only; includes schema version
-2. Create `CodeSuggestionAdapter.SuggestCodesAsync(clinicalText)`:
-   - Calls `IGeminiService.CallStructuredOutputAsync` with `CodeSuggestionPrompt.json` schema
-   - Records `responseLatencyMs` and token counts
-   - Returns validated response or throws `SuggestionSchemaValidationException`
+2. Create `GeminiCodingAdapter.SuggestCodesAsync(clinicalText, ct)`:
+   - Builds prompt from embedded `CodeSuggestionPrompt.json` (same pattern as `GeminiExtractionAdapter`)
+   - Calls `IGeminiClient.InvokeStructuredAsync<CodeSuggestionResult>` — `GeminiInvocationLogger` decorator auto-writes `AI_INVOCATION` audit entry including `modelVersion`, `promptHash`, token counts, and latency (AC-004, AIR-006)
+   - Validates `SchemaVersion` on response; throws `SuggestionSchemaValidationException` on mismatch (non-retriable)
 3. Implement `CodeSuggestionJob.ExecuteAsync(extractedClinicalDataId)`:
    - Idempotency: if any `MedicalCodeSuggestion` with `extractedClinicalDataId` and `status ∈ [Pending, Processing]` exists → exit
    - Load `ExtractedClinicalData`; decrypt clinical text
    - Call `CodeSuggestionAdapter.SuggestCodesAsync`
    - For each suggestion: validate `suggestedCode` against reference codeset (query `MedicalCodeReferenceTable` or deserialise `icd10_cpt_reference.json`); store regardless of confidence but set `confidenceScore` accurately
-   - Create `MedicalCodeSuggestion[]` records; store in DB
-   - Write `AI_INVOCATION` audit
-   - On zero results: write `CODE_SUGGESTION_EMPTY` audit; no `MedicalCodeSuggestion` records (AC-003)
+   - Create `MedicalCodeSuggestion[]` records with `Rank`, `Status = "Pending"`, `ModelVersion`, `PromptHash`; persist via EF Core
+   - `AI_INVOCATION` audit is written automatically by `GeminiInvocationLogger` — no manual write required (AIR-006)
+   - On zero results: write `CODE_SUGGESTION_EMPTY` audit entry via `IAuditLogService`; no `MedicalCodeSuggestion` records created (AC-003)
 4. Apply `[AutomaticRetry(Attempts = 1)]`; after retry failure → write `CODE_SUGGESTION_FAILED` audit; `ExtractedClinicalData` unchanged (AC-005)
 5. Create `POST /api/v1/code-suggestions/generate` in `CodeSuggestionsController`:
    - `[Authorize(Policy = "StaffPolicy")]`; body: `{ extractedClinicalDataId }`
@@ -98,21 +100,36 @@ Implement `CodeSuggestionJob` as a Hangfire job with an idempotency guard (exit 
 
 ## Current Project State
 ```
-backend/
-  src/
-    UPACIP.Infrastructure/BackgroundJobs/ClinicalDataExtractionJob.cs  (from US_026)
-    UPACIP.Infrastructure/AI/GeminiService.cs  (from US_008)
-    UPACIP.Domain/Entities/ExtractedClinicalData.cs
+backend/src/
+  UPACIP.Domain/Entities/
+    MedicalCodeSuggestion.cs          (exists — Rank/Status/ModelVersion/PromptHash added by task_002)
+    ExtractedClinicalData.cs          (exists — navigation ICollection<MedicalCodeSuggestion>)
+  UPACIP.Application/Interfaces/
+    IGeminiClient.cs                  (exists — InvokeStructuredAsync<T>)
+    IAuditLogService.cs               (exists — LogAsync)
+    IUnitOfWork.cs                    (exists)
+  UPACIP.Infrastructure/AI/
+    GeminiClient.cs                   (exists)
+    GeminiInvocationLogger.cs         (exists — decorator; auto-writes AI_INVOCATION audit)
+    GeminiExtractionAdapter.cs        (exists — reference implementation)
+    ClinicalExtractionPrompt.json     (exists — reference prompt structure)
+  UPACIP.Infrastructure/BackgroundJobs/
+    ClinicalDataExtractionJob.cs      (exists — enqueues DeduplicationJob; same pattern for CodeSuggestionJob)
+    DeduplicationJob.cs               (exists — reference implementation)
+  UPACIP.Infrastructure/Persistence/
+    AppDbContext.cs                   (exists — MedicalCodeSuggestions DbSet)
+  UPACIP.API/Controllers/
+    IntakeController.cs               (exists — reference for StaffPolicy pattern)
 ```
 
 ## Expected Changes
 | Action | File Path | Description |
 |--------|-----------|-------------|
-| CREATE | backend/src/UPACIP.Infrastructure/BackgroundJobs/CodeSuggestionJob.cs | Code suggestion Hangfire job with idempotency |
-| CREATE | backend/src/UPACIP.Infrastructure/AI/CodeSuggestionPrompt.json | Structured ICD-10/CPT prompt + schema |
-| CREATE | backend/src/UPACIP.Infrastructure/AI/CodeSuggestionAdapter.cs | Gemini adapter for code suggestions |
-| CREATE | backend/src/UPACIP.API/Controllers/CodeSuggestionsController.cs | On-demand trigger + idempotency endpoint |
-| MODIFY | backend/src/UPACIP.Infrastructure/BackgroundJobs/ClinicalDataExtractionJob.cs | Enqueue CodeSuggestionJob as continuation |
+| CREATE | backend/src/UPACIP.Infrastructure/BackgroundJobs/CodeSuggestionJob.cs | Hangfire job: idempotency guard, Gemini call via adapter, rank/status storage, failure path |
+| CREATE | backend/src/UPACIP.Infrastructure/AI/CodeSuggestionPrompt.json | Structured prompt with ICD-10/CPT output schema; SHA-256 hash logged per AIR-006 |
+| CREATE | backend/src/UPACIP.Infrastructure/AI/GeminiCodingAdapter.cs | Gemini adapter wrapping IGeminiClient.InvokeStructuredAsync<CodeSuggestionResult> |
+| CREATE | backend/src/UPACIP.API/Controllers/CodeSuggestionsController.cs | POST /api/v1/code-suggestions/generate; StaffPolicy; 202/409 idempotency responses |
+| MODIFY | backend/src/UPACIP.Infrastructure/BackgroundJobs/ClinicalDataExtractionJob.cs | After ExtractedClinicalData persisted, enqueue CodeSuggestionJob as Hangfire continuation |
 
 ## External References
 - [ICD-10-CM browse](https://www.icd10data.com/)
@@ -128,10 +145,10 @@ backend/
 - [ ] Force Gemini failure × 2 → CODE_SUGGESTION_FAILED audit; ExtractedClinicalData unchanged
 
 ## Implementation Checklist
-- [ ] Idempotency guard: exit if Pending/Processing set exists for same `extractedClinicalDataId` (edge case)
-- [ ] Gemini structured call via `CodeSuggestionAdapter`; schema validation (AC-001, AIR-003)
-- [ ] Reference codeset validation per suggestion; store all (including low-confidence) (AC-002, edge case)
-- [ ] Zero results: no records + `CODE_SUGGESTION_EMPTY` audit; no data change (AC-003)
-- [ ] `AI_INVOCATION` audit with all required fields (AC-004, AIR-006)
-- [ ] `[AutomaticRetry(Attempts = 1)]`; failure audit + ExtractedClinicalData unchanged (AC-005)
-- [ ] `POST /generate` on-demand endpoint with idempotency; Staff only (AC-001 on-demand trigger, OWASP A01)
+- [x] Idempotency guard: exit if Pending/Processing set exists for same `extractedClinicalDataId` (edge case)
+- [x] Gemini structured call via `CodeSuggestionAdapter`; schema validation (AC-001, AIR-003)
+- [x] Reference codeset validation per suggestion; store all (including low-confidence) (AC-002, edge case)
+- [x] Zero results: no records + `CODE_SUGGESTION_EMPTY` audit; no data change (AC-003)
+- [x] `AI_INVOCATION` audit with all required fields (AC-004, AIR-006)
+- [x] `[AutomaticRetry(Attempts = 1)]`; failure audit + ExtractedClinicalData unchanged (AC-005)
+- [x] `POST /generate` on-demand endpoint with idempotency; Staff only (AC-001 on-demand trigger, OWASP A01)

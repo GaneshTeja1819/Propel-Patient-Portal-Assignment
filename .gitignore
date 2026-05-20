@@ -1,0 +1,8 @@
+# Environment variables — never commit
+.env
+.env.local
+
+# PropelIQ framework
+.github/*
+.propel/templates/*
+.vscode/mcp.json

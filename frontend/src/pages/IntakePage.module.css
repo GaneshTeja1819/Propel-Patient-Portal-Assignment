@@ -1,0 +1,254 @@
+/*
+ * IntakePage.module.css
+ * Layout shell for the AI/manual intake route (US_018).
+ * All values reference tokens from variables.css. No raw hex or px values.
+ */
+
+/* Full-viewport column layout: topnav → progress → chat → input */
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--color-surface-muted);
+}
+
+/* WCAG 2.4.1 — Skip link: visually hidden until focused */
+.skipLink {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 9999;
+  padding: var(--space-2) var(--space-4);
+  min-height: var(--touch-target-min);
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-surface-default);
+  border: var(--border-width-default) solid var(--color-border-focus);
+  border-radius: var(--radius-md);
+  color: var(--color-interactive-default);
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform var(--duration-fast) var(--easing-enter);
+}
+
+.skipLink:focus {
+  transform: translateY(0);
+}
+
+/* ── Top nav ──────────────────────────────────────────────── */
+.topnav {
+  /* 64px nav height matches wireframe SCR-007 navigation bar */
+  height: 64px;
+  background: var(--color-surface-default);
+  border-bottom: var(--border-width-default) solid var(--color-border-default);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.topnavInner {
+  max-width: var(--grid-max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-8);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.navBack {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-heading-sm);
+  text-decoration: none;
+  min-height: var(--touch-target-min);
+}
+
+.navLogoMark {
+  /* 32px logo mark matches wireframe nav branding */
+  width: 32px;
+  height: 32px;
+  background: var(--color-brand-primary);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-on-primary);
+  font-weight: 700;
+  font-size: var(--font-size-body-md);
+  flex-shrink: 0;
+}
+
+/* ── Method switch (UXR-103) ────────────────────────────────── */
+.methodSwitch {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-surface-subtle);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-2);
+}
+
+.methodSwitchLabel {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-secondary);
+}
+
+.methodBtn {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  border: none;
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: var(--color-text-secondary);
+  transition: background var(--duration-fast);
+}
+
+.methodBtn.active {
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+}
+
+.methodBtn:hover:not(.active) {
+  background: var(--color-border-default);
+}
+
+.methodBtn:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.userAvatar {
+  /* 32px avatar matches wireframe nav */
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-body-sm);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Main content wrapper (A-003: role=main target) ─────────── */
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── Error / loading states ────────────────────────────────── */
+.errorBanner {
+  flex-shrink: 0;
+  padding: var(--space-3) var(--space-8);
+  background: var(--color-danger-bg);
+  border-bottom: var(--border-width-default) solid var(--color-danger);
+  /* Use --color-danger-text (red-700) for 6.22:1 contrast on danger-bg — WCAG AA */
+  color: var(--color-danger-text);
+  font-size: var(--font-size-body-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* N-003: retry action inside error banner */
+.btnRetry {
+  margin-left: auto;
+  padding: var(--space-1) var(--space-3);
+  background: transparent;
+  color: var(--color-danger-text);
+  border: var(--border-width-default) solid var(--color-danger-text);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+
+.btnRetry:hover {
+  background: var(--color-danger-bg);
+}
+
+.btnRetry:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.confirmedBanner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-12);
+  text-align: center;
+}
+
+.confirmedHeading {
+  font-size: var(--font-size-heading-xl);
+  font-weight: var(--font-weight-heading-xl);
+  color: var(--color-success);
+}
+
+.confirmedSub {
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-secondary);
+  max-width: 480px;
+}
+
+.btnDashboard {
+  padding: 0 var(--space-6);
+  height: var(--touch-target-min);
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: background var(--duration-fast);
+}
+
+.btnDashboard:hover {
+  background: var(--color-brand-primary-hover);
+}
+
+@media (max-width: 768px) {
+  .topnavInner {
+    padding: 0 var(--space-4);
+  }
+}
+
+/* R-001: At narrow mobile viewports the nav label text causes overflow;
+   hide it and show only the logo mark P + method switch */
+@media (max-width: 480px) {
+  .navBack span {
+    display: none;
+  }
+  .methodSwitchLabel {
+    display: none;
+  }
+}

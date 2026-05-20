@@ -75,7 +75,7 @@ Implement the AI intake session API: `POST /api/v1/intake/start`, `POST /api/v1/
 ## Implementation Plan
 1. Create `IntakeQuestions.json`: array of `{ fieldKey, promptTemplate, schema: { type, constraints } }` for each intake field (e.g., chiefComplaint, allergies, currentMedications, smokingStatus, etc.)
 2. Create `IntakeSessionState` record: `{ appointmentId, currentFieldIndex, capturedFields: Dictionary<string, object?>, method: "AI" | "AI-Partial", manualRequiredFields: List<string> }`; serialised to Redis key `intake-session-{appointmentId}` with 5-min TTL
-3. Create `GeminiIntakeAdapter.CallFieldAsync(fieldKey, patientResponse, fieldSchema)`: constructs Gemini function-calling request; calls `IGeminiService.CallStructuredOutputAsync`; parses response; validates against `fieldSchema`; on failure throws `IntakeSchemaValidationException`
+4. Create `GeminiIntakeAdapter.CallFieldAsync(fieldKey, patientResponse, fieldSchema)`: constructs Gemini function-calling request; calls `IGeminiClient.InvokeStructuredAsync<IntakeFieldResponse>`; parses response; validates against `fieldSchema`; on failure throws `IntakeSchemaValidationException`
 4. Create `IntakeSessionService`:
    - `StartSessionAsync(appointmentId)` → initialise `IntakeSessionState` in Redis; return first question prompt
    - `SubmitAnswerAsync(appointmentId, fieldKey, rawAnswer)` → load state; call `GeminiIntakeAdapter`; on success set field; on `IntakeSchemaValidationException` retry once; on second failure set `manualRequiredFields.Add(fieldKey)`, `method = "AI-Partial"`; advance index; return next question or `{ phase: "summary" }`
@@ -115,10 +115,10 @@ backend/
 - [ ] `GET /api/v1/intake/session/{id}` returns current partial captured fields (session resume)
 
 ## Implementation Checklist
-- [ ] Create `IntakeQuestions.json` with all intake fields and prompt templates (AC-001)
-- [ ] Implement `GeminiIntakeAdapter` using function calling; validate response against field schema (AC-002)
-- [ ] Retry once on validation failure; on second failure mark field as `ManualRequired`; set method to "AI-Partial" (AC-002, edge case)
-- [ ] Implement `IntakeSessionService` with Redis session state (5-min TTL, refreshed on each answer) (AC-001, AC-002)
-- [ ] `POST /api/v1/intake/answer` returns `{ nextQuestion }` or `{ phase: "summary" }` (AC-001)
-- [ ] `GET /api/v1/intake/session/{appointmentId}` returns partial state for resume (edge case)
-- [ ] All endpoints `[Authorize(Policy = "PatientPolicy")]` (OWASP A01)
+- [x] Create `IntakeQuestions.json` with all intake fields and prompt templates (AC-001)
+- [x] Implement `GeminiIntakeAdapter` using function calling; validate response against field schema (AC-002)
+- [x] Retry once on validation failure; on second failure mark field as `ManualRequired`; set method to "AI-Partial" (AC-002, edge case)
+- [x] Implement `IntakeSessionService` with Redis session state (5-min TTL, refreshed on each answer) (AC-001, AC-002)
+- [x] `POST /api/v1/intake/answer` returns `{ nextQuestion }` or `{ phase: "summary" }` (AC-001)
+- [x] `GET /api/v1/intake/session/{appointmentId}` returns partial state for resume (edge case)
+- [x] All endpoints `[Authorize(Policy = "PatientPolicy")]` (OWASP A01)
