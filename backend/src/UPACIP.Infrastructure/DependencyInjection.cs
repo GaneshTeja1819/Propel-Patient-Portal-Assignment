@@ -4,13 +4,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System.Text.Json;
+using UPACIP.Application.Handlers.Admin;
+using UPACIP.Application.Handlers.Auth;
 using UPACIP.Application.Handlers.Codes;
 using UPACIP.Application.Handlers.Documents;
-using UPACIP.Infrastructure.Handlers.Codes;
-using UPACIP.Infrastructure.Reference;
 using UPACIP.Application.Handlers.Intake;
 using UPACIP.Application.Handlers.Conflicts;
+using UPACIP.Infrastructure.Handlers.Codes;
 using UPACIP.Infrastructure.Handlers.Profile;
+using UPACIP.Infrastructure.Reference;
 using UPACIP.Application.Interfaces;
 using UPACIP.Infrastructure.AI;
 using UPACIP.Infrastructure.Audit;
@@ -20,6 +22,7 @@ using UPACIP.Infrastructure.Caching;
 using UPACIP.Infrastructure.Documents;
 using UPACIP.Infrastructure.Persistence;
 using UPACIP.Infrastructure.Persistence.Interceptors;
+using UPACIP.Infrastructure.Repositories;
 using UPACIP.Infrastructure.Security;
 
 namespace UPACIP.Infrastructure;
@@ -56,6 +59,27 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IRegistrationStore, RegistrationStore>();
+        services.AddScoped<ILoginUserStore, LoginUserStore>();
+        services.AddScoped<IAdminUserStore, AdminUserStore>();
+        services.AddScoped<RegisterUserHandler>();
+        services.AddScoped<LoginUserHandler>();
+        services.AddScoped<CreateUserHandler>();
+        services.AddScoped<UpdateUserHandler>();
+        services.AddScoped<ChangeRoleHandler>();
+        services.AddScoped<DeactivateUserHandler>();
+
+        // ── Audit log read (admin_read_role / audit_reader credentials) ────
+        // Falls back to DefaultConnection in development; in production the
+        // AuditReadConnection key uses credentials for the audit_reader role.
+        var auditReadCs = configuration.GetConnectionString("AuditReadConnection")
+            ?? connectionString
+            ?? throw new InvalidOperationException(
+                "Neither AuditReadConnection nor DefaultConnection is configured.");
+        services.AddSingleton(new AuditReadDbContext(auditReadCs));
+        services.AddScoped<IAuditLogReadRepository, AuditLogReadRepository>();
+        services.AddScoped<GetAuditLogHandler>();
+        services.AddScoped<GetAuditLogStatsHandler>();
 
         // ── Intake confirm (US_018, task_003) ──────────────────────────────
         services.AddScoped<IIntakeRecordRepository, IntakeRecordRepository>();
@@ -67,6 +91,8 @@ public static class DependencyInjection
         services.AddScoped<MarkReviewedHandler>();
 
         services.AddHangfireWithPostgres(configuration);
+        services.AddTransient<AccountLockoutNotificationJob>();
+        services.AddScoped<IAccountLockoutNotifier, HangfireAccountLockoutNotifier>();
         services.AddRedis(configuration);
 
         // ── Auth (JWT + Redis sessions) ──────────────────────────────────

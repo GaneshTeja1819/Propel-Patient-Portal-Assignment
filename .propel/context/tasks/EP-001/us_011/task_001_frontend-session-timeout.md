@@ -114,11 +114,11 @@ frontend/
 - [ ] Screen reader test: `aria-live="assertive"` region announces countdown without focus move
 
 ## Implementation Checklist
-- [ ] Implement `useInactivityTimer` with `requestAnimationFrame` tick; three phases: active / warning (13 min) / expired (15 min) (AC-001, AC-002, AC-003, AC-005)
-- [ ] Build `SessionTimeoutModal` with `role="dialog"`, `aria-live="assertive"` countdown region; "Stay logged in" CTA focusable via Tab (AC-003)
-- [ ] Wire "Stay logged in" to `refreshSession()` → `POST /api/v1/auth/refresh`; reset timer on success (AC-004)
-- [ ] Wire `phase === 'expired'` → logout() → navigate `/login?reason=expired` within 1 s (AC-001, AC-005)
-- [ ] Mount `SessionTimeoutManager` inside `AuthProvider` for authenticated routes only (AC-001)
-- [ ] Add `?reason=expired` banner on `LoginPage` (AC-001)
+- [x] Implement `useInactivityTimer` with `requestAnimationFrame` tick; three phases: active / warning (13 min) / expired (15 min) (AC-001, AC-002, AC-003, AC-005)
+- [x] Build `SessionTimeoutModal` with `role="dialog"`, `aria-live="assertive"` countdown region; "Stay logged in" CTA focusable via Tab (AC-003)
+- [x] Wire "Stay logged in" to `refreshSession()` → `POST /api/v1/auth/refresh`; reset timer on success (AC-004)
+- [x] Wire `phase === 'expired'` → logout() → navigate `/login?reason=expired` within 1 s (AC-001, AC-005)
+- [x] Mount `SessionTimeoutManager` inside `AuthProvider` for authenticated routes only (AC-001)
+- [x] Add `?reason=expired` banner on `LoginPage` (AC-001)
 - [ ] Verify `aria-live="assertive"` fires announcement without focus movement (AC-003 screen reader edge case)
 - [ ] Verify modal rendering is not blocked by synchronous JS tasks (AC-003 edge case)

@@ -65,6 +65,8 @@ public sealed class AppDbContext : DbContext
             e.Property(u => u.LastName).HasMaxLength(100).IsRequired();
             e.Property(u => u.PhoneNumber).HasMaxLength(30);
             e.Property(u => u.LastConflictReviewedAt).IsRequired(false);
+            e.Property(u => u.FailedLoginCount).HasDefaultValue(0);
+            e.Property(u => u.LockUntil);
         });
 
         // ── AppointmentSlot ───────────────────────────────────────────────

@@ -11,13 +11,20 @@ namespace UPACIP.Infrastructure.Auth;
 /// Value      : JSON-serialised <see cref="SessionData"/>
 /// TTL        : 15 minutes, sliding — reset on every successful refresh (AC-003, AC-004).
 ///
+/// A secondary set <c>user-sessions:{userId}</c> maps each userId to the set of
+/// active session IDs, enabling O(1) user-level invalidation (e.g., after role change
+/// or account deactivation). The set TTL is refreshed on each session creation; stale
+/// entries are harmless because deleting an already-expired key is a no-op.
+///
 /// Never exposes the stored value to the client; only the opaque
 /// <paramref name="sessionId"/> travels in an HttpOnly cookie.
 /// </summary>
 internal sealed class RedisSessionStore
 {
     private const string KeyPrefix = "session:";
+    private const string UserSessionsPrefix = "user-sessions:";
     private static readonly TimeSpan SessionTtl = TimeSpan.FromMinutes(15);
+    private static readonly TimeSpan UserSessionsSetTtl = TimeSpan.FromHours(24);
 
     private readonly IConnectionMultiplexer? _multiplexer;
     private readonly ILogger<RedisSessionStore> _logger;
@@ -39,8 +46,14 @@ internal sealed class RedisSessionStore
 
         var sessionId = GenerateSessionId();
         var json = JsonSerializer.Serialize(data);
-        await _multiplexer.GetDatabase()
-            .StringSetAsync(KeyPrefix + sessionId, json, SessionTtl);
+        var db = _multiplexer!.GetDatabase();
+
+        await db.StringSetAsync(KeyPrefix + sessionId, json, SessionTtl);
+
+        // Maintain a secondary index so we can invalidate all sessions for a user.
+        var userSetKey = UserSessionsPrefix + data.UserId;
+        await db.SetAddAsync(userSetKey, sessionId);
+        await db.KeyExpireAsync(userSetKey, UserSessionsSetTtl);
 
         return sessionId;
     }
@@ -79,6 +92,32 @@ internal sealed class RedisSessionStore
     {
         if (_multiplexer is null) return; // Best-effort on logout; no need to throw.
         await _multiplexer.GetDatabase().KeyDeleteAsync(KeyPrefix + sessionId);
+    }
+
+    /// <summary>
+    /// Deletes all active sessions for the specified user by consulting the
+    /// secondary index set <c>user-sessions:{userId}</c>.
+    /// Stale entries in the set (sessions already expired) are harmless — DEL on a
+    /// missing key is a no-op in Redis.
+    /// </summary>
+    public async Task InvalidateAllSessionsForUserAsync(Guid userId, CancellationToken ct = default)
+    {
+        if (_multiplexer is null) return; // No Redis; nothing to invalidate.
+
+        var db = _multiplexer.GetDatabase();
+        var userSetKey = UserSessionsPrefix + userId;
+
+        var sessionIds = await db.SetMembersAsync(userSetKey);
+
+        if (sessionIds.Length > 0)
+        {
+            var sessionKeys = sessionIds
+                .Select(s => (RedisKey)(KeyPrefix + s))
+                .ToArray();
+            await db.KeyDeleteAsync(sessionKeys);
+        }
+
+        await db.KeyDeleteAsync(userSetKey);
     }
 
     private void RequireMultiplexer()

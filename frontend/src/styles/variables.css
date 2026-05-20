@@ -278,6 +278,11 @@
 
   /* Form layout */
   --form-field-max-width-sm: 360px;
+  --auth-card-max-width-login: 420px;
+  --auth-card-max-width-register: 480px;
+
+  /* Auth shell */
+  --color-surface-auth-shell: #f0f5ff;
 
   /* Content column — max-width shared by chat, progress bar, and intake layout */
   --layout-content-max-width: 760px;

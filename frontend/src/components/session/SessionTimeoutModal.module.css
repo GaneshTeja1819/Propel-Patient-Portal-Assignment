@@ -1,0 +1,51 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(8 12 20 / 65%);
+  padding: 1rem;
+}
+
+.dialog {
+  width: min(30rem, 100%);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: 0.75rem;
+  background: var(--color-surface-default);
+  box-shadow: 0 1.25rem 2.5rem rgb(8 12 20 / 30%);
+  padding: 1.5rem;
+}
+
+.title {
+  margin: 0 0 0.75rem;
+  color: var(--color-text-primary);
+  font-size: 1.25rem;
+}
+
+.message {
+  margin: 0 0 0.75rem;
+  color: var(--color-text-primary);
+}
+
+.error {
+  margin: 0 0 1rem;
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.ctaButton {
+  border: 0;
+  border-radius: 0.5rem;
+  background: var(--color-interactive-default);
+  color: var(--color-text-inverse);
+  font-weight: 600;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+}
+
+.ctaButton:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}

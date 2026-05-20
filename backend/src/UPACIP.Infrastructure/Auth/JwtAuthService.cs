@@ -77,9 +77,18 @@ internal sealed class JwtAuthService : IAuthService
             return null;
         }
 
-        var accessToken = BuildJwt(user.Id, user.Role, user.Email);
-        var sessionId = await _sessionStore.CreateAsync(new SessionData(user.Id, user.Role, user.Email), ct);
+        return await IssueSessionAsync(user.Id, user.Role, user.Email, ct);
+    }
 
+    /// <inheritdoc />
+    public async Task<AuthResult> IssueSessionAsync(
+        Guid userId,
+        string role,
+        string email,
+        CancellationToken ct = default)
+    {
+        var accessToken = BuildJwt(userId, role, email);
+        var sessionId = await _sessionStore.CreateAsync(new SessionData(userId, role, email), ct);
         return new AuthResult(accessToken, sessionId);
     }
 
@@ -103,6 +112,12 @@ internal sealed class JwtAuthService : IAuthService
     public async Task LogoutAsync(string sessionId, CancellationToken ct = default)
     {
         await _sessionStore.DeleteAsync(sessionId, ct);
+    }
+
+    /// <inheritdoc />
+    public async Task InvalidateAllSessionsForUserAsync(Guid userId, CancellationToken ct = default)
+    {
+        await _sessionStore.InvalidateAllSessionsForUserAsync(userId, ct);
     }
 
     private string BuildJwt(Guid userId, string role, string email)

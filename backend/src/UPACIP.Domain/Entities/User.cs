@@ -10,6 +10,8 @@ public class User : BaseEntity
     public string? PhoneNumber { get; set; }
     public bool IsEmailVerified { get; set; }
     public bool IsActive { get; set; } = true;
+    public int FailedLoginCount { get; set; }
+    public DateTimeOffset? LockUntil { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 
