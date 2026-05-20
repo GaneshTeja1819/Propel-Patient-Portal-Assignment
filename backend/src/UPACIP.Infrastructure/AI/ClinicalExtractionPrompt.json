@@ -1,0 +1,4 @@
+{
+  "schemaVersion": "1.0",
+  "promptTemplate": "You are a clinical data extraction assistant. Extract structured clinical information from the following patient document text and return it as a JSON object.\n\nDocument text:\n{documentText}\n\nReturn a JSON object with exactly these fields:\n- vitals: object with bloodPressure (string, e.g. \"120/80\"), heartRate (number, bpm), weight (number, kg), temperature (number, Celsius). Set each field to null if not present.\n- medications: array of objects each with name (string), dosage (string), frequency (string). Return empty array if none found.\n- diagnoses: array of objects each with icdCode (string, e.g. \"J45.0\"), description (string). Return empty array if none found.\n- schemaVersion: string, always set to \"1.0\".\n\nReturn only the JSON object. Do not include markdown, code fences, or explanatory text."
+}

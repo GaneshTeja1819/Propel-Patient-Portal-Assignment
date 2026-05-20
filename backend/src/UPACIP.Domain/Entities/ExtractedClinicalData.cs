@@ -8,6 +8,7 @@ public class ExtractedClinicalData : BaseEntity
     public string ExtractionModel { get; set; } = string.Empty;          // Model identifier (e.g. gemini-2.0-flash)
     public DateTimeOffset ExtractedAt { get; set; } = DateTimeOffset.UtcNow;
     public double? ConfidenceScore { get; set; }
+    public string CodingStatus { get; set; } = "Pending";             // AC-005: "Pending" | "PendingManualCoding" | "Complete"
 
     // Navigation
     public ClinicalDocument Document { get; set; } = null!;

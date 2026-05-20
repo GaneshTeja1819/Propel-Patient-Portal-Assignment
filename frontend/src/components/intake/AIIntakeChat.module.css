@@ -1,0 +1,336 @@
+/*
+ * AIIntakeChat.module.css
+ * Message-thread conversation UI for AI intake (US_018, AC-001).
+ * All values reference tokens from variables.css. No raw hex or px values.
+ */
+
+/* Layout: fills the available vertical space between progress bar and input row */
+.chatArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  /* 760px matches the wireframe SCR-007 content column; not in design token system */
+  max-width: 760px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Chat bubbles */
+.bubble {
+  /* 760px is the wireframe content-column width for intake (SCR-007) */
+  max-width: 80%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-body-md);
+  line-height: var(--line-height-body-md);
+}
+
+.bubbleAi {
+  background: var(--color-ai-accent-bg);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-ai);
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-xs);
+  align-self: flex-start;
+}
+
+.bubbleUser {
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-xs) var(--radius-lg);
+  align-self: flex-end;
+}
+
+.bubbleHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-label);
+  color: var(--color-ai-accent);
+}
+
+/* PHI annotation inside AI bubble (UXR-402) */
+.phiNote {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-caption);
+  color: var(--color-interactive-default);
+  background: var(--color-surface-phi);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-xs);
+  margin-bottom: var(--space-2);
+}
+
+/* Typing indicator */
+.typingBubble {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-ai-accent-bg);
+  border: 1px solid var(--color-border-ai);
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-xs);
+  align-self: flex-start;
+}
+
+.dot {
+  /* 8px dot size matches wireframe SCR-007 typing indicator */
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-ai-accent);
+  animation: bounce 1.2s infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+/* Input area */
+.inputArea {
+  flex-shrink: 0;
+  padding: var(--space-4) var(--space-8) var(--space-6);
+  background: var(--color-surface-default);
+  border-top: var(--border-width-default) solid var(--color-border-default);
+}
+
+.inputInner {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.inputRow {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-end;
+}
+
+.inputField {
+  flex: 1;
+}
+
+.phiNoteInput {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-caption);
+  color: var(--color-interactive-default);
+  background: var(--color-surface-phi);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-xs);
+  margin-bottom: var(--space-2);
+}
+
+.textarea {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-primary);
+  background: var(--color-surface-default);
+  resize: none;
+  /* 52px min / 120px max matches wireframe SCR-007 textarea sizing */
+  min-height: 52px;
+  max-height: 120px;
+  line-height: var(--line-height-body-md);
+  transition: border-color var(--duration-fast);
+}
+
+.textarea.phiInput {
+  background: var(--color-surface-phi);
+  border-color: var(--color-blue-100);
+}
+
+.textarea:focus {
+  border-color: var(--color-border-focus);
+  outline: 3px solid var(--focus-ring-glow);
+  outline-offset: 0;
+}
+
+.btnSend {
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  /* 52px circular send button matches wireframe SCR-007 */
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  font-size: var(--font-size-heading-sm);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btnSend:hover {
+  background: var(--color-brand-primary-hover);
+}
+
+.btnSend:disabled {
+  background: var(--color-interactive-disabled);
+  cursor: not-allowed;
+}
+
+.btnSend:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.inputFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.inputHint {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Manual fallback input (rate-limit / schema-invalid) */
+.fallbackWrap {
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  align-self: flex-start;
+  max-width: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.fallbackLabel {
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+  color: var(--color-warning);
+}
+
+.fallbackInput {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1.5px solid var(--color-border-focus);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-primary);
+  background: var(--color-surface-default);
+}
+
+.fallbackInput:focus {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.btnFallbackSubmit {
+  align-self: flex-end;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+
+.btnFallbackSubmit:hover {
+  background: var(--color-brand-primary-hover);
+}
+
+.btnFallbackSubmit:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+@media (max-width: 768px) {
+  .chatArea,
+  .inputArea {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  .bubble {
+    max-width: 90%;
+  }
+}
+
+/* ── Quick-select option chips (H-001) ─────────────────────── */
+.quickOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.quickOption {
+  padding: var(--space-1) var(--space-3);
+  border: 1.5px solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-default);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+}
+
+.quickOption:hover {
+  background: var(--color-brand-primary-light);
+  border-color: var(--color-brand-primary);
+}
+
+.quickOption:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* ── Save & continue later (M-001) ────────────────────────── */
+.btnSaveLater {
+  padding: var(--space-1) var(--space-3);
+  background: transparent;
+  color: var(--color-brand-primary);
+  border: 1.5px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--duration-fast);
+  white-space: nowrap;
+}
+
+.btnSaveLater:hover {
+  background: var(--color-brand-primary-light);
+}
+
+.btnSaveLater:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}

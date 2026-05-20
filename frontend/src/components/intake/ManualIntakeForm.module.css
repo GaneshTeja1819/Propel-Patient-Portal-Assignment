@@ -1,0 +1,438 @@
+/*
+ * ManualIntakeForm.module.css — Styles for the 5-section manual intake form (US_019).
+ * Wireframe: SCR-008. All values reference design tokens from variables.css.
+ * No raw hex or px values permitted in this file.
+ */
+
+/* ── Scroll container ──────────────────────────────────────── */
+.formScroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.formInner {
+  width: 100%;
+  max-width: var(--layout-content-max-width);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ── Progress area ─────────────────────────────────────────── */
+.progressWrap {
+  margin-bottom: var(--space-2);
+}
+
+/* ── Section card ──────────────────────────────────────────── */
+.sectionCard {
+  background: var(--color-surface-default);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* ── Section header (toggle button) ───────────────────────── */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-4) var(--space-6);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  gap: var(--space-3);
+  transition: background var(--duration-fast) var(--easing-default);
+}
+
+.sectionHeader:hover {
+  background: var(--color-surface-subtle);
+}
+
+.sectionHeader:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+  border-radius: var(--radius-md);
+}
+
+.sectionTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.sectionNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--color-brand-primary-light);
+  color: var(--color-brand-primary);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  flex-shrink: 0;
+}
+
+.sectionTitle {
+  font-size: var(--font-size-heading-sm);
+  font-weight: var(--font-weight-heading-sm);
+  color: var(--color-text-primary);
+}
+
+/* Section icon — emoji badge replaces numbered badge (SCR-008 wireframe) */
+.sectionIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: var(--font-size-body-lg);
+  flex-shrink: 0;
+}
+
+/* Form subtitle (SCR-008 wireframe subheading) */
+.formSubtitle {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-2);
+  line-height: var(--line-height-body-md);
+}
+
+.sectionMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Section complete badge — uses --color-success-text for WCAG AA text contrast (4.75:1 on white) */
+.sectionComplete {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  color: var(--color-success-text);
+  letter-spacing: var(--letter-spacing-label);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.chevron {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  transition: transform var(--duration-fast) var(--easing-default);
+  flex-shrink: 0;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+/* ── Section body ──────────────────────────────────────────── */
+.sectionBody {
+  padding: 0 var(--space-6) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  border-top: var(--border-width-default) solid var(--color-border-default);
+}
+/* Always kept in DOM; hidden via display:none to preserve aria-describedby targets (M004) */
+.sectionBodyHidden {
+  display: none;
+}
+/* ── PHI note ──────────────────────────────────────────────── */
+.phiNote {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-caption);
+  color: var(--color-brand-primary);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-phi);
+  border-radius: var(--radius-sm);
+  margin-top: var(--space-4);
+}
+
+/* ── Field wrapper ─────────────────────────────────────────── */
+.fieldWrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.fieldLabel {
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-label);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.required {
+  color: var(--color-danger);
+  font-size: var(--font-size-body-sm);
+}
+
+/* ── Shared input base ─────────────────────────────────────── */
+.input,
+.textarea,
+.select {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-body-md);
+  font-family: var(--font-family-default);
+  color: var(--color-text-primary);
+  background: var(--color-surface-default);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  transition:
+    border-color var(--duration-fast) var(--easing-default),
+    box-shadow var(--duration-fast) var(--easing-default);
+  box-sizing: border-box;
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px var(--focus-ring-glow);
+}
+
+/* PHI field background (wireframe --cb-l) */
+.phiField {
+  background: var(--color-surface-phi);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 96px;
+  line-height: var(--line-height-body-md);
+}
+
+.select {
+  cursor: pointer;
+  appearance: auto;
+  /* M003: minimum 44px touch target on mobile */
+  min-height: var(--touch-target-min);
+}
+
+/* Error state */
+.inputError {
+  border-color: var(--color-danger);
+}
+
+.fieldError {
+  font-size: var(--font-size-caption);
+  color: var(--color-danger);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* ── Range input ───────────────────────────────────────────── */
+.rangeWrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.range {
+  flex: 1;
+  height: var(--touch-target-min);
+  accent-color: var(--color-brand-primary);
+  cursor: pointer;
+}
+
+.rangeValue {
+  min-width: 32px;
+  text-align: center;
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  background: var(--color-surface-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+}
+
+.rangeLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  padding-top: var(--space-1);
+}
+
+/* ── Checkbox / radio groups ───────────────────────────────── */
+.fieldGroupLegend {
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-label);
+  margin-bottom: var(--space-2);
+  padding: 0;
+}
+
+.fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.optionGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.optionLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-primary);
+  transition:
+    background var(--duration-fast) var(--easing-default),
+    border-color var(--duration-fast) var(--easing-default);
+  min-height: var(--touch-target-min);
+  min-width: 44px;
+  box-sizing: border-box;
+}
+
+.optionLabel:hover {
+  background: var(--color-brand-primary-light);
+  border-color: var(--color-brand-primary);
+}
+
+.optionLabel input[type='checkbox'],
+.optionLabel input[type='radio'] {
+  accent-color: var(--color-brand-primary);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.optionLabel input[type='checkbox']:focus-visible,
+.optionLabel input[type='radio']:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* ── Form footer ───────────────────────────────────────────── */
+.formFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-surface-default);
+  border-top: var(--border-width-default) solid var(--color-border-default);
+  flex-shrink: 0;
+}
+
+.btnGhost {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-body-md);
+  font-family: var(--font-family-default);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  min-height: var(--touch-target-min);
+  transition:
+    background var(--duration-fast) var(--easing-default),
+    color var(--duration-fast) var(--easing-default);
+}
+
+.btnGhost:hover {
+  background: var(--color-surface-subtle);
+  color: var(--color-text-primary);
+}
+
+.btnGhost:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-6);
+  font-size: var(--font-size-body-md);
+  font-family: var(--font-family-default);
+  font-weight: 600;
+  color: var(--color-text-on-primary);
+  background: var(--color-interactive-default);
+  border: var(--border-width-default) solid var(--color-interactive-default);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  min-height: var(--touch-target-min);
+  transition:
+    background var(--duration-fast) var(--easing-default),
+    border-color var(--duration-fast) var(--easing-default);
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: var(--color-interactive-hover);
+  border-color: var(--color-interactive-hover);
+}
+
+.btnPrimary:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* H001: spinner inside submit button during loading state */
+.btnSpinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spinnerRotate var(--duration-slow, 0.75s) linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spinnerRotate {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Submit error banner ───────────────────────────────────── */
+.submitErrorBanner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-danger-bg);
+  border: var(--border-width-default) solid var(--color-danger);
+  border-radius: var(--radius-md);
+  color: var(--color-danger-text);
+  font-size: var(--font-size-body-sm);
+  margin: 0 var(--space-6) var(--space-4);
+}

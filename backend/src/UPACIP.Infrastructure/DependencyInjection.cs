@@ -3,8 +3,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
+using System.Text.Json;
 using UPACIP.Application.Handlers.Admin;
 using UPACIP.Application.Handlers.Auth;
+using UPACIP.Application.Handlers.Codes;
+using UPACIP.Application.Handlers.Documents;
+using UPACIP.Application.Handlers.Intake;
+using UPACIP.Application.Handlers.Conflicts;
+using UPACIP.Infrastructure.Handlers.Codes;
+using UPACIP.Infrastructure.Handlers.Profile;
+using UPACIP.Infrastructure.Reference;
 using UPACIP.Application.Interfaces;
 using UPACIP.Infrastructure.AI;
 using UPACIP.Infrastructure.Audit;
@@ -73,6 +81,15 @@ public static class DependencyInjection
         services.AddScoped<GetAuditLogHandler>();
         services.AddScoped<GetAuditLogStatsHandler>();
 
+        // ── Intake confirm (US_018, task_003) ──────────────────────────────
+        services.AddScoped<IIntakeRecordRepository, IntakeRecordRepository>();
+        services.AddScoped<ConfirmIntakeHandler>();
+
+        // ── Conflict management (US_028, task_002) ─────────────────────────
+        services.AddScoped<IConflictRepository, ConflictRepository>();
+        services.AddScoped<ResolveConflictHandler>();
+        services.AddScoped<MarkReviewedHandler>();
+
         services.AddHangfireWithPostgres(configuration);
         services.AddTransient<AccountLockoutNotificationJob>();
         services.AddScoped<IAccountLockoutNotifier, HangfireAccountLockoutNotifier>();
@@ -88,8 +105,22 @@ public static class DependencyInjection
         // JwtAuthService constructor validates JWT_SIGNING_KEY at startup.
         services.AddScoped<IAuthService, JwtAuthService>();
 
-        // ── Documents ─────────────────────────────────────────────────────────
+        // ── Documents (US_025) ────────────────────────────────────────────────
         services.AddSingleton<IPdfTextExtractor, PdfTextExtractor>();
+
+        // SupabaseStorageService reads env vars at construction time and validates
+        // them eagerly, surfacing misconfiguration at startup (OWASP A02).
+        // AddHttpClient registers a typed client; SupabaseStorageService receives
+        // a managed HttpClient instance, avoiding socket exhaustion.
+        services.AddHttpClient<IDocumentStorageService, SupabaseStorageService>();
+
+        services.AddScoped<IClinicalDocumentRepository, ClinicalDocumentRepository>();
+        services.AddScoped<UploadDocumentHandler>();
+        services.AddScoped<GetPatientProfileHandler>();
+
+        // Hangfire dispatcher: bridges Application's IDocumentExtractionJobDispatcher
+        // to Hangfire's IBackgroundJobClient without coupling Application to Hangfire.
+        services.AddScoped<IDocumentExtractionJobDispatcher, HangfireDocumentExtractionJobDispatcher>();
 
         // ── AI (Gemini) ─────────────────────────────────────────────────────
         // GeminiClient validates GEMINI_API_KEY at construction; singleton is safe
@@ -102,6 +133,54 @@ public static class DependencyInjection
             sp.GetRequiredService<GeminiClient>(),
             sp.GetRequiredService<IServiceScopeFactory>(),
             sp.GetRequiredService<ILogger<GeminiInvocationLogger>>()));
+
+        // ── AI Intake Session (US_018) ─────────────────────────────────────
+        // IntakeQuestions.json is embedded in the Infrastructure assembly and
+        // loaded once at startup; the resulting array is shared across all scopes.
+        services.AddSingleton<IReadOnlyList<IntakeQuestion>>(sp =>
+        {
+            var assembly = typeof(DependencyInjection).Assembly;
+            const string ResourceName = "UPACIP.Infrastructure.AI.IntakeQuestions.json";
+            using var stream = assembly.GetManifestResourceStream(ResourceName)
+                ?? throw new InvalidOperationException(
+                    $"Embedded resource '{ResourceName}' not found in UPACIP.Infrastructure assembly. " +
+                    "Ensure the file Build Action is set to 'Embedded Resource'.");
+
+            var questions = JsonSerializer.Deserialize<IntakeQuestion[]>(
+                stream, new JsonSerializerOptions(JsonSerializerDefaults.Web))
+                ?? throw new InvalidOperationException("IntakeQuestions.json deserialized to null.");
+
+            return questions;
+        });
+
+        // GeminiIntakeAdapter is scoped — it depends on the singleton IGeminiClient.
+        services.AddScoped<GeminiIntakeAdapter>();
+
+        // GeminiExtractionAdapter + deduplication adapters/jobs are scoped so each
+        // Hangfire job execution gets its own EF Core DbContext scope (US_026, US_027).
+        services.AddScoped<GeminiExtractionAdapter>();
+        services.AddScoped<GeminiDeduplicationAdapter>();
+        services.AddScoped<ClinicalDataExtractionJob>();
+        services.AddScoped<DeduplicationJob>();
+
+        // Code suggestion adapter + job (US_029, AC-001).
+        // GeminiCodingAdapter is scoped so PromptHash is stable within a single job execution.
+        services.AddScoped<GeminiCodingAdapter>();
+        services.AddScoped<CodeSuggestionJob>();
+
+        // Code verification (US_030, AC-001–AC-005).
+        // IcdCptReferenceService is singleton: compiled regex patterns are shared
+        // safely across all requests; no mutable state.
+        services.AddSingleton<IIcdCptReferenceService, IcdCptReferenceService>();
+        services.AddScoped<VerifyCodeHandler>();
+
+        // IntakeSessionService is scoped — it takes IConnectionMultiplexer? (nullable).
+        services.AddScoped<IIntakeSessionService>(sp => new IntakeSessionService(
+            sp.GetService<IConnectionMultiplexer>(),
+            sp.GetRequiredService<GeminiIntakeAdapter>(),
+            sp.GetRequiredService<IReadOnlyList<IntakeQuestion>>(),
+            sp.GetRequiredService<IEncryptionService>(),
+            sp.GetRequiredService<ILogger<IntakeSessionService>>()));
 
         return services;
     }

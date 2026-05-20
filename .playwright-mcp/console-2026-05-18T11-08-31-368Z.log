@@ -1,0 +1,103 @@
+[    2392ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:21608
+[    2493ms] [WARNING] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition. @ http://localhost:5174/node_modules/.vite/deps/react-router-dom.js?v=8da97810:4435
+[    2493ms] [WARNING] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath. @ http://localhost:5174/node_modules/.vite/deps/react-router-dom.js?v=8da97810:4435
+[    2627ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/api/v1/intake/start:0
+[    2640ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/api/v1/intake/start:0
+[    2718ms] [LOG] HTML: %c%s font-weight:bold;font-family:Courier; <div class="_errorBanner_5x9tc_243" role="alert" aria-live="assertive"><span aria-hidden="true">⚠</span> Intake start failed: 404</div> @ http://localhost:5174/node_modules/.vite/deps/@axe-core_react.js?v=8da97810:33453
+[    2718ms] [ERROR] Fix any of the following:
+  Element has insufficient color contrast of 3.95 (foreground color: #dc2626, background color: #fee2e2, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1 @ http://localhost:5174/node_modules/.vite/deps/@axe-core_react.js?v=8da97810:33459
+[    2718ms] [LOG] Element: %o JSHandle@node @ http://localhost:5174/node_modules/.vite/deps/@axe-core_react.js?v=8da97810:33449
+[    2719ms] [LOG] HTML: %c%s font-weight:bold;font-family:Courier; <div class="_errorBanner_5x9tc_243" role="alert" aria-live="assertive"><span aria-hidden="true">⚠</span> Intake start failed: 404</div> @ http://localhost:5174/node_modules/.vite/deps/@axe-core_react.js?v=8da97810:33453
+[ 1414035ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/api/v1/intake/start:0
+[ 1446405ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/api/v1/intake/start:0
+[ 1446414ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/api/v1/intake/start:0
+[ 1473375ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:5174/src/pages/IntakePage.tsx?t=1779103984712:0
+[ 1473375ms] [ERROR] [vite] Failed to reload /src/pages/IntakePage.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5174/@vite/client:881
+[ 1482274ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:5174/src/pages/IntakePage.tsx?t=1779103993614:0
+[ 1482274ms] [ERROR] [vite] Failed to reload /src/pages/IntakePage.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5174/@vite/client:881
+[ 1490881ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/api/v1/intake/start:0
+[ 1490884ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/api/v1/intake/start:0
+[ 1508400ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/api/v1/intake/start:0
+[ 1554756ms] [ERROR] Warning: React has detected a change in the order of Hooks called by %s. This will lead to bugs and errors if not fixed. For more information, read the Rules of Hooks: https://reactjs.org/link/rules-of-hooks
+
+   Previous render            Next render
+   ------------------------------------------------------
+%s   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+%s IntakePage 1. useContext                 useContext
+2. useContext                 useContext
+3. useState                   useState
+4. useState                   useState
+5. useState                   useState
+6. useContext                 useContext
+7. useState                   useState
+8. useState                   useState
+9. useState                   useState
+10. useState                  useState
+11. useState                  useState
+12. useState                  useState
+13. useState                  useState
+14. useState                  useState
+15. useRef                    useRef
+16. useCallback               useCallback
+17. useEffect                 useCallback
+ 
+    at IntakePage (http://localhost:5174/src/pages/IntakePage.tsx?t=1779104066075:86:34)
+    at RenderedRoute (http://localhost:5174/node_modules/.vite/deps/react-router-dom.js?v=8da97810:4131:5)
+    at Routes (http://localhost:5174/node_modules/.vite/deps/react-router-dom.js?v=8da97810:4601:5)
+    at Router (http://localhost:5174/node_modules/.vite/deps/react-router-dom.js?v=8da97810:4544:15)
+    at BrowserRouter (http://localhost:5174/node_modules/.vite/deps/react-router-dom.js?v=8da97810:5290:5)
+    at App @ http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:520
+[ 1554756ms] Error: Rendered more hooks than during the previous render.
+    at updateWorkInProgressHook (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:11726:21)
+    at updateCallback (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:12225:22)
+    at Object.useCallback (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:12741:22)
+    at useCallback (http://localhost:5174/node_modules/.vite/deps/chunk-CANBAPAS.js?v=8da97810:1090:29)
+    at IntakePage (http://localhost:5174/src/pages/IntakePage.tsx?t=1779104066075:135:27)
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:11596:26)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:14630:28)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:15972:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:3680:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:3705:24)
+[ 1554757ms] Error: Rendered more hooks than during the previous render.
+    at updateWorkInProgressHook (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:11726:21)
+    at updateCallback (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:12225:22)
+    at Object.useCallback (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:12741:22)
+    at useCallback (http://localhost:5174/node_modules/.vite/deps/chunk-CANBAPAS.js?v=8da97810:1090:29)
+    at IntakePage (http://localhost:5174/src/pages/IntakePage.tsx?t=1779104066075:135:27)
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:11596:26)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:14630:28)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:15972:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:3680:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:3705:24)
+[ 1554760ms] [ERROR] The above error occurred in the <IntakePage> component:
+
+    at IntakePage (http://localhost:5174/src/pages/IntakePage.tsx?t=1779104066075:86:34)
+    at RenderedRoute (http://localhost:5174/node_modules/.vite/deps/react-router-dom.js?v=8da97810:4131:5)
+    at Routes (http://localhost:5174/node_modules/.vite/deps/react-router-dom.js?v=8da97810:4601:5)
+    at Router (http://localhost:5174/node_modules/.vite/deps/react-router-dom.js?v=8da97810:4544:15)
+    at BrowserRouter (http://localhost:5174/node_modules/.vite/deps/react-router-dom.js?v=8da97810:5290:5)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:14079
+[ 1554760ms] Error: Rendered more hooks than during the previous render.
+    at updateWorkInProgressHook (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:11726:21)
+    at updateCallback (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:12225:22)
+    at Object.useCallback (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:12741:22)
+    at useCallback (http://localhost:5174/node_modules/.vite/deps/chunk-CANBAPAS.js?v=8da97810:1090:29)
+    at IntakePage (http://localhost:5174/src/pages/IntakePage.tsx?t=1779104066075:135:27)
+    at renderWithHooks (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:11596:26)
+    at updateFunctionComponent (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:14630:28)
+    at beginWork (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:15972:22)
+    at beginWork$1 (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:19806:22)
+    at performUnitOfWork (http://localhost:5174/node_modules/.vite/deps/chunk-OY5C42Z6.js?v=8da97810:19251:20)
+[ 1562510ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/api/v1/intake/start:0
+[ 1562524ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/api/v1/intake/start:0
+[ 1584777ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/api/v1/intake/start:0
+[ 1666642ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/api/v1/intake/start:0
+[ 1716243ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/api/v1/intake/start:0
+[ 3335737ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/api/v1/intake/start:0
+[ 3354066ms] [WARNING] No routes matched location "/login"  @ http://localhost:5174/node_modules/.vite/deps/react-router-dom.js?v=8da97810:213
+[ 3354067ms] [WARNING] No routes matched location "/login"  @ http://localhost:5174/node_modules/.vite/deps/react-router-dom.js?v=8da97810:213
+[ 4444875ms] [WARNING] No routes matched location "/login"  @ http://localhost:5174/node_modules/.vite/deps/react-router-dom.js?v=8da97810:213
+[ 4444876ms] [WARNING] No routes matched location "/login"  @ http://localhost:5174/node_modules/.vite/deps/react-router-dom.js?v=8da97810:213

@@ -71,6 +71,7 @@ Implement the `DeduplicationJob` Hangfire job (replacing the stub from US_026) a
 ## Impacted Components
 - `backend/src/UPACIP.Infrastructure/BackgroundJobs/DeduplicationJob.cs` — replace stub; implement full dedup logic
 - `backend/src/UPACIP.Infrastructure/AI/DeduplicationPrompt.json` — new dedup structured prompt
+- `backend/src/UPACIP.Domain/Entities/MergedClinicalEntry.cs` — new Domain entity for canonical clinical entries after deduplication
 - `backend/src/UPACIP.Application/Queries/Profile/GetPatientProfileQuery.cs` — new CQRS query
 - `backend/src/UPACIP.API/Controllers/ProfileController.cs` — new controller with GET endpoints
 
@@ -104,10 +105,12 @@ backend/
 ## Expected Changes
 | Action | File Path | Description |
 |--------|-----------|-------------|
-| MODIFY | backend/src/UPACIP.Infrastructure/BackgroundJobs/DeduplicationJob.cs | Replace stub with full dedup implementation |
-| CREATE | backend/src/UPACIP.Infrastructure/AI/DeduplicationPrompt.json | Structured dedup prompt + canonical schema |
-| CREATE | backend/src/UPACIP.Application/Queries/Profile/GetPatientProfileQuery.cs | Profile aggregation CQRS query |
-| CREATE | backend/src/UPACIP.API/Controllers/ProfileController.cs | GET /api/v1/profile endpoints |
+| CREATE | `backend/src/UPACIP.Domain/Entities/MergedClinicalEntry.cs` | Domain entity: `Id`, `PatientId`, `EntryType` (enum), `EncryptedCanonicalValue`, `SourceDocumentIds` (JSON), `MergedAt`, `Confidence`, `IsPhiField`; navigation to `User` |
+| MODIFY | `backend/src/UPACIP.Infrastructure/BackgroundJobs/DeduplicationJob.cs` | Replace stub with full dedup implementation |
+| CREATE | `backend/src/UPACIP.Infrastructure/AI/DeduplicationPrompt.json` | Structured dedup prompt + canonical schema |
+| CREATE | `backend/src/UPACIP.Infrastructure/Migrations/<timestamp>_AddMergedClinicalEntry.cs` | EF Core migration: `MergedClinicalEntry` table + `IX_MergedClinicalEntry_PatientId` index (AC-005, NFR-004) |
+| CREATE | `backend/src/UPACIP.Application/Queries/Profile/GetPatientProfileQuery.cs` | Profile aggregation CQRS query |
+| CREATE | `backend/src/UPACIP.API/Controllers/ProfileController.cs` | GET /api/v1/profile endpoints |
 
 ## External References
 - [Gemini structured output](https://ai.google.dev/gemini-api/docs/structured-output)
@@ -121,9 +124,10 @@ backend/
 - [ ] GET /api/v1/profile/{patientId} → P95 ≤ 500 ms under 20 concurrent requests (load test)
 
 ## Implementation Checklist
-- [ ] `DeduplicationJob` idempotency guard: exit if `deduplicationStatus = "Processing"` (edge case)
-- [ ] Dedup job: decrypt extracted data; call Gemini with structured dedup prompt; validate response (AC-003, AIR-004)
-- [ ] Create `MergedClinicalEntry` records with PHI encryption and source document links (AC-003)
-- [ ] Profile query: LIMIT/OFFSET pagination; return raw data if dedup not completed (AC-001, edge case)
-- [ ] Indexed query on `patientId`; P95 ≤ 500 ms (AC-005)
-- [ ] `GET /me` (Patient own-only) + `GET /{patientId}` (Staff only); HTTP 403 on wrong role (AC-001, OWASP A01)
+- [x] `DeduplicationJob` idempotency guard: exit if `deduplicationStatus = "Processing"` (edge case)
+- [x] Dedup job: decrypt extracted data; call Gemini with structured dedup prompt; validate response (AC-003, AIR-004)
+- [x] Create `MergedClinicalEntry` records with PHI encryption and source document links (AC-003)
+- [x] Profile query: LIMIT/OFFSET pagination; return raw data if dedup not completed (AC-001, edge case)
+- [x] Indexed query on `patientId`; P95 ≤ 500 ms (AC-005)
+- [x] `GET /me` (Patient own-only) + `GET /{patientId}` (Staff only); HTTP 403 on wrong role (AC-001, OWASP A01)
+- [x] Create `MergedClinicalEntry` Domain entity; EF Core migration + `IX_MergedClinicalEntry_PatientId` index; `dotnet ef migrations add` before deploy (AC-003, AC-005, NFR-004)

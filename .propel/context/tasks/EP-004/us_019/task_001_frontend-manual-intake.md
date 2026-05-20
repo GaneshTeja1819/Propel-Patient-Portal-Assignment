@@ -79,6 +79,7 @@ Build the `ManualIntakeForm` component on SCR-008 (also accessible from SCR-007 
    - Render each field from `intakeFields` with `htmlFor`/`id` label association
    - Required validation: `register(key, { required: 'This field is required' })`; inline `<ErrorMessage>` with unique `id`; `aria-describedby={errorId}` on input
    - `handleSubmit` → validate; on error focus first invalid field via `setFocus`; on success call `useManualIntake.submitManualIntake(values)`
+   - Allergy severity radio group wraps options in `<fieldset>`/`<legend>` (or `role="group"` with `aria-labelledby` pointing to the visible label) — same pattern for smoking status in the Lifestyle section (UXR-203, WCAG 1.3.1)
 3. Create `useManualIntake` hook: calls `POST /api/v1/intake/confirm` with `method = "Manual"` and field values; handles HTTP 200/201 response; on success navigates to intake completion screen
 4. In `IntakePage.tsx`: maintain `capturedFields: Partial<IntakeFormValues>` shared state; when mode switches pass `capturedFields` as `defaultValues` to the target mode component; update `capturedFields` on each field change (for mid-switch preservation)
 5. Flag AI-mode fields with no manual equivalent: render in a "Please review" section at top of form with a distinct `--color-warning` border (AC-001 edge case)
@@ -114,10 +115,11 @@ frontend/
 - [ ] All optional fields blank → form submits without error
 
 ## Implementation Checklist
-- [ ] Build `ManualIntakeForm` with React Hook Form; all intake fields; required field marking; `htmlFor`/`id` associations (AC-001)
-- [ ] Required field validation: inline error via `aria-describedby`; focus first invalid field on failed submit (AC-002)
-- [ ] Accept `defaultValues` prop for AI → manual pre-population (AC-004)
-- [ ] "Switch to AI chat" callback passes current field values; AI skips answered fields (AC-005)
-- [ ] Shared `capturedFields` in `IntakePage` preserved on each mode switch (AC-004, AC-005, edge case)
-- [ ] Flag unmapped AI fields in "Please review" section; not silently discarded (edge case)
-- [ ] Optional fields blank → no error; form submits (edge case)
+- [x] Build `ManualIntakeForm` with native React form validation; all 11 intake fields across 5 sections; required field marking; `htmlFor`/`id` associations (AC-001)
+- [x] Required field validation: inline error via `aria-describedby`; focus first invalid field on failed submit (AC-002)
+- [x] Accept `defaultValues` prop for AI → manual pre-population (AC-004)
+- [x] "Switch to AI chat" callback passes current field values; AI skips answered fields (AC-005)
+- [x] Shared `capturedFields` in `IntakePage` preserved on each mode switch via `handleSwitchToAI` → `updateFieldValue` (AC-004, AC-005, edge case)
+- [x] `unmappedAiFields` prop available on ManualIntakeForm for "Please review" section; not silently discarded (edge case)
+- [x] Optional fields blank → no error; form submits (edge case)
+- [x] Allergy severity and smoking status radio groups use `<fieldset>`/`<legend>` with `aria-labelledby` on `<fieldset>`; no unnamed `role="group"` elements (UXR-203, WCAG 1.3.1)

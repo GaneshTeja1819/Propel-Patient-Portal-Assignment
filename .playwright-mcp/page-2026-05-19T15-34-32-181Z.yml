@@ -1,0 +1,100 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - heading "Patient Portal — Design System Baseline" [level=1] [ref=e6]
+      - paragraph [ref=e7]: Token system showcase for WCAG 2.2 AA compliance validation.
+    - region "Colour Tokens" [ref=e8]:
+      - heading "Colour Tokens" [level=2] [ref=e9]
+      - list "Colour token swatches" [ref=e10]:
+        - listitem [ref=e11]:
+          - generic [ref=e13]: Brand Primary
+          - generic [ref=e14]: "--color-brand-primary"
+        - listitem [ref=e15]:
+          - generic [ref=e17]: Brand Primary Light
+          - generic [ref=e18]: "--color-brand-primary-light"
+        - listitem [ref=e19]:
+          - generic [ref=e21]: Surface Muted
+          - generic [ref=e22]: "--color-surface-muted"
+        - listitem [ref=e23]:
+          - generic [ref=e25]: Surface Subtle
+          - generic [ref=e26]: "--color-surface-subtle"
+        - listitem [ref=e27]:
+          - generic [ref=e29]: Success
+          - generic [ref=e30]: "--color-success"
+        - listitem [ref=e31]:
+          - generic [ref=e33]: Warning
+          - generic [ref=e34]: "--color-warning"
+        - listitem [ref=e35]:
+          - generic [ref=e37]: Danger
+          - generic [ref=e38]: "--color-danger"
+        - listitem [ref=e39]:
+          - generic [ref=e41]: AI Accent
+          - generic [ref=e42]: "--color-ai-accent"
+    - region "Typography Scale" [ref=e43]:
+      - heading "Typography Scale" [level=2] [ref=e44]
+      - generic [ref=e45]:
+        - paragraph [ref=e46]: Heading XL — 24 px / 600
+        - paragraph [ref=e47]: Heading LG — 20 px / 600
+        - paragraph [ref=e48]: Heading MD — 18 px / 600
+        - paragraph [ref=e49]: Heading SM — 16 px / 600
+        - paragraph [ref=e50]: Body MD — 14 px / 400 — Normal body text
+        - paragraph [ref=e51]: Body SM — 13 px / 400 — Secondary text
+        - paragraph [ref=e52]: Caption — 12 px / 400
+        - paragraph [ref=e53]: Label — 12 px / 600 / Uppercase
+    - region "Interactive Elements" [ref=e54]:
+      - heading "Interactive Elements" [level=2] [ref=e55]
+      - generic [ref=e56]:
+        - button "Primary Action" [ref=e57] [cursor=pointer]
+        - button "Secondary Action" [ref=e58] [cursor=pointer]
+        - button "Danger Action" [ref=e59] [cursor=pointer]
+        - button "Disabled" [disabled] [ref=e60]
+      - generic [ref=e61]:
+        - generic [ref=e62]: Text Input
+        - textbox "Text Input" [ref=e63]:
+          - /placeholder: Enter a value
+        - paragraph [ref=e64]: Example hint text for screen readers.
+      - generic [ref=e65]:
+        - generic [ref=e66]: Select
+        - combobox "Select" [ref=e67]:
+          - option "Choose an option" [selected]
+          - option "Option A"
+          - option "Option B"
+      - generic [ref=e68]:
+        - link "Internal anchor link" [ref=e69] [cursor=pointer]:
+          - /url: "#interactive-heading"
+        - link "External link (opens in new tab)" [ref=e70] [cursor=pointer]:
+          - /url: https://example.com
+          - text: External link
+          - generic [ref=e71]: (opens in new tab)
+    - region "Spacing & Radius Tokens" [ref=e72]:
+      - heading "Spacing & Radius Tokens" [level=2] [ref=e73]
+      - list "Spacing token samples" [ref=e74]:
+        - listitem [ref=e75]:
+          - generic [ref=e77]: "--space-1"
+        - listitem [ref=e78]:
+          - generic [ref=e80]: "--space-2"
+        - listitem [ref=e81]:
+          - generic [ref=e83]: "--space-3"
+        - listitem [ref=e84]:
+          - generic [ref=e86]: "--space-4"
+        - listitem [ref=e87]:
+          - generic [ref=e89]: "--space-6"
+        - listitem [ref=e90]:
+          - generic [ref=e92]: "--space-8"
+    - region "Elevation / Shadow Tokens" [ref=e93]:
+      - heading "Elevation / Shadow Tokens" [level=2] [ref=e94]
+      - list "Shadow token samples" [ref=e95]:
+        - listitem "shadow-sm" [ref=e96]
+        - listitem "shadow-md" [ref=e97]
+        - listitem "shadow-lg" [ref=e98]
+    - region "Status Banners" [ref=e99]:
+      - heading "Status Banners" [level=2] [ref=e100]
+      - status "Success example" [ref=e101]:
+        - strong [ref=e102]: "Success:"
+        - text: Appointment confirmed.
+      - alert "Warning example" [ref=e103]:
+        - strong [ref=e104]: "Warning:"
+        - text: Your session expires in 5 minutes.
+      - alert "Error example" [ref=e105]:
+        - strong [ref=e106]: "Error:"
+        - text: Unable to load records.

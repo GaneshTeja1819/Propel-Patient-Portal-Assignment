@@ -76,11 +76,14 @@ All writes produce immutable audit entries. HTTP 403 for Patient on PATCH endpoi
 - `backend/src/UPACIP.Application/Commands/Conflicts/ResolveConflictCommand.cs` — new command
 - `backend/src/UPACIP.Application/Commands/Conflicts/MarkReviewedCommand.cs` — new command
 - `backend/src/UPACIP.Application/Handlers/Conflicts/ResolveConflictHandler.cs` — new handler
+- `backend/src/UPACIP.Application/Handlers/Conflicts/MarkReviewedHandler.cs` — new handler; sets `ReviewedUnresolved` + writes audit
+- `backend/src/UPACIP.Domain/Entities/DataConflict.cs` — extend with status, severity, conflictingValues, canonicalValue, resolvedById, rowVersion
+- `backend/src/UPACIP.Infrastructure/Persistence/AppDbContext.cs` — extend DataConflict model config with new column mappings and `HasRowVersion`
 
 ## Implementation Plan
 1. Extend `DataConflict` entity (if not yet added in US_027): add `status` enum (Open / Resolved / ReviewedUnresolved), `canonicalValue`, `resolvedById`, `resolvedAt`, `isNew` (bool; set to `true` when created after patient's `lastConflictReviewedAt`)
 2. `GET /api/v1/patients/{id}/conflicts`:
-   - `[Authorize(Policy = "StaffOrPatientPolicy")]` — Patient can read own; Staff can read any
+   - `[Authorize(Policy = "StaffPolicy")]` — conflicts are surfaced only on Staff screens (AC-001); if patient read access is required in a future story, register a `StaffOrPatientPolicy` in `Program.cs` and add patient-ownership guard (`conflict.PatientId == actorId`)
    - Compute `isNew` at query time: `conflict.createdAt > patient.lastConflictReviewedAt`
    - Returns `DataConflictDto`: `{ id, severity, conflictingValues[{value, sourceDocumentId}], status, isNew }`
 3. `PATCH /api/v1/conflicts/{id}/resolve`:
@@ -110,7 +113,10 @@ backend/
 | CREATE | backend/src/UPACIP.Application/Commands/Conflicts/ResolveConflictCommand.cs | Resolve conflict command |
 | CREATE | backend/src/UPACIP.Application/Commands/Conflicts/MarkReviewedCommand.cs | Mark reviewed command |
 | CREATE | backend/src/UPACIP.Application/Handlers/Conflicts/ResolveConflictHandler.cs | Resolve with concurrency guard + audit |
-| MODIFY | backend/src/UPACIP.Domain/Entities/DataConflict.cs | Add status, canonicalValue, rowVersion columns |
+| CREATE | backend/src/UPACIP.Application/Handlers/Conflicts/MarkReviewedHandler.cs | Mark-reviewed handler + `CONFLICT_REVIEWED` audit entry |
+| MODIFY | backend/src/UPACIP.Domain/Entities/DataConflict.cs | Add `Status`, `Severity`, `CanonicalValue`, `ResolvedById`, `ConflictingValues` (JSON), `RowVersion`; remove `IsResolved` bool |
+| MODIFY | backend/src/UPACIP.Infrastructure/Persistence/AppDbContext.cs | Extend DataConflict model config: column mappings for new fields, `HasRowVersion()`, index on `(PatientId, Status)` |
+| CREATE | backend/src/UPACIP.Infrastructure/Migrations/[timestamp]_ExtendDataConflict.cs | EF migration adding new columns and dropping `is_resolved` |
 
 ## External References
 - [EF Core optimistic concurrency — rowversion](https://learn.microsoft.com/en-us/ef/core/saving/concurrency)
@@ -126,8 +132,9 @@ backend/
 - [ ] Resolved conflict writes immutable audit entry; no UPDATE/DELETE permitted on audit table
 
 ## Implementation Checklist
-- [ ] `DataConflict` entity extended with status, canonicalValue, rowVersion (edge case — concurrency)
-- [ ] GET endpoint returns `isNew` flag per conflict (edge case — "New" badge support)
-- [ ] PATCH /resolve: HTTP 409 on already-resolved or rowversion conflict; HTTP 403 for Patient (AC-002, AC-005)
-- [ ] PATCH /mark-reviewed: HTTP 403 for Patient; immutable audit (AC-003, AC-005)
-- [ ] All audit entries immutable (no UPDATE/DELETE on audit table) (AC-002, AC-003)
+- [x] `DataConflict` entity extended with status, severity, conflictingValues, canonicalValue, resolvedById, rowVersion; EF migration created and AppDbContext model config updated (edge case — concurrency; AC-001)
+- [x] GET endpoint returns `isNew` flag per conflict; StaffPolicy enforced (edge case — "New" badge support; AC-001)
+- [x] PATCH /resolve: HTTP 409 on already-resolved or rowVersion conflict; HTTP 403 for Patient (AC-002, AC-005)
+- [x] PATCH /mark-reviewed: HTTP 403 for Patient; immutable `CONFLICT_REVIEWED` audit (AC-003, AC-005)
+- [x] All audit entries immutable (no UPDATE/DELETE on audit table) (AC-002, AC-003)
+- [x] `DependencyInjection.cs` registers `ResolveConflictHandler` and `MarkReviewedHandler` as scoped (AC-002, AC-003)

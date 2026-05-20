@@ -1,0 +1,94 @@
+[
+  {
+    "fieldKey": "chiefComplaint",
+    "fieldLabel": "Chief Complaint",
+    "isPhiField": true,
+    "promptTemplate": "The patient said: \"{rawAnswer}\"\n\nExtract the chief complaint — the primary reason for this appointment — as a concise clinical phrase (e.g. \"chest pain\", \"shortness of breath\", \"knee swelling\"). Return only a JSON object matching the schema.",
+    "questionText": "What is the main reason for your visit today? Please describe your primary symptom or concern.",
+    "schema": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 500
+    }
+  },
+  {
+    "fieldKey": "allergies",
+    "fieldLabel": "Allergies",
+    "isPhiField": true,
+    "promptTemplate": "The patient said: \"{rawAnswer}\"\n\nExtract a list of medication and environmental allergies. If none mentioned, return an empty array. Return only a JSON object matching the schema.",
+    "questionText": "Do you have any known allergies (medications, foods, environmental)? Please list them or say 'none'.",
+    "schema": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  {
+    "fieldKey": "currentMedications",
+    "fieldLabel": "Current Medications",
+    "isPhiField": true,
+    "promptTemplate": "The patient said: \"{rawAnswer}\"\n\nExtract the list of current medications including dosage if mentioned. If none, return an empty array. Return only a JSON object matching the schema.",
+    "questionText": "Are you currently taking any medications, vitamins, or supplements? Please list them.",
+    "schema": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  {
+    "fieldKey": "smokingStatus",
+    "fieldLabel": "Smoking Status",
+    "isPhiField": true,
+    "promptTemplate": "The patient said: \"{rawAnswer}\"\n\nClassify the patient's smoking status. Return one of: \"never\", \"former\", \"current\". Return only a JSON object matching the schema.",
+    "questionText": "Have you ever smoked or used tobacco products?",
+    "schema": {
+      "type": "string",
+      "enum": ["never", "former", "current"]
+    },
+    "quickOptions": ["Never smoked", "Former smoker", "Currently smoke"]
+  },
+  {
+    "fieldKey": "alcoholUse",
+    "fieldLabel": "Alcohol Use",
+    "isPhiField": true,
+    "promptTemplate": "The patient said: \"{rawAnswer}\"\n\nClassify the patient's alcohol use frequency. Return one of: \"none\", \"occasional\", \"moderate\", \"heavy\". Return only a JSON object matching the schema.",
+    "questionText": "How often do you consume alcoholic beverages?",
+    "schema": {
+      "type": "string",
+      "enum": ["none", "occasional", "moderate", "heavy"]
+    },
+    "quickOptions": ["None", "Occasional (1-2/week)", "Moderate (3-4/week)", "Heavy (daily)"]
+  },
+  {
+    "fieldKey": "exerciseHabits",
+    "fieldLabel": "Exercise Habits",
+    "isPhiField": false,
+    "promptTemplate": "The patient said: \"{rawAnswer}\"\n\nClassify the patient's exercise frequency. Return one of: \"none\", \"light\", \"moderate\", \"active\". Return only a JSON object matching the schema.",
+    "questionText": "How often do you engage in physical activity or exercise?",
+    "schema": {
+      "type": "string",
+      "enum": ["none", "light", "moderate", "active"]
+    },
+    "quickOptions": ["None", "Light (walks)", "Moderate (3x/week)", "Very active (daily)"]
+  },
+  {
+    "fieldKey": "additionalSymptoms",
+    "fieldLabel": "Additional Symptoms",
+    "isPhiField": true,
+    "promptTemplate": "The patient said: \"{rawAnswer}\"\n\nExtract any additional symptoms beyond the chief complaint. If none, return an empty array. Return only a JSON object matching the schema.",
+    "questionText": "Do you have any other symptoms you would like your care team to know about?",
+    "schema": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  {
+    "fieldKey": "notes",
+    "fieldLabel": "Additional Notes",
+    "isPhiField": true,
+    "promptTemplate": "The patient said: \"{rawAnswer}\"\n\nCapture any additional context or concerns the patient wants their care team to know. Return a plain string. Return only a JSON object matching the schema.",
+    "questionText": "Is there anything else you would like your care team to know before your appointment?",
+    "schema": {
+      "type": "string",
+      "maxLength": 1000
+    }
+  }
+]
