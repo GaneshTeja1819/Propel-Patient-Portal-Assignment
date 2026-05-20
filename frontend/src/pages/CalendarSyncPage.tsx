@@ -77,7 +77,7 @@ export default function CalendarSyncPage() {
             <button
               className={styles.providerButton}
               onClick={() => handleConnect('Google')}
-              disabled={!appointmentId || status === 'loading'}
+              disabled={!appointmentId}
               aria-label="Connect Google Calendar"
             >
               <svg className={styles.providerIcon} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -92,7 +92,7 @@ export default function CalendarSyncPage() {
             <button
               className={styles.providerButton}
               onClick={() => handleConnect('Outlook')}
-              disabled={!appointmentId || status === 'loading'}
+              disabled={!appointmentId}
               aria-label="Connect Outlook Calendar"
             >
               <svg className={styles.providerIcon} viewBox="0 0 24 24" aria-hidden="true" focusable="false">

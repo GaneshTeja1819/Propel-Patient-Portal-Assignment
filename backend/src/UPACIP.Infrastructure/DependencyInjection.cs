@@ -17,7 +17,6 @@ using UPACIP.Application.Handlers.Appointments;
 using UPACIP.Application.Handlers.Slots;
 using UPACIP.Application.Interfaces;
 using UPACIP.Application.Services;
-using UPACIP.Application.Services;
 using UPACIP.Infrastructure.AI;
 using UPACIP.Infrastructure.Audit;
 using UPACIP.Infrastructure.Auth;
@@ -29,6 +28,7 @@ using UPACIP.Infrastructure.Persistence.Interceptors;
 using UPACIP.Infrastructure.Repositories;
 using UPACIP.Infrastructure.Persistence.QueryServices;
 using UPACIP.Infrastructure.Security;
+using UPACIP.Infrastructure.Services;
 
 namespace UPACIP.Infrastructure;
 
