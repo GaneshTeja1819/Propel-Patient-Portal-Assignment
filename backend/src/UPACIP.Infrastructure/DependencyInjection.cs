@@ -28,6 +28,7 @@ using UPACIP.Infrastructure.Persistence.Interceptors;
 using UPACIP.Infrastructure.Repositories;
 using UPACIP.Infrastructure.Persistence.QueryServices;
 using UPACIP.Infrastructure.Security;
+using UPACIP.Infrastructure.Services;
 
 namespace UPACIP.Infrastructure;
 
@@ -105,14 +106,20 @@ public static class DependencyInjection
         services.AddHangfireWithPostgres(configuration);
         services.AddTransient<AccountLockoutNotificationJob>();
         services.AddTransient<GeneratePdfConfirmationJob>();
+        services.AddTransient<AppointmentReminderJob>();
         services.AddTransient<WaitlistNotificationJob>();
         services.AddTransient<SlotSwapJob>();
         services.AddTransient<SlotSwapNotificationJob>();
         services.AddScoped<IEmailService, SmtpEmailService>();
+        // US_020: SMS gateway — HttpClient managed to avoid socket exhaustion
+        services.AddHttpClient<ISmsService, SmsService>();
         services.AddScoped<IAccountLockoutNotifier, HangfireAccountLockoutNotifier>();
         services.AddScoped<IPdfConfirmationJobEnqueuer, HangfirePdfConfirmationJobEnqueuer>();
         services.AddScoped<ISlotSwapJobEnqueuer, HangfireSlotSwapJobEnqueuer>();
         services.AddScoped<IWaitlistNotificationJobEnqueuer, HangfireWaitlistNotificationJobEnqueuer>();
+        services.AddScoped<IReminderJobEnqueuer, HangfireReminderJobEnqueuer>();
+        // US_021: Calendar sync — HttpClient managed to avoid socket exhaustion
+        services.AddHttpClient<ICalendarSyncService, CalendarSyncService>();
         services.AddRedis(configuration);
 
         // ── Auth (JWT + Redis sessions) ──────────────────────────────────

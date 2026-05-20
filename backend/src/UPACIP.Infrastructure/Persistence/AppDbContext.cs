@@ -293,11 +293,15 @@ public sealed class AppDbContext : DbContext
         {
             e.ToTable("calendar_syncs");
             e.Property(c => c.EncryptedAccessToken).HasColumnType("text");
-            e.Property(c => c.EncryptedRefreshToken).HasColumnType("text");            if (phiConverter is not null)
+            e.Property(c => c.EncryptedRefreshToken).HasColumnType("text");
+            e.Property(c => c.SyncStatus).HasMaxLength(20).HasDefaultValue("Pending").IsRequired();
+            e.Property(c => c.CalendarEventId).HasMaxLength(512);
+            if (phiConverter is not null)
             {
                 e.Property(c => c.EncryptedAccessToken).HasConversion(phiConverter);
                 e.Property(c => c.EncryptedRefreshToken).HasConversion(phiConverter);
-            }            e.HasOne(c => c.User)
+            }
+            e.HasOne(c => c.User)
              .WithMany(u => u.CalendarSyncs)
              .HasForeignKey(c => c.UserId)
              .OnDelete(DeleteBehavior.Restrict);

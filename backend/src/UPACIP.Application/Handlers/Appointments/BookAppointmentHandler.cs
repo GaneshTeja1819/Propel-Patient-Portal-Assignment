@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 using UPACIP.Application.Commands.Appointments;
 using UPACIP.Application.Exceptions;
 using UPACIP.Application.Interfaces;
@@ -33,6 +34,7 @@ public sealed class BookAppointmentHandler
     private readonly ISlotCacheService _slotCacheService;
     private readonly IAuditLogService _auditLogService;
     private readonly IPdfConfirmationJobEnqueuer _pdfJobEnqueuer;
+    private readonly IReminderJobEnqueuer _reminderJobEnqueuer;
     private readonly ILogger<BookAppointmentHandler> _logger;
 
     public BookAppointmentHandler(
@@ -42,15 +44,17 @@ public sealed class BookAppointmentHandler
         ISlotCacheService slotCacheService,
         IAuditLogService auditLogService,
         IPdfConfirmationJobEnqueuer pdfJobEnqueuer,
+        IReminderJobEnqueuer reminderJobEnqueuer,
         ILogger<BookAppointmentHandler> logger)
     {
-        _bookingStore     = bookingStore;
-        _unitOfWork       = unitOfWork;
-        _riskScorer       = riskScorer;
-        _slotCacheService = slotCacheService;
-        _auditLogService  = auditLogService;
-        _pdfJobEnqueuer   = pdfJobEnqueuer;
-        _logger           = logger;
+        _bookingStore        = bookingStore;
+        _unitOfWork          = unitOfWork;
+        _riskScorer          = riskScorer;
+        _slotCacheService    = slotCacheService;
+        _auditLogService     = auditLogService;
+        _pdfJobEnqueuer      = pdfJobEnqueuer;
+        _reminderJobEnqueuer = reminderJobEnqueuer;
+        _logger              = logger;
     }
 
     public async Task<BookAppointmentResult> HandleAsync(
@@ -139,6 +143,25 @@ public sealed class BookAppointmentHandler
         }
 
         _pdfJobEnqueuer.Enqueue(appointmentId, isReschedule: false);
+
+        // US_020, AC-001: Schedule email + SMS reminders at configured intervals
+        if (startTime.HasValue)
+        {
+            try
+            {
+                var jobIds = _reminderJobEnqueuer.Schedule(appointmentId, startTime.Value);
+                if (jobIds.Count > 0)
+                {
+                    // Persist job IDs so they can be cancelled on reschedule (edge case)
+                    appointment.ReminderJobIds = JsonSerializer.Serialize(jobIds);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Reminder job scheduling failed for {AppointmentId}; booking preserved.", appointmentId);
+            }
+        }
 
         return new BookAppointmentResult
         {

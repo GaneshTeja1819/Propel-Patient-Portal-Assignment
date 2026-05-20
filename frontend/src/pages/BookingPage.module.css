@@ -255,6 +255,31 @@
   outline-offset: var(--focus-outline-offset);
 }
 
+/* US_021: Optional calendar sync CTA — secondary style */
+.secondaryButton {
+  width: 100%;
+  padding: var(--space-3) var(--space-6);
+  background-color: transparent;
+  color: var(--color-interactive-default);
+  border: 1px solid var(--color-interactive-default);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-body-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--easing-default);
+  min-height: var(--touch-target-min);
+  margin-bottom: var(--space-2);
+}
+
+.secondaryButton:hover {
+  background-color: var(--color-surface-hover, rgba(0,0,0,0.04));
+}
+
+.secondaryButton:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
 .toastContainer {
   position: fixed;
   top: var(--space-4);
