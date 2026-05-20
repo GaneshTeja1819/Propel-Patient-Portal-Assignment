@@ -34,4 +34,11 @@ public interface IAuthService
 
     /// <summary>Deletes the Redis session, invalidating any outstanding refresh capability.</summary>
     Task LogoutAsync(string sessionId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Invalidates all active Redis sessions for the specified user.
+    /// Used after role changes and deactivation so the new state takes effect immediately
+    /// without waiting for the 15-minute JWT TTL to expire (AC-002, AC-005).
+    /// </summary>
+    Task InvalidateAllSessionsForUserAsync(Guid userId, CancellationToken ct = default);
 }

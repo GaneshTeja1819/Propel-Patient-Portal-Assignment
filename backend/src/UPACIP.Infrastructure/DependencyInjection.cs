@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
+using UPACIP.Application.Handlers.Admin;
 using UPACIP.Application.Handlers.Auth;
 using UPACIP.Application.Interfaces;
 using UPACIP.Infrastructure.AI;
@@ -13,6 +14,7 @@ using UPACIP.Infrastructure.Caching;
 using UPACIP.Infrastructure.Documents;
 using UPACIP.Infrastructure.Persistence;
 using UPACIP.Infrastructure.Persistence.Interceptors;
+using UPACIP.Infrastructure.Repositories;
 using UPACIP.Infrastructure.Security;
 
 namespace UPACIP.Infrastructure;
@@ -51,8 +53,25 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IRegistrationStore, RegistrationStore>();
         services.AddScoped<ILoginUserStore, LoginUserStore>();
+        services.AddScoped<IAdminUserStore, AdminUserStore>();
         services.AddScoped<RegisterUserHandler>();
         services.AddScoped<LoginUserHandler>();
+        services.AddScoped<CreateUserHandler>();
+        services.AddScoped<UpdateUserHandler>();
+        services.AddScoped<ChangeRoleHandler>();
+        services.AddScoped<DeactivateUserHandler>();
+
+        // ── Audit log read (admin_read_role / audit_reader credentials) ────
+        // Falls back to DefaultConnection in development; in production the
+        // AuditReadConnection key uses credentials for the audit_reader role.
+        var auditReadCs = configuration.GetConnectionString("AuditReadConnection")
+            ?? connectionString
+            ?? throw new InvalidOperationException(
+                "Neither AuditReadConnection nor DefaultConnection is configured.");
+        services.AddSingleton(new AuditReadDbContext(auditReadCs));
+        services.AddScoped<IAuditLogReadRepository, AuditLogReadRepository>();
+        services.AddScoped<GetAuditLogHandler>();
+        services.AddScoped<GetAuditLogStatsHandler>();
 
         services.AddHangfireWithPostgres(configuration);
         services.AddTransient<AccountLockoutNotificationJob>();

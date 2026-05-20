@@ -1,0 +1,245 @@
+.card {
+  background: var(--color-surface-default);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.cardHeader {
+  padding: var(--space-4) var(--space-6);
+  border-bottom: var(--border-width-default) solid var(--color-border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.cardTitle {
+  font-size: var(--font-size-heading-sm);
+  font-weight: var(--font-weight-heading-sm);
+  color: var(--color-text-primary);
+}
+
+.userCount {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+.searchWrap {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.searchInput {
+  min-height: calc(var(--space-8) + var(--space-2));
+  padding: 0 var(--space-3);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-md);
+  width: calc(var(--space-4) * 15);
+  color: var(--color-text-primary);
+  background: var(--color-surface-default);
+}
+
+.searchInput:focus-visible {
+  border-color: var(--color-border-focus);
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: 0;
+}
+
+.filterSelect {
+  min-height: calc(var(--space-8) + var(--space-2));
+  padding: 0 var(--space-3);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-primary);
+  background: var(--color-surface-default);
+  cursor: pointer;
+}
+
+.filterSelect:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-label);
+  color: var(--color-text-secondary);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: calc(var(--border-width-default) * 2) solid var(--color-border-default);
+  background: var(--color-surface-subtle);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width-default) solid var(--color-border-default);
+  font-size: var(--font-size-body-sm);
+  vertical-align: middle;
+}
+
+.table tr:hover td {
+  background: var(--color-surface-muted);
+}
+
+.rowExpanded td {
+  background: var(--color-surface-muted);
+}
+
+.expandRow td {
+  padding: 0 !important;
+  border-bottom: calc(var(--border-width-default) * 2) solid var(--color-border-default);
+}
+
+.expandRow:hover td {
+  background: transparent;
+}
+
+.userName {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.userEmail {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+}
+
+.youBadge {
+  font-size: var(--font-size-caption);
+  background: var(--color-brand-primary-light);
+  color: var(--color-brand-primary);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-full);
+  font-weight: 700;
+}
+
+.lastLogin {
+  color: var(--color-text-secondary);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-caption);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badgeAdmin {
+  background: var(--color-warning-bg);
+  color: var(--color-amber-700);
+}
+
+.badgeStaff {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.badgePatient {
+  background: var(--color-brand-primary-light);
+  color: var(--color-brand-primary);
+}
+
+.badgeActive {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.badgeInactive {
+  background: var(--color-surface-subtle);
+  color: var(--color-text-disabled);
+}
+
+.btnExpand {
+  background: none;
+  border: none;
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-brand-primary);
+  cursor: pointer;
+  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+}
+
+.btnExpand:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+  border-radius: var(--radius-sm);
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-md);
+}
+
+.statusMsg {
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-md);
+}
+
+.errorMsg {
+  margin: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-danger-bg);
+  border: var(--border-width-default) solid var(--color-danger);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-danger);
+}
+
+.srOnly {
+  position: absolute;
+  width: var(--sr-only-dimension);
+  height: var(--sr-only-dimension);
+  padding: 0;
+  margin: var(--sr-only-margin);
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+@media (max-width: 768px) {
+  .cardHeader {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .searchInput {
+    width: calc(var(--space-4) * 10);
+  }
+
+  .table {
+    font-size: var(--font-size-caption);
+  }
+}

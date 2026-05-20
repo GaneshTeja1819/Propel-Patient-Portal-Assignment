@@ -1,0 +1,89 @@
+.cell {
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-surface-subtle);
+  border-bottom: calc(var(--border-width-default) * 2) solid var(--color-border-default);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-label);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-width-default) solid var(--color-border-default);
+}
+
+.field {
+  margin-bottom: var(--space-3);
+}
+
+.fieldLabel {
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  color: var(--color-text-disabled);
+  margin-bottom: calc(var(--border-width-default) * 2);
+}
+
+.fieldValue {
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-primary);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.fieldValueMono {
+  font-family: monospace;
+  font-size: var(--font-size-label);
+  background: var(--color-surface-default);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.phiIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-label);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-light);
+  border-radius: var(--radius-full);
+  padding: var(--border-width-default) var(--space-2);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.immutableNote {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-label);
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+  border: var(--border-width-default) solid var(--color-amber-100);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  margin-top: var(--space-3);
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
