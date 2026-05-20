@@ -117,10 +117,10 @@ backend/
 - [ ] Simulate Supabase 507 → HTTP 507 to client; no ClinicalDocument row created
 
 ## Implementation Checklist
-- [ ] SHA-256 dedup check before upload; HTTP 409 if duplicate (edge case)
-- [ ] Supabase Storage upload; `StorageLimitExceededException` → HTTP 507 (edge case)
-- [ ] Encrypt storagePath before DB persistence; no binary content in ClinicalDocument (AC-001, AC-005, DR-005)
-- [ ] ClinicalDocument created with extractionStatus="Pending" (AC-001)
-- [ ] Enqueue `ClinicalDataExtractionJob` immediately after successful record creation (AC-004)
-- [ ] Write `DOCUMENT_UPLOADED` audit entry (AC-001)
-- [ ] `[Authorize(Policy = "PatientPolicy")]`; credentials from env vars only (OWASP A01, OWASP A02)
+- [x] SHA-256 dedup check before upload; HTTP 409 if duplicate (edge case)
+- [x] Supabase Storage upload; `StorageLimitExceededException` → HTTP 507 (edge case)
+- [x] Encrypt storagePath before DB persistence; no binary content in ClinicalDocument (AC-001, AC-005, DR-005)
+- [x] ClinicalDocument created with extractionStatus="Pending" (AC-001)
+- [x] Enqueue `ClinicalDataExtractionJob` immediately after successful record creation (AC-004)
+- [x] Write `DOCUMENT_UPLOADED` audit entry (AC-001)
+- [x] `[Authorize(Policy = "PatientPolicy")]`; credentials from env vars only (OWASP A01, OWASP A02)

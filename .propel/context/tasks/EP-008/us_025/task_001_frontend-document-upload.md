@@ -115,8 +115,8 @@ frontend/
 - [ ] Storage error from backend → "Storage limit reached — contact support" banner
 
 ## Implementation Checklist
-- [ ] MIME type + extension PDF validation on file change; inline error; no upload (AC-002)
-- [ ] Client-side size check (> 10 MB); inline error; no HTTP request (AC-003)
-- [ ] Document type selector required; "Upload" CTA disabled until both fields set (AC-001)
-- [ ] Upload progress bar via Axios `onUploadProgress` (AC-001 UX)
-- [ ] Success banner on HTTP 201; storage error banner on HTTP 507 (AC-001, edge case)
+- [x] MIME type + extension PDF validation on file change; inline error; no upload (AC-002)
+- [x] Client-side size check (> 10 MB); inline error; no HTTP request (AC-003)
+- [x] Document type selector required; "Upload" CTA disabled until both fields set (AC-001)
+- [x] Upload progress bar via Axios `onUploadProgress` (AC-001 UX)
+- [x] Success banner on HTTP 201; storage error banner on HTTP 507 (AC-001, edge case)

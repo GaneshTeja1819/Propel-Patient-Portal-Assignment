@@ -1,0 +1,76 @@
+- generic [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - navigation "Main navigation" [ref=e3]:
+    - generic [ref=e4]:
+      - link "Back to dashboard" [ref=e5] [cursor=pointer]:
+        - /url: wireframe-SCR-003-patient-dashboard.html
+        - generic [ref=e6]: P
+        - generic [ref=e7]: Intake Form
+      - group "Method:" [ref=e8]:
+        - generic [ref=e9]: "Method:"
+        - link "Switch to AI-assisted intake (your answers will be carried over)" [ref=e10] [cursor=pointer]:
+          - /url: wireframe-SCR-007-ai-intake.html
+          - text: 🤖 AI
+        - button "Manual form (current)" [pressed] [ref=e11] [cursor=pointer]: 📝 Manual
+      - generic [ref=e12]: SJ
+  - region "Form progress" [ref=e13]:
+    - generic [ref=e14]:
+      - generic [ref=e15]: Annual Physical · Dr. M. Okafor · May 20
+      - generic [ref=e16]: Section 1 of 5
+    - progressbar "20% complete" [ref=e17]
+  - main [ref=e19]:
+    - heading "Pre-appointment intake" [level=1] [ref=e20]
+    - paragraph [ref=e21]: Complete all sections. Required fields are marked *. Your information is encrypted.
+    - generic [ref=e22]:
+      - generic [ref=e23]:
+        - button "Chief Complaint ✓ Complete" [expanded] [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]:
+            - generic [ref=e26]: 🩺
+            - generic [ref=e27]: Chief Complaint
+          - generic [ref=e28]: ✓ Complete
+        - generic [ref=e29]:
+          - generic "PHI — protected health information" [ref=e30]:
+            - generic [ref=e31]: 🔒
+            - text: This section contains protected health information.
+          - generic [ref=e32]:
+            - generic [ref=e33]: Chief complaint *
+            - textbox "Chief complaint *" [active] [ref=e34]:
+              - /placeholder: Describe your main reason for visiting…
+            - alert [ref=e66]: Chief complaint is required.
+          - generic [ref=e35]:
+            - generic [ref=e36]: How long have you had this symptom? *
+            - combobox "How long have you had this symptom? *" [ref=e37]:
+              - option "— select —" [selected]
+              - option "A few days"
+              - option "1–2 weeks"
+              - option "3–4 weeks"
+              - option "1–3 months"
+              - option "More than 3 months"
+          - generic [ref=e38]:
+            - generic [ref=e39]: Pain / severity (0–10)
+            - slider "Pain / severity (0–10)" [ref=e40]: "5"
+            - generic [ref=e41]:
+              - text: "Current:"
+              - strong [ref=e42]: "5"
+              - text: / 10
+      - button "Medications" [ref=e44] [cursor=pointer]:
+        - generic [ref=e45]:
+          - generic [ref=e46]: 💊
+          - generic [ref=e47]: Medications
+      - button "Allergies" [ref=e49] [cursor=pointer]:
+        - generic [ref=e50]:
+          - generic [ref=e51]: ⚠
+          - generic [ref=e52]: Allergies
+      - button "Lifestyle" [ref=e54] [cursor=pointer]:
+        - generic [ref=e55]:
+          - generic [ref=e56]: 🏃
+          - generic [ref=e57]: Lifestyle
+      - button "Additional notes" [ref=e59] [cursor=pointer]:
+        - generic [ref=e60]:
+          - generic [ref=e61]: 📝
+          - generic [ref=e62]: Additional notes
+      - generic [ref=e63]:
+        - link "Save & continue later" [ref=e64] [cursor=pointer]:
+          - /url: wireframe-SCR-003-patient-dashboard.html
+        - button "Submit intake ➤" [ref=e65] [cursor=pointer]

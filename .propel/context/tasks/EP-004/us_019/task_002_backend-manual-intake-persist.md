@@ -96,8 +96,8 @@ backend/
 - [ ] POST twice same appointmentId → HTTP 200 with existing ID; no duplicate row
 
 ## Implementation Checklist
-- [ ] Extend `ConfirmIntakeHandler` for `method = "Manual"`: skip Redis lookup; use `capturedFields` from command directly (AC-003)
-- [ ] PHI field encryption via `IPhiEncryptionService` (same path as AI — already implemented) (AC-003)
-- [ ] Optional null fields stored as null; no stripping (edge case)
-- [ ] Idempotency check shared with AI path (edge case)
-- [ ] Write `INTAKE_COMPLETED` audit entry with `method = "Manual"` (AC-003)
+- [x] Extend `ConfirmIntakeHandler` for `method = "Manual"`: skip Redis lookup; use `capturedFields` from command directly (AC-003)
+- [x] PHI field encryption via `IPhiEncryptionService` (same path as AI — already implemented) (AC-003)
+- [x] Optional null fields stored as null; no stripping (edge case)
+- [x] Idempotency check shared with AI path (edge case)
+- [x] Write `INTAKE_COMPLETED` audit entry with `method = "Manual"` (AC-003)

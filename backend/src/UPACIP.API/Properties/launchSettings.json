@@ -20,10 +20,13 @@
         "JWT_SIGNING_KEY": "dev-jwt-signing-key-must-be-at-least-32-characters-long-for-hmac-sha256",
         "PHI_ENCRYPTION_KEY": "6xgq3qHytvqrPP859IU2Lh4xr0YZ6EUSDbdWZrbLXrk=",
         "GEMINI_API_KEY": "dev-placeholder",
-        "DATABASE_URL": "Host=db.qenyllwjorqeooooodsy.supabase.co;Port=5432;Database=postgres;Username=postgres;Password=qSQ8Q28zcNxHRRVw;SSL Mode=Require;Trust Server Certificate=true",
+        "ConnectionStrings__DefaultConnection": "Host=aws-1-ap-south-1.pooler.supabase.com;Port=5432;Database=postgres;Username=postgres.qenyllwjorqeooooodsy;Password=qSQ8Q28zcNxHRRVw;SSL Mode=Require;Trust Server Certificate=true",
         "ALLOWED_ORIGIN": "http://localhost:5173",
         "Hangfire__Dashboard__Username": "admin",
-        "Hangfire__Dashboard__Password": "dev-hangfire-pass"
+        "Hangfire__Dashboard__Password": "dev-hangfire-pass",
+        "SUPABASE_URL": "https://qenyllwjorqeooooodsy.supabase.co",
+        "SUPABASE_SERVICE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlbnlsbHdqb3JxZW9vb29vZHN5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODkzNzUyMywiZXhwIjoyMDk0NTEzNTIzfQ.kjxHdJhJFH6z9imyRLO9YUqThabbRVqTWEqHxnb3lrg",
+        "SUPABASE_STORAGE_BUCKET": "clinical_document"
       }
     },
     "https": {
@@ -37,10 +40,13 @@
         "JWT_SIGNING_KEY": "dev-jwt-signing-key-must-be-at-least-32-characters-long-for-hmac-sha256",
         "PHI_ENCRYPTION_KEY": "6xgq3qHytvqrPP859IU2Lh4xr0YZ6EUSDbdWZrbLXrk=",
         "GEMINI_API_KEY": "dev-placeholder",
-        "DATABASE_URL": "Host=db.qenyllwjorqeooooodsy.supabase.co;Port=5432;Database=postgres;Username=postgres;Password=qSQ8Q28zcNxHRRVw;SSL Mode=Require;Trust Server Certificate=true",
+        "ConnectionStrings__DefaultConnection": "Host=aws-1-ap-south-1.pooler.supabase.com;Port=5432;Database=postgres;Username=postgres.qenyllwjorqeooooodsy;Password=qSQ8Q28zcNxHRRVw;SSL Mode=Require;Trust Server Certificate=true",
         "ALLOWED_ORIGIN": "http://localhost:5173",
         "Hangfire__Dashboard__Username": "admin",
-        "Hangfire__Dashboard__Password": "dev-hangfire-pass"
+        "Hangfire__Dashboard__Password": "dev-hangfire-pass",
+        "SUPABASE_URL": "https://qenyllwjorqeooooodsy.supabase.co",
+        "SUPABASE_SERVICE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlbnlsbHdqb3JxZW9vb29vZHN5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODkzNzUyMywiZXhwIjoyMDk0NTEzNTIzfQ.kjxHdJhJFH6z9imyRLO9YUqThabbRVqTWEqHxnb3lrg",
+        "SUPABASE_STORAGE_BUCKET": "clinical_document"
       }
     },
     "IIS Express": {

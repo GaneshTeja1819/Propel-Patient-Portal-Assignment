@@ -76,6 +76,7 @@ Extend `ClinicalDataExtractionJob` with the failure/retry path and the downstrea
 4. On successful extraction: `BackgroundJob.ContinueJobWith<DeduplicationJob>(extractionJobId, j => j.ExecuteAsync(clinicalDocumentId))` — fire and forget (AC-005); extraction job does not wait
 5. Create `DeduplicationJob.cs` as a stub (full implementation in US_027 task_002): accepts `clinicalDocumentId`; logs "Deduplication job started for document {id}"
 6. Add `GET /api/v1/documents/{id}/extraction-status` to `DocumentsController`: returns `{ extractionStatus, extractionFailureNote }`; `[Authorize(Policy = "PatientPolicy")]` — surfaces failed status for UXR-603 retry CTA
+7. Add `POST /api/v1/documents/{id}/retry-extraction` to `DocumentsController`: resets `ClinicalDocument.extractionStatus = "Pending"`; clears `extractionFailureNote`; enqueues a fresh `ClinicalDataExtractionJob` for the document via `IBackgroundJobClient`; returns 202 Accepted; `[Authorize(Policy = "PatientPolicy")]`; guards against retry storms by rejecting if status is not `"Failed"` (returns 409 Conflict if status is `"Processing"` or `"Completed"`)
 
 ## Current Project State
 ```
@@ -90,7 +91,7 @@ backend/
 |--------|-----------|-------------|
 | MODIFY | backend/src/UPACIP.Infrastructure/BackgroundJobs/ClinicalDataExtractionJob.cs | Add AutomaticRetry; failure continuation; downstream job enqueue |
 | CREATE | backend/src/UPACIP.Infrastructure/BackgroundJobs/DeduplicationJob.cs | Dedup job stub (full in US_027) |
-| MODIFY | backend/src/UPACIP.API/Controllers/DocumentsController.cs | Add GET /extraction-status endpoint |
+| MODIFY | backend/src/UPACIP.API/Controllers/DocumentsController.cs | Add GET /extraction-status and POST /retry-extraction endpoints (UXR-603) |
 
 ## External References
 - [Hangfire AutomaticRetry with custom delays](https://docs.hangfire.io/en/latest/background-methods/performing-recurrent-tasks.html)
@@ -105,8 +106,9 @@ backend/
 - [ ] Successful extraction → DeduplicationJob enqueued; extraction job marked "Succeeded" without waiting for dedup
 
 ## Implementation Checklist
-- [ ] `[AutomaticRetry(Attempts = 2, DelaysInSeconds = [30, 300])]` on extraction job (AC-004)
-- [ ] Failure continuation: set `extractionStatus = "Failed"`; store `extractionFailureNote` (AC-004)
-- [ ] Write `AI_INVOCATION` audit on Gemini failure with httpStatusCode (AC-003, AIR-007)
-- [ ] Enqueue `DeduplicationJob` as continuation on success; extraction does not await it (AC-005)
-- [ ] Add `GET /extraction-status` endpoint returning status + failure note (UXR-603)
+- [x] `[AutomaticRetry(Attempts = 2, DelaysInSeconds = [30, 300])]` on extraction job (AC-004)
+- [x] Failure continuation: set `extractionStatus = "Failed"`; store `extractionFailureNote` (AC-004)
+- [x] Write `AI_INVOCATION` audit on Gemini failure with httpStatusCode (AC-003, AIR-007)
+- [x] Enqueue `DeduplicationJob` as continuation on success; extraction does not await it (AC-005)
+- [x] Add `GET /extraction-status` endpoint returning status + failure note (UXR-603)
+- [x] Add `POST /retry-extraction` endpoint resetting status to `"Pending"` and re-enqueueing extraction job; reject with 409 if not in `"Failed"` state (AC-004, AIR-007)

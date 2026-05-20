@@ -58,11 +58,11 @@
 ---
 
 ## Task Overview
-Implement `POST /api/v1/intake/confirm` in `IntakeController`. The handler loads the final session state from Redis (falls back to the request body payload if Redis has expired), encrypts all PHI fields via `IPhiEncryptionService`, persists the `IntakeRecord` to the database, clears the Redis session key, and writes an `INTAKE_COMPLETED` audit entry. An idempotency check prevents duplicate `IntakeRecord` creation for the same `appointmentId`.
+Implement `POST /api/v1/intake/confirm` in `IntakeController`. The handler loads the final session state from Redis (falls back to the request body payload if Redis has expired), encrypts all PHI fields via `IEncryptionService`, persists the `IntakeRecord` to the database, clears the Redis session key, and writes an `INTAKE_COMPLETED` audit entry. An idempotency check prevents duplicate `IntakeRecord` creation for the same `appointmentId`.
 
 ## Dependent Tasks
 - `task_002_ai-gemini-intake-session.md` (US_018) — `IntakeSessionService` and Redis session must exist
-- `task_001_backend-phi-encryption.md` (US_006) — `IPhiEncryptionService` must be registered
+- `task_001_backend-phi-encryption.md` (US_006) — `IEncryptionService` must be registered
 - `task_001_backend-migrations.md` (US_005) — `IntakeRecord` entity and table must exist
 
 ## Impacted Components
@@ -75,7 +75,7 @@ Implement `POST /api/v1/intake/confirm` in `IntakeController`. The handler loads
 2. Implement `ConfirmIntakeHandler.Handle`:
    - Idempotency: check if `IntakeRecord` already exists for `appointmentId`; if yes → return HTTP 200 with `{ intakeRecordId }` (no re-insertion)
    - Load session from Redis via `IntakeSessionService.GetSessionAsync`; if null → use `command.capturedFields` fallback; log Warning
-   - Identify PHI fields (chiefComplaint, allergies, currentMedications, notes etc.); encrypt each with `IPhiEncryptionService.EncryptAsync`
+   - Identify PHI fields (chiefComplaint, allergies, currentMedications, notes etc.); encrypt each with `IEncryptionService.Encrypt(string)` (AES-256-GCM, synchronous)
    - Create `IntakeRecord`: `appointmentId`, `method`, all fields, `completedAt = UtcNow`; persist
    - Delete Redis session key via `IntakeSessionService.ClearSessionAsync(appointmentId)`
    - Write `INTAKE_COMPLETED` audit entry with `actorId` and `appointmentId`
@@ -87,7 +87,7 @@ Implement `POST /api/v1/intake/confirm` in `IntakeController`. The handler loads
 backend/
   src/
     UPACIP.API/Controllers/IntakeController.cs  (from task_002)
-    UPACIP.Infrastructure/Security/PhiEncryptionService.cs  (from US_006)
+    UPACIP.Infrastructure/Security/AesEncryptionService.cs  (from US_006)
     UPACIP.Domain/Entities/IntakeRecord.cs  (from US_005)
 ```
 
@@ -111,10 +111,10 @@ backend/
 - [ ] Expire Redis session before confirm; include fields in request body → record still created; Warning logged
 
 ## Implementation Checklist
-- [ ] Idempotency check: existing IntakeRecord for appointmentId → HTTP 200; no re-insert (edge case)
-- [ ] Load session from Redis; fallback to request body `capturedFields` if expired (edge case)
-- [ ] Encrypt PHI fields via `IPhiEncryptionService` before persistence (AC-004, NFR-001)
-- [ ] Create `IntakeRecord` with `method = "AI" | "AI-Partial"`; persist (AC-004)
-- [ ] Clear Redis session key on successful persistence (cleanup)
-- [ ] Write `INTAKE_COMPLETED` audit entry (AC-004)
-- [ ] `[Authorize(Policy = "PatientPolicy")]` on confirm action (OWASP A01)
+- [x] Idempotency check: existing IntakeRecord for appointmentId → HTTP 200; no re-insert (edge case)
+- [x] Load session from Redis; fallback to request body `capturedFields` if expired (edge case)
+- [x] Encrypt PHI fields via `IEncryptionService.Encrypt(string)` before persistence (AC-004, NFR-001)
+- [x] Create `IntakeRecord` with `method = "AI" | "AI-Partial"`; persist (AC-004)
+- [x] Clear Redis session key on successful persistence (cleanup)
+- [x] Write `INTAKE_COMPLETED` audit entry (AC-004)
+- [x] `[Authorize(Policy = "PatientPolicy")]` on confirm action (OWASP A01)

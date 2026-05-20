@@ -79,7 +79,9 @@ Build two profile views sharing the same `ClinicalSections` component: SCR-009 (
 3. Create `ClinicalSections.tsx`: accepts `{ data, mode: 'patient' | 'staff' }`; renders VitalsSection, MedicationsSection, DiagnosesSection, VisitHistorySection (each a `ClinicalSection`); in `patient` mode — append `--color-ai-label` "AI-extracted" badge on AI-sourced fields; in `staff` mode — render `<ConflictsSection>` placeholder slot (implemented in US_028)
 4. Create `PatientProfilePage.tsx` at `/profile`: calls `usePatientProfile(currentUser.id)`; if `!hasDocuments` → render no-data state with "Upload documents" CTA to `/documents/upload`; if `deduplicationStatus === "Processing"` → render amber "Profile consolidation in progress" banner; renders `<ClinicalSections mode="patient" />`
 5. Create `StaffPatientProfilePage.tsx` at `/staff/patients/:id`: calls `usePatientProfile(params.id)`; same empty-state / dedup-banner logic; renders `<ClinicalSections mode="staff" />`; patient-role redirect guard (HTTP 403 handled in hook)
-6. Add CSS token `--color-ai-label` (blue-tint); add to `variables.css`
+6. Add CSS token `--color-ai-label` (blue-tint, #7C3AED) to `variables.css`; and `--color-ai-accent-border` for left-border on AI data rows; matching `color-ai-accent` (#7C3AED) from UXR-403
+7. In `ClinicalSection.tsx`: each data item that is `isPhiField=true` renders a `🔒` prefix icon with `aria-label="PHI"` before the label text; wrapper row applies `badge-phi` background token (UXR-402)
+8. In `PatientProfilePage.tsx` header block: render `<span className="badge badge-patient-view">Patient view — read-only</span>` alongside the existing `AI-enriched` badge; no Staff conflict controls rendered in patient mode (AC-002)
 
 ## Current Project State
 ```
@@ -116,9 +118,11 @@ frontend/
 - [ ] Section with > 20 items → pagination controls; only 20 DOM rows rendered
 
 ## Implementation Checklist
-- [ ] Build `ClinicalSection` with pagination at 20 items; "No data available" empty state (AC-001, AC-002, AC-005)
-- [ ] Build `ClinicalSections` with patient/staff mode toggle; AI-extracted badge in patient mode (AC-002, UXR-403)
-- [ ] Patient profile page: no-document CTA + dedup banner (AC-004, edge case)
-- [ ] Staff profile page: dedup banner; Conflicts section slot for US_028 (AC-001)
-- [ ] `usePatientProfile` hook with React Query; profile data fetched on mount (AC-001, AC-005)
-- [ ] Add `--color-ai-label` token (AC-002, UXR-403)
+- [x] Build `ClinicalSection` with pagination at 20 items; "No data available" empty state (AC-001, AC-002, AC-005)
+- [x] Build `ClinicalSections` with patient/staff mode toggle; AI-extracted badge in patient mode (AC-002, UXR-403)
+- [x] Patient profile page: no-document CTA + dedup banner (AC-004, edge case)
+- [x] Staff profile page: dedup banner; Conflicts section slot for US_028 (AC-001)
+- [x] `usePatientProfile` hook with fetch + useState/useEffect pattern; profile data fetched on mount (AC-001, AC-005)
+- [x] Added `--color-ai-label: var(--color-ai-accent)` semantic alias to `variables.css`; `--color-ai-accent-border` resolved via existing `--color-border-ai` token (DRY — no new duplicate) (AC-002, UXR-403)
+- [x] PHI lock icon (`🔒`) prefix with `aria-label="PHI"` on each PHI data field in `ClinicalSection`; `badge-phi` background per UXR-402 (AC-001, AC-002, UXR-402)
+- [x] "Patient view — read-only" indicator badge in `PatientProfilePage` profile header; no Staff conflict controls in patient mode (AC-002)

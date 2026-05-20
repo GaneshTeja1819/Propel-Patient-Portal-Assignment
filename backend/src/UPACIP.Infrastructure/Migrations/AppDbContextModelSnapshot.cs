@@ -17,7 +17,7 @@ namespace UPACIP.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "9.0.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "vector");
@@ -218,6 +218,19 @@ namespace UPACIP.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ExtractionFailureNote")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExtractionStatus")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("FileHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -246,9 +259,10 @@ namespace UPACIP.Infrastructure.Migrations
 
                     b.HasIndex("AppointmentId");
 
-                    b.HasIndex("PatientId");
-
                     b.HasIndex("ProviderId");
+
+                    b.HasIndex("PatientId", "FileHash")
+                        .IsUnique();
 
                     b.ToTable("clinical_documents", (string)null);
                 });
@@ -259,6 +273,15 @@ namespace UPACIP.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("CanonicalValue")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConflictingValues")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("[]");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -266,26 +289,39 @@ namespace UPACIP.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsResolved")
-                        .HasColumnType("boolean");
-
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset?>("ResolvedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("SourceValue")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid?>("ResolvedById")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("TargetValue")
+                    b.Property<string>("Severity")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasDefaultValue("Medium");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasDefaultValue("Open");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PatientId");
+                    b.HasIndex("PatientId", "Status")
+                        .HasDatabaseName("IX_DataConflict_PatientId_Status");
 
                     b.ToTable("data_conflicts", (string)null);
                 });
@@ -295,6 +331,14 @@ namespace UPACIP.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("CodingStatus")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasDefaultValue("Pending")
+                        .HasColumnName("coding_status");
 
                     b.Property<double?>("ConfidenceScore")
                         .HasColumnType("double precision");
@@ -444,8 +488,32 @@ namespace UPACIP.Infrastructure.Migrations
                     b.Property<bool>("IsVerified")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("ModelVersion")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("model_version");
+
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("PromptHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("prompt_hash");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("integer")
+                        .HasColumnName("rank");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasDefaultValue("Pending")
+                        .HasColumnName("status");
 
                     b.Property<DateTimeOffset>("SuggestedAt")
                         .HasColumnType("timestamp with time zone");
@@ -456,11 +524,55 @@ namespace UPACIP.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClinicalDataId");
-
                     b.HasIndex("PatientId");
 
+                    b.HasIndex("ClinicalDataId", "Status")
+                        .HasDatabaseName("IX_MedicalCodeSuggestion_ClinicalDataId_Status");
+
                     b.ToTable("medical_code_suggestions", (string)null);
+                });
+
+            modelBuilder.Entity("UPACIP.Domain.Entities.MergedClinicalEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Confidence")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("EncryptedCanonicalValue")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EncryptedLabel")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsPhiField")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("MergedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SectionType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("SourceDocumentIds")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId")
+                        .HasDatabaseName("IX_MergedClinicalEntry_PatientId");
+
+                    b.ToTable("merged_clinical_entries", (string)null);
                 });
 
             modelBuilder.Entity("UPACIP.Domain.Entities.Notification", b =>
@@ -512,6 +624,13 @@ namespace UPACIP.Infrastructure.Migrations
                     b.Property<int>("ConflictCount")
                         .HasColumnType("integer");
 
+                    b.Property<string>("DeduplicationStatus")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Pending");
+
                     b.Property<string>("EncryptedSummaryJson")
                         .IsRequired()
                         .HasColumnType("text");
@@ -560,6 +679,9 @@ namespace UPACIP.Infrastructure.Migrations
                     b.Property<bool>("IsEmailVerified")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTimeOffset?>("LastConflictReviewedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -607,12 +729,25 @@ namespace UPACIP.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Decision")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasDefaultValue("")
+                        .HasColumnName("decision");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Notes")
                         .HasColumnType("text");
+
+                    b.Property<string>("OriginalSuggestedCode")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("original_suggested_code");
 
                     b.Property<Guid>("SuggestionId")
                         .HasColumnType("uuid");
@@ -807,6 +942,17 @@ namespace UPACIP.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("ClinicalData");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("UPACIP.Domain.Entities.MergedClinicalEntry", b =>
+                {
+                    b.HasOne("UPACIP.Domain.Entities.User", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Patient");
                 });

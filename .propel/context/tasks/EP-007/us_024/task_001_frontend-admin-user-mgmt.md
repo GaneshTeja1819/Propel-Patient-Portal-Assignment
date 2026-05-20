@@ -111,9 +111,9 @@ frontend/
 - [ ] Search with no matches → empty state shown; no error thrown
 
 ## Implementation Checklist
-- [ ] Build `AdminUserManagementPage` with two-panel layout; `<RequireRole role="Admin" />` (AC-001)
-- [ ] Build `UserSearchPanel` with 300 ms debounce; empty state on no results (AC-001, edge case)
-- [ ] Build `UserDetailPanel`: inline actions; self-deactivation guard disables button with tooltip (AC-001, AC-003)
-- [ ] Build `RoleDowngradeConfirmModal`; only opens when Admin → lower role; cancel leaves role unchanged (AC-004)
-- [ ] `useAdminUsers` hook; on 401 redirect to login with `?redirect=/admin/users` (edge case)
-- [ ] All actions complete within 2 screen transitions (no separate page per action) (AC-001, UXR-105)
+- [x] Build `AdminUserManagementPage` with two-panel layout; `<RequireRole role="Admin" />` (AC-001)
+- [x] Build `UserSearchPanel` with 300 ms debounce; empty state on no results (AC-001, edge case)
+- [x] Build `UserDetailPanel`: inline actions; self-deactivation guard disables button with tooltip (AC-001, AC-003)
+- [x] Build `RoleDowngradeConfirmModal`; only opens when Admin → lower role; cancel leaves role unchanged (AC-004)
+- [x] `useAdminUsers` hook; on 401 redirect to login with `?redirect=/admin/users` (edge case)
+- [x] All actions complete within 2 screen transitions (no separate page per action) (AC-001, UXR-105)

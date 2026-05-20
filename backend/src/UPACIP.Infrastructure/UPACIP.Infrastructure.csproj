@@ -27,4 +27,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="AI\IntakeQuestions.json" />
+    <EmbeddedResource Include="AI\ClinicalExtractionPrompt.json" />
+    <EmbeddedResource Include="AI\DeduplicationPrompt.json" />
+    <EmbeddedResource Include="AI\CodeSuggestionPrompt.json" />
+  </ItemGroup>
+
 </Project>

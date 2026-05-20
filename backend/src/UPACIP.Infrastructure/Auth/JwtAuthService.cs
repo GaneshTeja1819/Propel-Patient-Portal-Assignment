@@ -114,6 +114,12 @@ internal sealed class JwtAuthService : IAuthService
         await _sessionStore.DeleteAsync(sessionId, ct);
     }
 
+    /// <inheritdoc />
+    public async Task InvalidateAllSessionsForUserAsync(Guid userId, CancellationToken ct = default)
+    {
+        await _sessionStore.InvalidateAllSessionsForUserAsync(userId, ct);
+    }
+
     private string BuildJwt(Guid userId, string role, string email)
     {
         var now = DateTime.UtcNow;

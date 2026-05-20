@@ -7,6 +7,12 @@ public class PatientProfile360 : BaseEntity
     public DateTimeOffset LastUpdatedAt { get; set; } = DateTimeOffset.UtcNow;
     public int ConflictCount { get; set; }
 
+    /// <summary>
+    /// De-duplication pipeline state: Pending → Processing → Completed | Failed.
+    /// Tracks idempotency for <c>DeduplicationJob</c> (US_027, edge case: concurrent runs).
+    /// </summary>
+    public string DeduplicationStatus { get; set; } = "Pending";
+
     // Navigation
     public User Patient { get; set; } = null!;
 }

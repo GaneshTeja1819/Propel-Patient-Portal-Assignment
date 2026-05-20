@@ -1,0 +1,91 @@
+- generic [ref=e3]:
+  - link "Skip to main content" [ref=e4] [cursor=pointer]:
+    - /url: "#main-intake"
+  - status [ref=e5]: Switched to manual intake form. Your AI answers have been carried over.
+  - navigation "Main navigation" [ref=e6]:
+    - generic [ref=e7]:
+      - link "Patient Portal — back to dashboard" [ref=e8] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e9]: P
+        - text: Intake Form
+      - group "Intake method" [ref=e10]:
+        - generic [ref=e11]: "Method:"
+        - button "AI-assisted intake" [ref=e12] [cursor=pointer]: 🤖 AI
+        - button "Switch to manual form (your answers will be carried over)" [pressed] [ref=e13] [cursor=pointer]: 📝 Manual
+      - img "Test Patient" [ref=e14]: TP
+  - main [ref=e15]:
+    - heading "Manual Intake — complete your pre-visit questionnaire" [level=1] [ref=e39]
+    - form "Manual intake form" [ref=e40]:
+      - region "Intake progress" [ref=e42]:
+        - generic [ref=e43]:
+          - generic [ref=e44]: Manual Intake
+          - generic "Question 0 of 5" [ref=e45]
+        - progressbar "0% complete" [ref=e46]
+      - generic [ref=e48]:
+        - generic [ref=e49]:
+          - button "Chief Complaint" [expanded] [ref=e50] [cursor=pointer]:
+            - generic [ref=e51]:
+              - generic [ref=e52]: "1"
+              - generic [ref=e53]: Chief Complaint
+            - generic [ref=e55]: ▼
+          - region "Chief Complaint section" [ref=e56]:
+            - generic [ref=e57]: Chief Complaint section
+            - generic "Protected health information" [ref=e58]:
+              - generic [ref=e59]: 🔒
+              - text: Protected health information
+            - generic [ref=e60]:
+              - generic [ref=e61]:
+                - text: Chief complaint
+                - generic [ref=e62]: "*"
+              - textbox "Chief complaint" [active] [ref=e63]:
+                - /placeholder: Describe your main symptom or reason for the visit…
+              - alert [ref=e109]:
+                - generic [ref=e110]: ⚠
+                - text: Please describe your chief complaint.
+            - generic [ref=e64]:
+              - generic [ref=e65]:
+                - text: How long have you had this symptom?
+                - generic [ref=e66]: "*"
+              - combobox "How long have you had this symptom?" [ref=e67] [cursor=pointer]:
+                - option "— select —" [selected]
+                - option "A few days"
+                - option "1–2 weeks"
+                - option "3–4 weeks"
+                - option "1–3 months"
+                - option "More than 3 months"
+              - alert [ref=e111]:
+                - generic [ref=e112]: ⚠
+                - text: Please select symptom duration.
+            - generic [ref=e68]:
+              - generic [ref=e69]: Pain / severity (0–10)
+              - generic [ref=e70]:
+                - slider "Pain / severity (0–10)" [ref=e71] [cursor=pointer]: "0"
+                - generic [ref=e72]: "0"
+              - generic [ref=e73]:
+                - generic [ref=e74]: 0 (None)
+                - generic [ref=e75]: 10 (Severe)
+        - button "Medications" [ref=e77] [cursor=pointer]:
+          - generic [ref=e78]:
+            - generic [ref=e79]: "2"
+            - generic [ref=e80]: Medications
+          - generic [ref=e82]: ▼
+        - button "Allergies" [ref=e84] [cursor=pointer]:
+          - generic [ref=e85]:
+            - generic [ref=e86]: "3"
+            - generic [ref=e87]: Allergies
+          - generic [ref=e89]: ▼
+        - button "Lifestyle" [ref=e91] [cursor=pointer]:
+          - generic [ref=e92]:
+            - generic [ref=e93]: "4"
+            - generic [ref=e94]: Lifestyle
+          - generic [ref=e96]: ▼
+        - button "Additional Notes" [ref=e98] [cursor=pointer]:
+          - generic [ref=e99]:
+            - generic [ref=e100]: "5"
+            - generic [ref=e101]: Additional Notes
+          - generic [ref=e103]: ▼
+      - generic [ref=e104]:
+        - button "Switch to AI-assisted intake (your answers will be carried over)" [ref=e105] [cursor=pointer]: ← Switch to AI
+        - generic [ref=e106]:
+          - button "Save progress and continue later" [ref=e107] [cursor=pointer]: Save & continue later
+          - button "Submit intake →" [ref=e108] [cursor=pointer]
