@@ -15,7 +15,6 @@ using UPACIP.Infrastructure.Handlers.Profile;
 using UPACIP.Infrastructure.Reference;
 using UPACIP.Application.Handlers.Appointments;
 using UPACIP.Application.Handlers.Slots;
-using UPACIP.Application.Handlers.Appointments;
 using UPACIP.Application.Handlers.Patients;
 using UPACIP.Application.Handlers.Queue;
 using UPACIP.Application.Interfaces;

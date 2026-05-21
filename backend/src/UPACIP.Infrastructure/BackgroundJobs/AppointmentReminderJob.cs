@@ -138,7 +138,7 @@ public sealed class AppointmentReminderJob
 
         notification = new Notification
         {
-            RecipientId  = appointment.PatientId,
+            RecipientId  = appointment.PatientId ?? Guid.Empty,
             Type         = $"AppointmentReminder_{channel}",
             Title        = idempotencyKey,
             Body         = "Queued",

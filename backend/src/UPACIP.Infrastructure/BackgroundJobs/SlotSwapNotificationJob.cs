@@ -59,7 +59,7 @@ public sealed class SlotSwapNotificationJob
 
         notification ??= new Domain.Entities.Notification
         {
-            RecipientId = appointment.PatientId,
+            RecipientId = appointment.PatientId ?? Guid.Empty,
             Type = NotificationType,
             Title = appointmentId.ToString("D"),
             Body = "Queued",
@@ -85,7 +85,7 @@ public sealed class SlotSwapNotificationJob
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             await WriteFailureAuditAsync(
-                appointment.PatientId,
+                appointment.PatientId ?? Guid.Empty,
                 appointmentId,
                 "Patient email missing or invalid",
                 cancellationToken);
@@ -126,7 +126,7 @@ public sealed class SlotSwapNotificationJob
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
                 await WriteFailureAuditAsync(
-                    appointment.PatientId,
+                    appointment.PatientId ?? Guid.Empty,
                     appointmentId,
                     ex.GetType().Name,
                     cancellationToken);
