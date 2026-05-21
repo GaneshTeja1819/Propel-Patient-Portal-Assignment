@@ -109,6 +109,16 @@
   --color-conflict-critical: var(--color-red-600);
   --color-conflict-high: var(--color-amber-600);
 
+  /* Semantic — Appointment Status (AC-001, SCR-011) */
+  --color-status-booked: var(--color-blue-700);
+  --color-status-booked-bg: var(--color-blue-050);
+  --color-status-arrived: var(--color-green-600);
+  --color-status-arrived-bg: var(--color-green-100);
+  --color-status-cancelled: var(--color-gray-400);
+  --color-status-cancelled-bg: var(--color-gray-100);
+  --color-status-walkin: var(--color-amber-600);
+  --color-status-walkin-bg: var(--color-amber-100);
+
   /* Interactive */
   --color-interactive-default: var(--color-blue-700);
   --color-interactive-hover: var(--color-blue-600);

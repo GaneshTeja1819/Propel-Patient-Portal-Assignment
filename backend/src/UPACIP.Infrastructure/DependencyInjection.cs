@@ -4,6 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using UPACIP.Application.Handlers.Auth;
+using UPACIP.Application.Handlers.Appointments;
+using UPACIP.Application.Handlers.Patients;
+using UPACIP.Application.Handlers.Queue;
 using UPACIP.Application.Interfaces;
 using UPACIP.Infrastructure.AI;
 using UPACIP.Infrastructure.Audit;
@@ -51,8 +54,16 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IRegistrationStore, RegistrationStore>();
         services.AddScoped<ILoginUserStore, LoginUserStore>();
+        services.AddScoped<IWalkInBookingStore, WalkInBookingStore>();
+        services.AddScoped<IQueueStore, QueueStore>();
         services.AddScoped<RegisterUserHandler>();
         services.AddScoped<LoginUserHandler>();
+        services.AddScoped<WalkInBookingHandler>();
+        services.AddScoped<CreatePatientFromWalkInHandler>();
+        services.AddScoped<GetTodaysQueueHandler>();
+        services.AddScoped<ArriveQueueEntryHandler>();
+        services.AddScoped<ReorderQueueEntryHandler>();
+        services.AddScoped<RemoveQueueEntryHandler>();
 
         services.AddHangfireWithPostgres(configuration);
         services.AddTransient<AccountLockoutNotificationJob>();

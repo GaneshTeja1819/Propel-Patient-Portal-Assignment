@@ -3,6 +3,8 @@ import BaselineDemo from './components/BaselineDemo';
 import { AuthProvider } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
+import StaffQueuePage from './pages/StaffQueuePage';
+import WalkInBookingPage from './pages/WalkInBookingPage';
 
 function App() {
   return (
@@ -13,7 +15,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegistrationPage />} />
           <Route path="/dashboard" element={<PageStub title="Patient Dashboard" />} />
-          <Route path="/staff/queue" element={<PageStub title="Staff Queue" />} />
+          <Route path="/staff/queue" element={<StaffQueuePage />} />
+          <Route path="/staff/walk-in" element={<WalkInBookingPage />} />
           <Route path="/admin/users" element={<PageStub title="Admin Users" />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
