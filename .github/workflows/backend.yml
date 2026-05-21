@@ -100,20 +100,17 @@ jobs:
 
       # ── Deploy to MonsterASP (AC-002, AC-003, AC-004) ───────────────────────
       # Runs only on push to main and only if all prior steps succeeded (AC-004).
-      # FTP credentials come exclusively from GitHub Secrets (AC-003).
+      # WebDeploy credentials come exclusively from GitHub Secrets (AC-003).
       # A missing secret causes this step to fail before any files are transferred.
-      - name: Deploy to MonsterASP via FTP
+      - name: Deploy to MonsterASP via WebDeploy
         if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: rasmusbuchholdt/simply-web-deploy@2.1.2
         with:
           website-name: ${{ secrets.WEBSITE_NAME }}
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
           server-username: ${{ secrets.SERVER_USERNAME }}
           server-password: ${{ secrets.SERVER_PASSWORD }}
-          local-dir: ./backend/publish/
-          server-dir: /wwwroot/
-          timeout: 60000  # 60 s FTP connection timeout; job timeout-minutes: 10 is the hard cap
-          dangerous-clean-slate: false
+          source-path: ./backend/publish/
 
       # ── Post-deploy health check (AC-002) ────────────────────────────────────
       # Retries GET /api/v1/health up to 3 times with 20-second intervals to
