@@ -1,0 +1,108 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Filter bar */
+.filterBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  padding: var(--space-1) var(--space-3);
+  border: 1.5px solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--color-surface-default);
+  color: var(--color-text-secondary);
+  transition: background var(--duration-fast) var(--easing-default);
+  min-height: var(--touch-target-min);
+}
+
+.filterBtn:hover:not(.filterBtnActive) {
+  background: var(--color-surface-subtle);
+}
+
+.filterBtn:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.filterBtnActive {
+  background: var(--color-brand-primary-light);
+  color: var(--color-brand-primary);
+  border-color: var(--color-brand-primary);
+}
+
+/* Toasts / banners */
+.conflictToast {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+}
+
+.removeConfirmation {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+}
+
+/* Table */
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.thDrag {
+  width: 32px;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 2px solid var(--color-border-default);
+  background: var(--color-surface-subtle);
+}
+
+.th {
+  text-align: left;
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 2px solid var(--color-border-default);
+  background: var(--color-surface-subtle);
+  white-space: nowrap;
+}
+
+.emptyCell {
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-md);
+}
+
+/* Responsive — 768px: all columns remain visible, no horizontal scroll */
+@media (max-width: 768px) {
+  .th {
+    font-size: 10px;
+    padding: var(--space-2) var(--space-2);
+  }
+}

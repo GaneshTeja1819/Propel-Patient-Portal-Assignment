@@ -86,9 +86,12 @@ public sealed class AppDbContext : DbContext
         {
             e.ToTable("appointments");
             e.Property<uint>("xmin").HasColumnType("xid").ValueGeneratedOnAddOrUpdate().IsRowVersion();
+            e.Property(a => a.CreatedByStaffId);
+            e.Property(a => a.AnonymousPatientDetails).HasColumnType("jsonb");
             e.HasOne(a => a.Patient)
              .WithMany(u => u.PatientAppointments)
              .HasForeignKey(a => a.PatientId)
+             .IsRequired(false)
              .OnDelete(DeleteBehavior.Restrict);
             e.HasOne(a => a.Provider)
              .WithMany(u => u.ProviderAppointments)

@@ -1,0 +1,192 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.description {
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-4);
+}
+
+.errorBanner {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.duplicateBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.linkBtn {
+  background: none;
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-sm);
+  color: var(--color-warning);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.linkBtn:hover {
+  background: var(--color-warning);
+  color: var(--color-surface-default);
+}
+
+.linkBtn:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
+}
+
+.fieldLabel {
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.required {
+  color: var(--color-danger);
+  margin-left: 2px;
+}
+
+.passwordWrapper {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  min-height: var(--touch-target-min, 44px);
+  padding: 0 var(--space-3);
+  border: 1.5px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-primary);
+  background: var(--color-surface-default);
+  transition: border-color var(--duration-fast) var(--easing-default);
+}
+
+.input:focus {
+  border-color: var(--color-border-focus);
+  outline: var(--focus-outline-width) solid rgba(26, 86, 219, 0.2);
+  outline-offset: 0;
+}
+
+.inputError {
+  border-color: var(--color-danger);
+}
+
+.revealBtn {
+  position: absolute;
+  right: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-brand-primary);
+  cursor: pointer;
+  padding: 0;
+}
+
+.revealBtn:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+  border-radius: var(--radius-xs);
+}
+
+.strengthBar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.strengthSegment {
+  height: 4px;
+  border-radius: var(--radius-full);
+  transition: background var(--duration-fast) var(--easing-default);
+}
+
+.fieldHint {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-1);
+}
+
+.fieldError {
+  font-size: var(--font-size-caption);
+  color: var(--color-danger);
+  margin-top: var(--space-1);
+}
+
+.submitBtn {
+  width: 100%;
+  min-height: var(--touch-target-min, 44px);
+  padding: 0 var(--space-6);
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  border: 1.5px solid var(--color-brand-primary);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--easing-default);
+  margin-top: var(--space-2);
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--color-brand-primary-hover);
+  border-color: var(--color-brand-primary-hover);
+}
+
+.submitBtn:disabled {
+  background: var(--color-interactive-disabled);
+  border-color: var(--color-interactive-disabled);
+  cursor: not-allowed;
+}
+
+.submitBtn:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.successBanner {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-success);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+}

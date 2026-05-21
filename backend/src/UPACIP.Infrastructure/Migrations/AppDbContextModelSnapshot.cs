@@ -29,6 +29,12 @@ namespace UPACIP.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("AnonymousPatientDetails")
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTimeOffset?>("ArrivedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -46,6 +52,12 @@ namespace UPACIP.Infrastructure.Migrations
                         .HasDefaultValue("NotProvided")
                         .HasColumnType("character varying(50)");
 
+                    b.Property<Guid?>("CreatedByStaffId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("DisplayOrder")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
@@ -53,7 +65,7 @@ namespace UPACIP.Infrastructure.Migrations
                         .HasDefaultValue(0)
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("PatientId")
+                    b.Property<Guid?>("PatientId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ProviderId")
@@ -810,8 +822,7 @@ namespace UPACIP.Infrastructure.Migrations
                     b.HasOne("UPACIP.Domain.Entities.User", "Patient")
                         .WithMany("PatientAppointments")
                         .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("UPACIP.Domain.Entities.User", "Provider")
                         .WithMany("ProviderAppointments")

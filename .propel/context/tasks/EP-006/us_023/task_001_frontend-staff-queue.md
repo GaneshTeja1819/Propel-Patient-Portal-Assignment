@@ -112,17 +112,17 @@ frontend/
 - Refer to [frontend build commands](.propel/build/)
 
 ## Implementation Validation Strategy
-- [ ] Queue loads with all today's appointments in chronological order; status badges coloured correctly
-- [ ] Drag row to new position → order updates; conflict toast appears when position conflicts
-- [ ] Click "Remove" → reason required; confirm → row removed; confirmation shown
-- [ ] Click "Mark Arrived" → status badge changes to "Arrived" immediately (optimistic); HTTP 409 → inline "already arrived" message
-- [ ] Render at 768 px → no horizontal scroll; columns visible
+- [x] Queue loads with all today's appointments in chronological order; status badges coloured correctly
+- [x] Drag row to new position → order updates; conflict toast appears when position conflicts
+- [x] Click "Remove" → reason required; confirm → row removed; confirmation shown
+- [x] Click "Mark Arrived" → status badge changes to "Arrived" immediately (optimistic); HTTP 409 → inline "already arrived" message
+- [x] Render at 768 px → no horizontal scroll; columns visible
 
 ## Implementation Checklist
-- [ ] Add status colour tokens to `variables.css` (AC-001)
-- [ ] Build `QueueRow` with drag handle; status badge; "Mark Arrived" disabled when not "Booked" (AC-001, AC-004)
-- [ ] Build `QueueTable` with drag-reorder; conflict warning toast on slot overlap (AC-002)
-- [ ] Build `RemoveQueueModal` with mandatory reason field; block submit if empty (AC-003)
-- [ ] `useQueue` hook: fetch today's queue; PATCH arrive (HTTP 409 → inline message); PATCH reorder; DELETE remove (AC-001–AC-004)
-- [ ] Responsive 768 px layout; no horizontal scroll (UXR-104 edge case)
-- [ ] Override-arrived removal guard: confirmation warning if status already "Arrived" (edge case)
+- [x] Add status colour tokens to `variables.css` (AC-001)
+- [x] Build `QueueRow` with drag handle; status badge; "Mark Arrived" disabled when not "Booked" (AC-001, AC-004)
+- [x] Build `QueueTable` with drag-reorder; conflict warning toast on slot overlap (AC-002)
+- [x] Build `RemoveQueueModal` with mandatory reason field; block submit if empty (AC-003)
+- [x] `useQueue` hook: fetch today's queue; PATCH arrive (HTTP 409 → inline message); PATCH reorder; DELETE remove (AC-001–AC-004)
+- [x] Responsive 768 px layout; no horizontal scroll (UXR-104 edge case)
+- [x] Override-arrived removal guard: confirmation warning if status already "Arrived" (edge case)

@@ -132,10 +132,10 @@ backend/
 - [ ] Duplicate email → HTTP 409; no duplicate User record
 
 ## Implementation Checklist
-- [ ] `GET /api/v1/patients/search` with `[Authorize(Policy = "StaffPolicy")]`; case-insensitive search (AC-001)
-- [ ] `WalkInBookingHandler`: slot reservation via EF Core concurrency; nullable patientId for anon; `WALKIN_APPOINTMENT_CREATED` audit with Staff actor (AC-001, AC-002, AC-004)
-- [ ] Anon details stored in `Appointment.anonymousPatientDetails` JSON column; no User record required (AC-002)
-- [ ] `CreatePatientFromWalkInHandler`: BCrypt password hash; duplicate email → HTTP 409 (AC-003, edge case)
-- [ ] Dual audit entries (`PATIENT_ACCOUNT_CREATED` + `WALKIN_APPOINTMENT_LINKED`) with `actorRole = "Staff"` (AC-003, AC-004)
-- [ ] Atomic transaction on slot reservation; rollback on failure; slot released (edge case)
-- [ ] All endpoints `[Authorize(Policy = "StaffPolicy")]`; Patient cannot call these (OWASP A01)
+- [x] `GET /api/v1/patients/search` with `[Authorize(Policy = "StaffPolicy")]`; case-insensitive search (AC-001)
+- [x] `WalkInBookingHandler`: slot reservation via EF Core concurrency; nullable patientId for anon; `WALKIN_APPOINTMENT_CREATED` audit with Staff actor (AC-001, AC-002, AC-004)
+- [x] Anon details stored in `Appointment.anonymousPatientDetails` JSON column; no User record required (AC-002)
+- [x] `CreatePatientFromWalkInHandler`: BCrypt password hash; duplicate email → HTTP 409 (AC-003, edge case)
+- [x] Dual audit entries (`PATIENT_ACCOUNT_CREATED` + `WALKIN_APPOINTMENT_LINKED`) with `actorRole = "Staff"` (AC-003, AC-004)
+- [x] Atomic transaction on slot reservation; rollback on failure; slot released (edge case)
+- [x] All endpoints `[Authorize(Policy = "StaffPolicy")]`; Patient cannot call these (OWASP A01)

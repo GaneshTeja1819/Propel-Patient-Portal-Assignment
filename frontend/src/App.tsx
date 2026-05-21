@@ -15,6 +15,8 @@ import CalendarSyncPage from './pages/CalendarSyncPage';
 import DashboardPage from './pages/DashboardPage';
 import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
+import StaffQueuePage from './pages/StaffQueuePage';
+import WalkInBookingPage from './pages/WalkInBookingPage';
 
 function App() {
   return (
@@ -32,7 +34,8 @@ function App() {
           <Route path="/calendar-sync" element={<ProtectedRoute><CalendarSyncPage /></ProtectedRoute>} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/appointments/:id" element={<AppointmentDetailPage />} />
-          <Route path="/staff/queue" element={<PageStub title="Staff Queue" />} />
+          <Route path="/staff/queue" element={<StaffQueuePage />} />
+          <Route path="/staff/walk-in" element={<WalkInBookingPage />} />
           <Route path="/staff/patients/:id" element={<ProtectedRoute><StaffPatientProfilePage /></ProtectedRoute>} />
           <Route path="/staff/coding/:encounterId" element={<ProtectedRoute><CodeVerificationPage /></ProtectedRoute>} />
           <Route path="/admin/users" element={<AdminUserManagementPage />} />
