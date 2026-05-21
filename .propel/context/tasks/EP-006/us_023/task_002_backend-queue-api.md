@@ -120,9 +120,9 @@ backend/
 - [ ] DELETE without reason → HTTP 422; with reason → appointment status updated; audit reason stored
 
 ## Implementation Checklist
-- [ ] Add `displayOrder`, `arrivedAt` to `Appointment`; create migration (AC-001, AC-004)
-- [ ] Implement `GetTodaysQueueQuery` handler: ordered by displayOrder then startDateTime (AC-001)
-- [ ] PATCH arrive: HTTP 409 if already "Arrived"; set arrivedAt; write audit (AC-004, edge case)
-- [ ] PATCH reorder: save displayOrder; detect + return `slotConflict`; write audit (AC-002)
-- [ ] DELETE: require reason; HTTP 422 if absent; write audit with reason (AC-003)
-- [ ] All mutating endpoints `[Authorize(Policy = "StaffPolicy")]`; arrive returns HTTP 403 for Patient role (AC-005)
+- [x] Add `displayOrder`, `arrivedAt` to `Appointment`; create migration (AC-001, AC-004)
+- [x] Implement `GetTodaysQueueQuery` handler: ordered by displayOrder then startDateTime (AC-001)
+- [x] PATCH arrive: HTTP 409 if already "Arrived"; set arrivedAt; write audit (AC-004, edge case)
+- [x] PATCH reorder: save displayOrder; detect + return `slotConflict`; write audit (AC-002)
+- [x] DELETE: require reason; HTTP 422 if absent; write audit with reason (AC-003)
+- [x] All mutating endpoints `[Authorize(Policy = "StaffPolicy")]`; arrive returns HTTP 403 for Patient role (AC-005)

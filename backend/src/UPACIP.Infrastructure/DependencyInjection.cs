@@ -15,6 +15,8 @@ using UPACIP.Infrastructure.Handlers.Profile;
 using UPACIP.Infrastructure.Reference;
 using UPACIP.Application.Handlers.Appointments;
 using UPACIP.Application.Handlers.Slots;
+using UPACIP.Application.Handlers.Patients;
+using UPACIP.Application.Handlers.Queue;
 using UPACIP.Application.Interfaces;
 using UPACIP.Application.Services;
 using UPACIP.Infrastructure.AI;
@@ -70,6 +72,8 @@ public static class DependencyInjection
         services.AddScoped<ISlotQueryService, SlotQueryService>();
         services.AddScoped<IAppointmentBookingStore, BookingStore>();
         services.AddScoped<IAppointmentManagementStore, AppointmentManagementStore>();
+        services.AddScoped<IWalkInBookingStore, WalkInBookingStore>();
+        services.AddScoped<IQueueStore, QueueStore>();
         services.AddScoped<RegisterUserHandler>();
         services.AddScoped<LoginUserHandler>();
         services.AddScoped<CreateUserHandler>();
@@ -102,6 +106,12 @@ public static class DependencyInjection
         services.AddScoped<CancelAppointmentHandler>();
         services.AddScoped<RescheduleAppointmentHandler>();
         services.AddSingleton<INoShowRiskScorer, NoShowRiskScorer>();
+        services.AddScoped<WalkInBookingHandler>();
+        services.AddScoped<CreatePatientFromWalkInHandler>();
+        services.AddScoped<GetTodaysQueueHandler>();
+        services.AddScoped<ArriveQueueEntryHandler>();
+        services.AddScoped<ReorderQueueEntryHandler>();
+        services.AddScoped<RemoveQueueEntryHandler>();
 
         services.AddHangfireWithPostgres(configuration);
         services.AddTransient<AccountLockoutNotificationJob>();

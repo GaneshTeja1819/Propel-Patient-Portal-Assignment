@@ -73,7 +73,7 @@ public sealed class GeneratePdfConfirmationJob
 
         notification ??= new Domain.Entities.Notification
         {
-            RecipientId = appointment.PatientId,
+            RecipientId = appointment.PatientId ?? Guid.Empty,
             Type = NotificationType,
             Title = idempotencyKey,
             Body = "Queued",
@@ -117,7 +117,7 @@ public sealed class GeneratePdfConfirmationJob
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             await _auditLogService.LogAsync(
-                actorId: appointment.PatientId,
+                actorId: appointment.PatientId ?? Guid.Empty,
                 actorRole: "System",
                 actionType: "PDF_GENERATION_FAILED",
                 targetEntity: "Appointment",

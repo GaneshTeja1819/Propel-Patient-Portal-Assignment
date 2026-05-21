@@ -27,7 +27,7 @@ env:
 jobs:
   build-test-deploy:
     name: "Build → Test → Deploy (backend)"
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 10  # AC-005 — pipeline must complete within 10 minutes
 
     steps:
@@ -90,29 +90,27 @@ jobs:
       - name: Static secret scan — assert zero raw credentials in workflow YAML
         if: success()
         run: |
-          WORKFLOW=".github/workflows/backend.yml"
-          if grep -Pn '(?i)(password|api_key|token|secret)\s*:\s*(?!\$\{\{)[^\s#]' \
-               "$WORKFLOW"; then
-            echo "::error file=${WORKFLOW}::Raw credential detected. Use \${{ secrets.NAME }} syntax instead."
+          $workflow = ".github/workflows/backend.yml"
+          $matches = Select-String -Path $workflow -Pattern '(?i)(password|api_key|token|secret)\s*:\s*(?!\$\{\{)[^\s#]' -AllMatches
+          if ($matches) {
+            Write-Output "::error file=$workflow::Raw credential detected. Use `${{ secrets.NAME }} syntax instead."
             exit 1
-          fi
-          echo "Secret scan PASS — zero raw credentials found in ${WORKFLOW}."
+          }
+          Write-Output "Secret scan PASS — zero raw credentials found in $workflow."
 
       # ── Deploy to MonsterASP (AC-002, AC-003, AC-004) ───────────────────────
       # Runs only on push to main and only if all prior steps succeeded (AC-004).
-      # FTP credentials come exclusively from GitHub Secrets (AC-003).
+      # WebDeploy credentials come exclusively from GitHub Secrets (AC-003).
       # A missing secret causes this step to fail before any files are transferred.
-      - name: Deploy to MonsterASP via FTP
+      - name: Deploy to MonsterASP via WebDeploy
         if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: rasmusbuchholdt/simply-web-deploy@2.1.0
         with:
-          server: ${{ secrets.MONSTERASP_FTP_SERVER }}
-          username: ${{ secrets.MONSTERASP_FTP_USER }}
-          password: ${{ secrets.MONSTERASP_FTP_PASSWORD }}
-          local-dir: ./backend/publish/
-          server-dir: /wwwroot/
-          timeout: 60000  # 60 s FTP connection timeout; job timeout-minutes: 10 is the hard cap
-          dangerous-clean-slate: false
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+          source-path: ./backend/publish/
 
       # ── Post-deploy health check (AC-002) ────────────────────────────────────
       # Retries GET /api/v1/health up to 3 times with 20-second intervals to
@@ -121,22 +119,26 @@ jobs:
       - name: Post-deploy health check — GET /api/v1/health
         if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          MAX_RETRIES=3
-          RETRY_INTERVAL=20
-          URL="https://${{ secrets.MONSTERASP_HOST }}/api/v1/health"
-          echo "Health check target: ${URL}"
-          for i in $(seq 1 $MAX_RETRIES); do
-            echo "Attempt ${i} of ${MAX_RETRIES}..."
-            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$URL")
-            if [ "$HTTP_STATUS" = "200" ]; then
-              echo "Health check PASS — /api/v1/health returned HTTP 200."
-              exit 0
-            fi
-            echo "Got HTTP ${HTTP_STATUS}."
-            if [ "$i" -lt "$MAX_RETRIES" ]; then
-              echo "Retrying in ${RETRY_INTERVAL}s..."
-              sleep "$RETRY_INTERVAL"
-            fi
-          done
-          echo "::error::Health check failed after ${MAX_RETRIES} attempts (${URL} did not return HTTP 200)."
+          $maxRetries = 3
+          $retryInterval = 20
+          $url = "https://${{ secrets.MONSTERASP_HOST }}/api/v1/health"
+          Write-Output "Health check target: $url"
+          for ($i = 1; $i -le $maxRetries; $i++) {
+            Write-Output "Attempt $i of $maxRetries..."
+            try {
+              $response = Invoke-WebRequest -Uri $url -Method GET -TimeoutSec 10 -UseBasicParsing
+              if ($response.StatusCode -eq 200) {
+                Write-Output "Health check PASS — /api/v1/health returned HTTP 200."
+                exit 0
+              }
+              Write-Output "Got HTTP $($response.StatusCode)."
+            } catch {
+              Write-Output "Got error: $($_.Exception.Message)"
+            }
+            if ($i -lt $maxRetries) {
+              Write-Output "Retrying in ${retryInterval}s..."
+              Start-Sleep -Seconds $retryInterval
+            }
+          }
+          Write-Output "::error::Health check failed after $maxRetries attempts ($url did not return HTTP 200)."
           exit 1

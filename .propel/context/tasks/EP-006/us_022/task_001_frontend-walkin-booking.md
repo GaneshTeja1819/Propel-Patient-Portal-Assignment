@@ -118,10 +118,10 @@ frontend/
 - [ ] After booking → "Create patient account" toggle available; duplicate email → inline error with "Link" CTA
 
 ## Implementation Checklist
-- [ ] Build `WalkInBookingPage` with `<RequireRole role="Staff" />`; 3-step inline flow (AC-001, AC-002, AC-003)
-- [ ] Build `PatientSearchInput` with 300 ms debounce; "Patient not found" option leads to anon form (AC-001, AC-002)
-- [ ] Render `SlotGrid` in step 2; no-slots empty state with "Add to same-day queue" CTA (AC-005)
-- [ ] Build `AnonymousPatientForm` for anon walk-in details (AC-002)
-- [ ] Build `CreatePatientAccountForm`; duplicate email → inline "Link to existing account" message (AC-003, edge case)
-- [ ] Password complexity validation via same rules as self-registration (edge case)
-- [ ] Add `/staff/walk-in` route with Staff role guard (AC-001)
+- [x] Build `WalkInBookingPage` with `<RequireRole role="Staff" />`; 3-step inline flow (AC-001, AC-002, AC-003)
+- [x] Build `PatientSearchInput` with 300 ms debounce; "Patient not found" option leads to anon form (AC-001, AC-002)
+- [x] Render `SlotGrid` in step 2; no-slots empty state with "Add to same-day queue" CTA (AC-005)
+- [x] Build `AnonymousPatientForm` for anon walk-in details (AC-002)
+- [x] Build `CreatePatientAccountForm`; duplicate email → inline "Link to existing account" message (AC-003, edge case)
+- [x] Password complexity validation via same rules as self-registration (edge case)
+- [x] Add `/staff/walk-in` route with Staff role guard (AC-001)
