@@ -104,7 +104,7 @@ jobs:
       # A missing secret causes this step to fail before any files are transferred.
       - name: Deploy to MonsterASP via WebDeploy
         if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: rasmusbuchholdt/simply-web-deploy@2.1.2
+        uses: rasmusbuchholdt/simply-web-deploy@v2.1
         with:
           website-name: ${{ secrets.WEBSITE_NAME }}
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
