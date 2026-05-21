@@ -1,0 +1,15 @@
+- generic [ref=e3]:
+  - navigation "Main navigation" [ref=e4]:
+    - generic [ref=e5]:
+      - link "Patient Portal — back to dashboard" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]: P
+        - text: Intake Form
+      - group "Intake method" [ref=e8]:
+        - generic [ref=e9]: "Method:"
+        - button "AI-assisted intake" [ref=e10] [cursor=pointer]: 🤖 AI
+        - button "Switch to manual form (your answers will be carried over)" [active] [pressed] [ref=e11] [cursor=pointer]: 📝 Manual
+      - img "Test Patient" [ref=e12]: TP
+  - main [ref=e13]:
+    - heading "AI Conversational Intake — complete your pre-visit questionnaire" [level=1] [ref=e14]
+    - paragraph [ref=e38]: Manual intake form will be available in US_019.

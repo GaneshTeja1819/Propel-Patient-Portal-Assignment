@@ -7,12 +7,22 @@ public class Appointment : BaseEntity
     public Guid SlotId { get; set; }
     public Guid? CreatedByStaffId { get; set; }                    // Set when Staff creates the appointment
     public string? AnonymousPatientDetails { get; set; }           // JSON; populated when PatientId is null
-    public string Status { get; set; } = string.Empty;             // Scheduled | Arrived | Completed | Cancelled | NoShow | RemovedFromQueue
+    public string Status { get; set; } = string.Empty;             // Booked | Scheduled | Arrived | Completed | Cancelled | NoShow | RemovedFromQueue
     public string? Notes { get; set; }
+    public int NoShowRiskScore { get; set; }
+    public string InsuranceValidationStatus { get; set; } = "NotProvided";  // Validated | NotRecognised | NotProvided
+    public string? InsuranceProvider { get; set; }
+    public string? InsuranceId { get; set; }
     public int? DisplayOrder { get; set; }                         // Queue display order; null = not explicitly ordered
     public DateTimeOffset? ArrivedAt { get; set; }                 // Set when Staff marks patient as Arrived
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+
+    /// <summary>
+    /// JSON-serialised array of Hangfire job IDs for scheduled reminder jobs.
+    /// Stored so reminders can be cancelled on reschedule (US_020, AC-001).
+    /// </summary>
+    public string? ReminderJobIds { get; set; }
 
     // Navigation
     public User? Patient { get; set; }                             // Nullable — absent for anonymous bookings

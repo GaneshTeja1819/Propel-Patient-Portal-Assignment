@@ -125,9 +125,9 @@ backend/
 - [ ] All mutating admin actions produce immutable audit entries with actorRole="Admin"
 
 ## Implementation Checklist
-- [ ] Implement admin user search endpoint with case-insensitive ILIKE (AC-001)
-- [ ] Implement user create/update with BCrypt password hashing; unique email validation (AC-001)
-- [ ] Self-deactivation guard: HTTP 422; no audit entry (AC-003)
-- [ ] Role change + `InvalidateAllSessionsForUserAsync`; write `ROLE_CHANGED` audit with oldRole/newRole (AC-002, AC-005)
-- [ ] Deactivation + `InvalidateAllSessionsForUserAsync`; write `USER_DEACTIVATED` audit (AC-001, edge case)
-- [ ] All endpoints `[Authorize(Policy = "AdminPolicy")]`; immutable audit entries (no UPDATE/DELETE) (AC-005)
+- [x] Implement admin user search endpoint with case-insensitive ILIKE (AC-001)
+- [x] Implement user create/update with BCrypt password hashing; unique email validation (AC-001)
+- [x] Self-deactivation guard: HTTP 422; no audit entry (AC-003)
+- [x] Role change + `InvalidateAllSessionsForUserAsync`; write `ROLE_CHANGED` audit with oldRole/newRole (AC-002, AC-005)
+- [x] Deactivation + `InvalidateAllSessionsForUserAsync`; write `USER_DEACTIVATED` audit (AC-001, edge case)
+- [x] All endpoints `[Authorize(Policy = "AdminPolicy")]`; immutable audit entries (no UPDATE/DELETE) (AC-005)

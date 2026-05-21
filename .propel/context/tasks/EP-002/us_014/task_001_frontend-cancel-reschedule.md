@@ -114,9 +114,9 @@ frontend/
 - [ ] Reschedule; force HTTP 409 → error message shown; appointment still shows original slot
 
 ## Implementation Checklist
-- [ ] Build `CancelConfirmModal` with "Keep appointment" dismiss path (no API call) and accessible `role="dialog"` (AC-002)
-- [ ] Implement `useCancelAppointment` hook; on success refetch appointment list (AC-002)
-- [ ] Disable/hide "Cancel" + "Reschedule" buttons when `isPast` is true; no API call possible (AC-003)
-- [ ] Build `RescheduleFlow` reusing `SlotGrid`; HTTP 409 → error toast + grid refresh; existing appointment unchanged (AC-005 edge case)
-- [ ] Implement `useRescheduleAppointment` hook; handle HTTP 409 (edge case)
-- [ ] Add `/appointments/:id` route; create `AppointmentDetailPage` with same cancel/reschedule guards (AC-002, AC-003)
+- [x] Build `CancelConfirmModal` with "Keep appointment" dismiss path (no API call) and accessible `role="dialog"` (AC-002)
+- [x] Implement `useCancelAppointment` hook; on success refetch appointment list (AC-002)
+- [x] Disable/hide "Cancel" + "Reschedule" buttons when `isPast` is true; no API call possible (AC-003)
+- [x] Build `RescheduleFlow` reusing `SlotGrid`; HTTP 409 → error toast + grid refresh; existing appointment unchanged (AC-005 edge case)
+- [x] Implement `useRescheduleAppointment` hook; handle HTTP 409 (edge case)
+- [x] Add `/appointments/:id` route; create `AppointmentDetailPage` with same cancel/reschedule guards (AC-002, AC-003)

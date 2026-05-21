@@ -65,6 +65,7 @@ Build `CodeVerificationPage` at `/staff/coding/:encounterId` (SCR-014). The page
 
 ## Dependent Tasks
 - `task_001_ai-code-suggestion.md` (US_029) — `MedicalCodeSuggestion` records must exist; `GET /api/v1/code-suggestions?encounterId=` endpoint needed
+- `task_003_database-verified-medical-code.md` (US_030, indirect) — `VerifiedMedicalCode.Decision` column must exist before `POST /api/v1/codes/verify` can persist decisions consumed by this page
 
 ## Impacted Components
 - `frontend/src/pages/CodeVerificationPage.tsx` — new SCR-014 page
@@ -129,10 +130,10 @@ frontend/
 - [ ] HTTP 403 → redirect to /
 
 ## Implementation Checklist
-- [ ] Suggestions sorted by rank; "Low confidence" amber badge for < 0.5 (AC-001, UXR-107)
-- [ ] Accept / Reject fire immediately; row transitions to badge; irreversible (AC-002, AC-004)
-- [ ] Modify opens inline edit; `validateCode` call on blur; inline error if invalid; confirm fires verify (AC-003)
-- [ ] All-rejected banner renders when all rows = "Rejected" (AC-005)
-- [ ] Finalized guard: actions disabled with tooltip (edge case)
-- [ ] HTTP 403 → navigate to `/` (edge case, OWASP A01)
-- [ ] Empty suggestions state: "No codes suggested" + Regenerate CTA (edge case — US_029 failure)
+- [x] Suggestions sorted by rank; "Low confidence" amber badge for < 0.5 (AC-001, UXR-107)
+- [x] Accept / Reject fire immediately; row transitions to badge; irreversible (AC-002, AC-004)
+- [x] Modify opens inline edit; `validateCode` call on blur; inline error if invalid; confirm fires verify (AC-003)
+- [x] All-rejected banner renders when all rows = "Rejected" (AC-005)
+- [x] Finalized guard: actions disabled with tooltip (edge case)
+- [x] HTTP 403 → navigate to `/` (edge case, OWASP A01)
+- [x] Empty suggestions state: "No codes suggested" + Regenerate CTA (edge case — US_029 failure)

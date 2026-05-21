@@ -1,0 +1,25 @@
+- generic [ref=e3]:
+  - navigation "Main navigation" [ref=e4]:
+    - generic [ref=e5]:
+      - link "Patient Portal — back to dashboard" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]: P
+        - text: Intake Form
+      - group "Intake method" [ref=e8]:
+        - generic [ref=e9]: "Method:"
+        - button "AI-assisted intake" [pressed] [ref=e10] [cursor=pointer]: 🤖 AI
+        - button "Switch to manual form (your answers will be carried over)" [ref=e11] [cursor=pointer]: 📝 Manual
+      - img "Alex Patient" [ref=e12]: AP
+  - heading "AI Conversational Intake — complete your pre-visit questionnaire" [level=1] [ref=e13]
+  - main [ref=e14]:
+    - log "Intake conversation" [ref=e15]:
+      - status "AI is composing a response" [ref=e16]
+    - region "Your response" [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - textbox "Your response to the AI health assistant" [disabled] [ref=e24]:
+            - /placeholder: Type your answer… (Enter to send, Shift+Enter for new line)
+          - button "Send response" [disabled] [ref=e25]: ➤
+        - generic [ref=e26]:
+          - generic [ref=e27]: Your data is encrypted and only shared with your care team.
+          - button "Save progress and continue later" [ref=e28] [cursor=pointer]: Save & continue later

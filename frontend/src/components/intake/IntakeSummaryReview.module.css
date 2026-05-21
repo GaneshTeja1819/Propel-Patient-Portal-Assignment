@@ -1,0 +1,192 @@
+/*
+ * IntakeSummaryReview.module.css
+ * Review + inline-edit grid for captured intake fields (US_018, AC-003).
+ * All values reference tokens from variables.css. No raw hex or px values.
+ */
+
+.wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6) var(--space-8);
+  max-width: 760px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.heading {
+  font-size: var(--font-size-heading-md);
+  font-weight: var(--font-weight-heading-md);
+  line-height: var(--line-height-heading-md);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.subheading {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-6);
+}
+
+.fieldList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
+}
+
+/* Single field card */
+.fieldCard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  background: var(--color-surface-default);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.fieldCard.phiField {
+  background: var(--color-surface-phi);
+  border-color: var(--color-blue-100);
+}
+
+.fieldInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.fieldLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  letter-spacing: var(--letter-spacing-label);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.phiIcon {
+  font-size: var(--font-size-body-sm);
+  aria-hidden: true;
+}
+
+.fieldValue {
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-primary);
+  word-break: break-word;
+}
+
+.fieldValue.empty {
+  color: var(--color-text-disabled);
+  font-style: italic;
+}
+
+.editInput {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1.5px solid var(--color-border-focus);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-md);
+  color: var(--color-text-primary);
+  background: var(--color-surface-default);
+  margin-top: var(--space-1);
+  outline: none;
+}
+
+.editInput:focus {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.btnEdit {
+  flex-shrink: 0;
+  padding: var(--space-1) var(--space-3);
+  border: 1.5px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-sm);
+  font-weight: 600;
+  color: var(--color-interactive-default);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+
+.btnEdit:hover {
+  background: var(--color-brand-primary-light);
+}
+
+.btnEdit:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Confirm / action row */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: var(--border-width-default) solid var(--color-border-default);
+}
+
+.btnConfirm {
+  padding: 0 var(--space-6);
+  height: var(--touch-target-min);
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+
+.btnConfirm:hover {
+  background: var(--color-brand-primary-hover);
+}
+
+.btnConfirm:disabled {
+  background: var(--color-interactive-disabled);
+  cursor: not-allowed;
+}
+
+.btnConfirm:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* AI badge */
+.aiBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 1px var(--space-2);
+  background: var(--color-ai-accent-bg);
+  color: var(--color-ai-accent);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+@media (max-width: 768px) {
+  .wrap {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  .fieldCard {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .btnEdit {
+    align-self: flex-end;
+  }
+}

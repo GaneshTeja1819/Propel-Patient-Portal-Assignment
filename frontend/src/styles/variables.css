@@ -96,18 +96,34 @@
   --color-text-inverse: var(--color-white);
 
   /* Semantic — Status */
+  /* --color-success: green-600 = #16A34A — 3.30:1 on white, FAILS WCAG AA. DO NOT use for text on white backgrounds. Use --color-success-text instead. */
   --color-success: var(--color-green-600);
   --color-success-bg: var(--color-green-100);
+  /* --color-success-text: green-700 achieves 4.75:1 on white — WCAG AA compliant for success text */
+  --color-success-text: var(--color-green-700);
   --color-warning: var(--color-amber-600);
   --color-warning-bg: var(--color-amber-100);
   --color-danger: var(--color-red-600);
   --color-danger-bg: var(--color-red-100);
+  /* --color-danger-text: red-700 achieves 6.22:1 on danger-bg — WCAG AA compliant */
+  --color-danger-text: var(--color-red-700);
+  /* --color-warning-text: amber-700 achieves 5.33:1 on warning-bg — WCAG AA compliant */
+  --color-warning-text: var(--color-amber-700);
+  --color-error: var(--color-danger);
+  --color-neutral: var(--color-text-secondary);
 
   /* Semantic — AI & Conflicts */
   --color-ai-accent: var(--color-purple-600);
   --color-ai-accent-bg: var(--color-purple-100);
+  /* --color-ai-label: semantic alias for AI-extracted field label/badge colour (US_027 profile). Points to --color-ai-accent. */
+  --color-ai-label: var(--color-ai-accent);
   --color-conflict-critical: var(--color-red-600);
   --color-conflict-high: var(--color-amber-600);
+  /* Severity colour aliases for ConflictRow badges / borders (US_028, UXR-404).
+     --color-severity-high   → red  (High severity conflicts)
+     --color-severity-medium → amber (Medium severity conflicts) */
+  --color-severity-high: var(--color-conflict-critical);
+  --color-severity-medium: var(--color-conflict-high);
 
   /* Semantic — Appointment Status (AC-001, SCR-011) */
   --color-status-booked: var(--color-blue-700);
@@ -188,6 +204,8 @@
   --space-8: 32px;
   --space-12: 48px;
   --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
 
   /* ─────────────────────────────────────────────────────────────
    * 5. Border Radius
@@ -258,6 +276,8 @@
   --focus-outline-offset: 2px;
   --focus-outline-color: var(--color-blue-700);
   --focus-outline-style: solid;
+  /* Semi-transparent glow used on text inputs alongside the solid focus ring */
+  --focus-ring-glow: rgba(26, 86, 219, 0.2);
 
   /* ─────────────────────────────────────────────────────────────
    * 10. Component Constraints
@@ -277,6 +297,17 @@
 
   /* Auth shell */
   --color-surface-auth-shell: #f0f5ff;
+
+  /* Content column — max-width shared by chat, progress bar, and intake layout */
+  --layout-content-max-width: 760px;
+
+  /* Slot booking */
+  --color-slot-available: var(--color-surface-default);
+  --color-slot-selected: var(--color-brand-primary);
+  --color-slot-unavailable: var(--color-surface-subtle);
+  --color-slot-preferred: var(--color-amber-100);
+  --spinner-size: var(--space-4);
+  --spinner-border-width: 2px;
 
   /* Grid — swatch gallery minimum column width */
   --grid-col-min-swatch: 120px;

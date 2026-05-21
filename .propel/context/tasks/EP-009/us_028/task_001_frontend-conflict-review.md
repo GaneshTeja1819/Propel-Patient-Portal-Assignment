@@ -55,6 +55,9 @@
 | Layer | Technology | Version | Justification |
 |-------|------------|---------|---------------|
 | Frontend | React (SPA) | 18.x | TR-001 — Conflicts section within SCR-013 |
+| Library | TypeScript | 5.x | TR-001 — static typing for all .tsx components and DataConflict DTO |
+| Library | Vite | 6.x | TR-001 — build tool; `vite.config.ts` governs asset bundling |
+| Library | React Router DOM | 6.x | TR-001 — routing within StaffPatientProfilePage |
 
 ---
 
@@ -68,6 +71,9 @@ Implement the `ConflictsSection` component rendered inside `StaffPatientProfileP
 - `frontend/src/components/profile/ConflictsSection.tsx` — new component; rendered only when conflicts exist
 - `frontend/src/components/profile/ConflictRow.tsx` — new row with severity badge + resolve/mark-reviewed actions
 - `frontend/src/hooks/useConflicts.ts` — new hook: GET conflicts + PATCH resolve/mark-reviewed
+- `frontend/src/types/conflict.ts` — new TypeScript type definitions: `DataConflictDto`, `ConflictingValue`, `ConflictStatus`
+- `frontend/src/pages/StaffPatientProfilePage.tsx` — modified to receive and pass conflicts to ConflictsSection
+- `frontend/src/styles/variables.css` — add severity color tokens
 
 ## Implementation Plan
 1. Create `useConflicts(patientId)` hook:
@@ -98,6 +104,7 @@ frontend/
 ## Expected Changes
 | Action | File Path | Description |
 |--------|-----------|-------------|
+| CREATE | frontend/src/types/conflict.ts | `DataConflictDto`, `ConflictingValue`, `ConflictStatus` type definitions |
 | CREATE | frontend/src/components/profile/ConflictsSection.tsx | Conditional conflict list; hidden when empty |
 | CREATE | frontend/src/components/profile/ConflictRow.tsx | Conflict row with severity + actions |
 | CREATE | frontend/src/hooks/useConflicts.ts | GET conflicts + PATCH resolve/mark-reviewed |
@@ -117,9 +124,9 @@ frontend/
 - [ ] New document uploaded after resolution → new conflict row with "New" badge appears
 
 ## Implementation Checklist
-- [ ] `ConflictsSection` not rendered when `conflicts.length === 0` (AC-004)
-- [ ] Severity badge with design tokens; "New" badge on `isNew` (AC-001, edge case, UXR-404)
-- [ ] Resolve action with authoritative value selector; optimistic row update (AC-002)
-- [ ] Mark Reviewed action; row shows "ReviewedUnresolved" label (AC-003)
-- [ ] HTTP 409 handling: inline error + refetch (edge case)
-- [ ] Source document reference links in each conflict row (AC-001)
+- [x] `ConflictsSection` not rendered when `conflicts.length === 0` (AC-004)
+- [x] Severity badge with design tokens; "New" badge on `isNew` (AC-001, edge case, UXR-404)
+- [x] Resolve action with authoritative value selector; optimistic row update (AC-002)
+- [x] Mark Reviewed action; row shows "ReviewedUnresolved" label (AC-003)
+- [x] HTTP 409 handling: inline error + refetch (edge case)
+- [x] Source document reference links in each conflict row (AC-001)

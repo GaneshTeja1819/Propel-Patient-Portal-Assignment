@@ -39,6 +39,7 @@ public sealed class AppDbContext : DbContext
     public DbSet<PatientProfile360> PatientProfiles360 => Set<PatientProfile360>();
     public DbSet<DataConflict> DataConflicts => Set<DataConflict>();
     public DbSet<MedicalCodeSuggestion> MedicalCodeSuggestions => Set<MedicalCodeSuggestion>();
+    public DbSet<MergedClinicalEntry> MergedClinicalEntries => Set<MergedClinicalEntry>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<InsuranceRecord> InsuranceRecords => Set<InsuranceRecord>();
@@ -51,6 +52,7 @@ public sealed class AppDbContext : DbContext
 
         // pgvector extension — required for future embedding columns
         modelBuilder.HasPostgresExtension("vector");
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
         // ── User ──────────────────────────────────────────────────────────
         modelBuilder.Entity<User>(e =>
@@ -63,6 +65,7 @@ public sealed class AppDbContext : DbContext
             e.Property(u => u.FirstName).HasMaxLength(100).IsRequired();
             e.Property(u => u.LastName).HasMaxLength(100).IsRequired();
             e.Property(u => u.PhoneNumber).HasMaxLength(30);
+            e.Property(u => u.LastConflictReviewedAt).IsRequired(false);
             e.Property(u => u.FailedLoginCount).HasDefaultValue(0);
             e.Property(u => u.LockUntil);
         });
@@ -100,21 +103,6 @@ public sealed class AppDbContext : DbContext
              .OnDelete(DeleteBehavior.Restrict);
         });
 
-        // ── WaitlistEntry ─────────────────────────────────────────────────
-        modelBuilder.Entity<WaitlistEntry>(e =>
-        {
-            e.ToTable("waitlist_entries");
-            e.HasOne(w => w.Patient)
-             .WithMany()
-             .HasForeignKey(w => w.PatientId)
-             .OnDelete(DeleteBehavior.Restrict);
-            e.HasOne(w => w.Provider)
-             .WithMany()
-             .HasForeignKey(w => w.ProviderId)
-             .IsRequired(false)
-             .OnDelete(DeleteBehavior.Restrict);
-        });
-
         // ── PHI value converter — shared across all encrypted columns (AC-001) ──
         EncryptedStringConverter? phiConverter = _encryptionService is not null
             ? new EncryptedStringConverter(_encryptionService)
@@ -142,8 +130,14 @@ public sealed class AppDbContext : DbContext
         modelBuilder.Entity<ClinicalDocument>(e =>
         {
             e.ToTable("clinical_documents");
+            // StoragePath is encrypted at rest (AC-005, DR-005) — EF Core converter applies
+            // AES-256-GCM transparently on SaveChanges. FileHash is stored plaintext and indexed.
             if (phiConverter is not null)
                 e.Property(d => d.StoragePath).HasConversion(phiConverter);
+            e.Property(d => d.ExtractionStatus).HasMaxLength(20).IsRequired();
+            e.Property(d => d.FileHash).HasMaxLength(64).IsRequired();
+            // Composite index enables efficient per-patient duplicate detection (SHA-256 dedup).
+            e.HasIndex(d => new { d.PatientId, d.FileHash }).IsUnique();
             e.HasOne(d => d.Patient)
              .WithMany()
              .HasForeignKey(d => d.PatientId)
@@ -164,6 +158,11 @@ public sealed class AppDbContext : DbContext
         modelBuilder.Entity<ExtractedClinicalData>(e =>
         {
             e.ToTable("extracted_clinical_data");
+            e.Property(x => x.CodingStatus)
+             .HasColumnName("coding_status")
+             .HasMaxLength(32)
+             .HasDefaultValue("Pending")
+             .IsRequired();
             e.Property(x => x.EncryptedExtractedJson).HasColumnType("text");
             if (phiConverter is not null)
                 e.Property(x => x.EncryptedExtractedJson).HasConversion(phiConverter);
@@ -182,6 +181,8 @@ public sealed class AppDbContext : DbContext
         {
             e.ToTable("patient_profiles_360");
             e.Property(p => p.EncryptedSummaryJson).HasColumnType("text");
+            e.Property(p => p.DeduplicationStatus).HasMaxLength(20).IsRequired()
+             .HasDefaultValue("Pending");
             e.HasIndex(p => p.PatientId).IsUnique();
             e.HasOne(p => p.Patient)
              .WithOne(u => u.PatientProfile)
@@ -189,10 +190,40 @@ public sealed class AppDbContext : DbContext
              .OnDelete(DeleteBehavior.Restrict);
         });
 
+        // ── MergedClinicalEntry ───────────────────────────────────────────
+        modelBuilder.Entity<MergedClinicalEntry>(e =>
+        {
+            e.ToTable("merged_clinical_entries");
+            e.Property(m => m.SectionType).HasMaxLength(50).IsRequired();
+            e.Property(m => m.EncryptedLabel).HasColumnType("text");
+            e.Property(m => m.EncryptedCanonicalValue).HasColumnType("text");
+            e.Property(m => m.SourceDocumentIds).HasColumnType("text").IsRequired();
+            if (phiConverter is not null)
+            {
+                e.Property(m => m.EncryptedLabel).HasConversion(phiConverter);
+                e.Property(m => m.EncryptedCanonicalValue).HasConversion(phiConverter);
+            }
+            // Indexed query on PatientId for P95 ≤ 500 ms target (AC-005, NFR-004)
+            e.HasIndex(m => m.PatientId).HasDatabaseName("IX_MergedClinicalEntry_PatientId");
+            e.HasOne(m => m.Patient)
+             .WithMany()
+             .HasForeignKey(m => m.PatientId)
+             .OnDelete(DeleteBehavior.Restrict);
+        });
+
         // ── DataConflict ──────────────────────────────────────────────────
         modelBuilder.Entity<DataConflict>(e =>
         {
             e.ToTable("data_conflicts");
+            e.Property(c => c.Status).HasMaxLength(30).IsRequired().HasDefaultValue("Open");
+            e.Property(c => c.Severity).HasMaxLength(10).IsRequired().HasDefaultValue("Medium");
+            e.Property(c => c.ConflictingValues).HasColumnType("text").IsRequired().HasDefaultValue("[]");
+            e.Property(c => c.CanonicalValue).HasColumnType("text");
+            // xmin shadow property — PostgreSQL system column; guards against concurrent resolution (AC-002)
+            e.Property<uint>("xmin").HasColumnType("xid").ValueGeneratedOnAddOrUpdate().IsRowVersion();
+            // Composite index for efficient status-filtered queries per patient (AC-001, NFR)
+            e.HasIndex(c => new { c.PatientId, c.Status })
+             .HasDatabaseName("IX_DataConflict_PatientId_Status");
             e.HasOne(c => c.Patient)
              .WithMany()
              .HasForeignKey(c => c.PatientId)
@@ -203,6 +234,22 @@ public sealed class AppDbContext : DbContext
         modelBuilder.Entity<MedicalCodeSuggestion>(e =>
         {
             e.ToTable("medical_code_suggestions");
+            e.Property(m => m.Rank).HasColumnName("rank").IsRequired();
+            e.Property(m => m.Status)
+             .HasColumnName("status")
+             .HasMaxLength(32)
+             .HasDefaultValue("Pending")
+             .IsRequired();
+            e.Property(m => m.ModelVersion)
+             .HasColumnName("model_version")
+             .HasMaxLength(128)
+             .IsRequired();
+            e.Property(m => m.PromptHash)
+             .HasColumnName("prompt_hash")
+             .HasMaxLength(64)
+             .IsRequired();
+            e.HasIndex(m => new { m.ClinicalDataId, m.Status })
+             .HasDatabaseName("IX_MedicalCodeSuggestion_ClinicalDataId_Status");
             e.HasOne(m => m.ClinicalData)
              .WithMany(x => x.CodeSuggestions)
              .HasForeignKey(m => m.ClinicalDataId)
@@ -249,11 +296,15 @@ public sealed class AppDbContext : DbContext
         {
             e.ToTable("calendar_syncs");
             e.Property(c => c.EncryptedAccessToken).HasColumnType("text");
-            e.Property(c => c.EncryptedRefreshToken).HasColumnType("text");            if (phiConverter is not null)
+            e.Property(c => c.EncryptedRefreshToken).HasColumnType("text");
+            e.Property(c => c.SyncStatus).HasMaxLength(20).HasDefaultValue("Pending").IsRequired();
+            e.Property(c => c.CalendarEventId).HasMaxLength(512);
+            if (phiConverter is not null)
             {
                 e.Property(c => c.EncryptedAccessToken).HasConversion(phiConverter);
                 e.Property(c => c.EncryptedRefreshToken).HasConversion(phiConverter);
-            }            e.HasOne(c => c.User)
+            }
+            e.HasOne(c => c.User)
              .WithMany(u => u.CalendarSyncs)
              .HasForeignKey(c => c.UserId)
              .OnDelete(DeleteBehavior.Restrict);
@@ -263,6 +314,14 @@ public sealed class AppDbContext : DbContext
         modelBuilder.Entity<VerifiedMedicalCode>(e =>
         {
             e.ToTable("verified_medical_codes");
+            e.Property(v => v.Decision)
+             .HasColumnName("decision")
+             .HasMaxLength(32)
+             .HasDefaultValue("")
+             .IsRequired();
+            e.Property(v => v.OriginalSuggestedCode)
+             .HasColumnName("original_suggested_code")
+             .HasMaxLength(32);
             e.HasOne(v => v.Suggestion)
              .WithOne(m => m.VerifiedCode)
              .HasForeignKey<VerifiedMedicalCode>(v => v.SuggestionId)

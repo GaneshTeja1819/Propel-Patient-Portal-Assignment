@@ -125,10 +125,10 @@ backend/
 - [ ] PATCH reschedule with already-booked new slot → HTTP 409; both slots unchanged (verify via DB)
 
 ## Implementation Checklist
-- [ ] Implement `CancelAppointmentHandler`: future-date guard (HTTP 422 for past); status="Cancelled"; slot released; audit written (AC-001, AC-003)
-- [ ] Enqueue `WaitlistNotificationJob` after successful cancel; job no-ops if no waitlisted patients (AC-001)
-- [ ] Implement `RescheduleAppointmentHandler` with EF Core transaction; `DbUpdateConcurrencyException` → HTTP 409 full rollback (AC-004, AC-005)
-- [ ] Implement `WaitlistNotificationJob` (SMTP dispatch; handles zero waitlist entries gracefully) (AC-001)
-- [ ] Write `APPOINTMENT_CANCELLED` and `APPOINTMENT_RESCHEDULED` audit entries in respective handlers (AC-001, AC-004)
-- [ ] Enqueue `GeneratePdfConfirmationJob` after successful reschedule (AC-004, US_015 integration)
-- [ ] Add PATCH actions to `AppointmentsController` with `[Authorize(Policy = "PatientPolicy")]` (AC-001)
+- [x] Implement `CancelAppointmentHandler`: future-date guard (HTTP 422 for past); status="Cancelled"; slot released; audit written (AC-001, AC-003)
+- [x] Enqueue `WaitlistNotificationJob` after successful cancel; job no-ops if no waitlisted patients (AC-001)
+- [x] Implement `RescheduleAppointmentHandler` with EF Core transaction; `DbUpdateConcurrencyException` → HTTP 409 full rollback (AC-004, AC-005)
+- [x] Implement `WaitlistNotificationJob` (SMTP dispatch; handles zero waitlist entries gracefully) (AC-001)
+- [x] Write `APPOINTMENT_CANCELLED` and `APPOINTMENT_RESCHEDULED` audit entries in respective handlers (AC-001, AC-004)
+- [x] Enqueue `GeneratePdfConfirmationJob` after successful reschedule (AC-004, US_015 integration)
+- [x] Add PATCH actions to `AppointmentsController` with `[Authorize(Policy = "PatientPolicy")]` (AC-001)

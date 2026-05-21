@@ -1,0 +1,28 @@
+.page {
+  max-width: var(--grid-max-width);
+  margin: 0 auto;
+  padding: var(--space-8);
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.pageTitle {
+  font-size: var(--font-size-heading-xl);
+  font-weight: var(--font-weight-heading-xl);
+  color: var(--color-text-primary);
+  letter-spacing: var(--letter-spacing-heading-xl);
+  line-height: var(--line-height-heading-xl);
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: var(--space-4);
+  }
+}

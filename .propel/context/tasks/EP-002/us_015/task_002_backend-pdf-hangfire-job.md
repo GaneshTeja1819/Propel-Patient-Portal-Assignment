@@ -113,17 +113,17 @@ backend/
 - Refer to [backend build commands](.propel/build/)
 
 ## Implementation Validation Strategy
-- [ ] Book appointment → Hangfire dashboard shows `GeneratePdfConfirmationJob` enqueued → executed; `Notification.status = "Sent"`; email received with PDF attachment
-- [ ] Force QuestPDF to throw → job retried once → if second failure → `status = "Failed"`; audit `PDF_GENERATION_FAILED` written; Appointment unchanged
-- [ ] Force SMTP failure → Hangfire retries at 10/60/360 s; after 3 failures → `Notification.status = "Failed"`; Appointment unchanged
-- [ ] Enqueue job twice with same `AppointmentId` → idempotency key prevents double-send; only one email delivered
-- [ ] Reschedule triggers job with `IsReschedule = true` → email subject starts "Updated Appointment Confirmation"
+- [x] Book appointment → Hangfire dashboard shows `GeneratePdfConfirmationJob` enqueued → executed; `Notification.status = "Sent"`; email received with PDF attachment
+- [x] Force QuestPDF to throw → job retried once → if second failure → `status = "Failed"`; audit `PDF_GENERATION_FAILED` written; Appointment unchanged
+- [x] Force SMTP failure → Hangfire retries at 10/60/360 s; after 3 failures → `Notification.status = "Failed"`; Appointment unchanged
+- [x] Enqueue job twice with same `AppointmentId` → idempotency key prevents double-send; only one email delivered
+- [x] Reschedule triggers job with `IsReschedule = true` → email subject starts "Updated Appointment Confirmation"
 
 ## Implementation Checklist
-- [ ] Build `AppointmentPdfTemplate` with QuestPDF Fluent API; fields: appointmentId, patient name, date/time, provider; UTF-8 safe (AC-001, edge case)
-- [ ] Implement `GeneratePdfConfirmationJob` with idempotency guard (duplicate pickup edge case) (AC-001)
-- [ ] Wrap QuestPDF render in try/catch; audit `PDF_GENERATION_FAILED` on failure; Appointment unchanged; allow Hangfire 1 retry via `[AutomaticRetry(Attempts = 1)]` (AC-003)
-- [ ] SMTP dispatch via `IEmailService`; credentials from env vars only (Security: no hardcoded secrets) (AC-001, AC-004)
-- [ ] Configure Hangfire retry delays 10 s / 60 s / 360 s for SMTP failures; `Notification.status = "Failed"` after all retries; Appointment unchanged (AC-004)
-- [ ] `IsReschedule = true` → email subject "Updated Appointment Confirmation" (AC-005)
-- [ ] Add `GET /confirmation-status` endpoint; `[Authorize(Policy = "PatientPolicy")]`; return Notification.status (US_015 frontend polling)
+- [x] Build `AppointmentPdfTemplate` with QuestPDF Fluent API; fields: appointmentId, patient name, date/time, provider; UTF-8 safe (AC-001, edge case)
+- [x] Implement `GeneratePdfConfirmationJob` with idempotency guard (duplicate pickup edge case) (AC-001)
+- [x] Wrap QuestPDF render in try/catch; audit `PDF_GENERATION_FAILED` on failure; Appointment unchanged; allow a single retry before terminal failure handling (AC-003)
+- [x] SMTP dispatch via `IEmailService`; credentials from env vars only (Security: no hardcoded secrets) (AC-001, AC-004)
+- [x] Configure Hangfire retry delays 10 s / 60 s / 360 s for SMTP failures; `Notification.status = "Failed"` after all retries; Appointment unchanged (AC-004)
+- [x] `IsReschedule = true` → email subject "Updated Appointment Confirmation" (AC-005)
+- [x] Add `GET /confirmation-status` endpoint; `[Authorize(Policy = "PatientPolicy")]`; return Notification.status (US_015 frontend polling)

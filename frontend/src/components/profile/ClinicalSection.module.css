@@ -1,0 +1,244 @@
+/**
+ * ClinicalSection.module.css — Styles for ClinicalSection component (US_027).
+ * All values use semantic tokens from variables.css (no raw hex/px).
+ * Wireframe source: wireframe-SCR-009-patient-profile.html, wireframe-SCR-013-staff-patient-profile.html
+ */
+
+/* Section card (wireframe .profile-section) */
+.section {
+  background: var(--color-surface-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+  overflow: hidden;
+}
+
+/* Collapsible header button (wireframe .ps-header) */
+.sectionHeader {
+  padding: var(--space-4) var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-family-default);
+  color: var(--color-text-primary);
+  min-height: var(--touch-target-min, 44px);
+  transition: background 0.1s;
+}
+
+.sectionHeader:hover {
+  background: var(--color-surface-subtle);
+}
+
+/* Title row */
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.sectionIcon {
+  font-size: var(--font-size-body-md);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-heading-sm);
+  font-weight: var(--font-weight-heading-sm);
+  color: var(--color-text-primary);
+}
+
+/* Header badges (AI badge, count) */
+.badgeRow {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+/* Expand chevron — rotate when expanded */
+.chevron {
+  color: var(--color-text-disabled);
+  font-size: var(--font-size-body-sm);
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.chevronExpanded {
+  transform: rotate(90deg);
+}
+
+/* Section body */
+.sectionBody {
+  padding: var(--space-6);
+  border-top: 1px solid var(--color-border-default);
+}
+
+/* Data row (wireframe .data-row) */
+.dataRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border-default);
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.dataRow:last-of-type {
+  border-bottom: none;
+}
+
+/* AI-extracted row: left border accent (wireframe .ai-accent-row, UXR-403) */
+.aiAccentRow {
+  border-left: 3px solid var(--color-border-ai);
+  padding-left: var(--space-3);
+}
+
+/* Data label */
+.dataLabel {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-sm);
+  min-width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* PHI lock icon (UXR-402) */
+.phiIcon {
+  font-size: var(--font-size-caption);
+  color: var(--color-brand-primary);
+  flex-shrink: 0;
+}
+
+/* Data value */
+.dataValue {
+  font-size: var(--font-size-body-md);
+  font-weight: 600;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Badges — AI-extracted (UXR-403) */
+.badgeAi {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-label);
+  white-space: nowrap;
+  background: var(--color-ai-accent-bg);
+  color: var(--color-ai-accent);
+  border: 1px solid var(--color-ai-accent-bg);
+}
+
+/* Badges — Verified */
+.badgeVerified {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-label);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-label);
+  white-space: nowrap;
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+/* Empty state — "No data available" */
+.emptyState {
+  padding: var(--space-6) 0;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-sm);
+}
+
+/* Pagination controls */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border-default);
+  margin-top: var(--space-2);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-secondary);
+}
+
+.pageBtn {
+  background: none;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-sm);
+  color: var(--color-interactive-default);
+  cursor: pointer;
+  min-height: var(--touch-target-min, 44px);
+  min-width: 44px;
+  transition: background 0.1s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background: var(--color-brand-primary-light);
+}
+
+.pageBtn:disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+/* Skeleton loader for loading state */
+.skeleton {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    var(--color-border-default) 25%,
+    var(--color-surface-subtle) 50%,
+    var(--color-border-default) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: var(--radius-sm);
+  color: transparent;
+  user-select: none;
+  height: 1.2em;
+  width: 200px;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dataRow {
+    flex-direction: column;
+  }
+
+  .dataValue {
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .sectionBody {
+    padding: var(--space-4);
+  }
+}

@@ -17,13 +17,13 @@
 | Reference Type | Value |
 |----------------|-------|
 | **UI Impact** | Yes |
-| **Figma URL** | N/A |
+| **Figma URL** | figma_spec.md §4 — SCR-007 AI Intake |
 | **Wireframe Status** | AVAILABLE |
 | **Wireframe Type** | HTML |
 | **Wireframe Path/URL** | .propel/context/wireframes/Hi-Fi/wireframe-SCR-007-ai-intake.html |
 | **Screen Spec** | SCR-007 |
 | **UXR Requirements** | UXR-502 |
-| **Design Tokens** | `--color-primary`, `--spacing-*`, `--radius-*` from variables.css; progress bar fill uses `--color-primary` |
+| **Design Tokens** | `--color-primary`, `--spacing-*`, `--radius-*` from variables.css; progress bar fill uses `--color-primary`; PHI fields use `color-surface-phi` background token; AI content uses `color-ai-accent` pill badge per designsystem.md §SCR-007 |
 
 ---
 
@@ -54,6 +54,7 @@
 | Layer | Technology | Version | Justification |
 |-------|------------|---------|---------------|
 | Frontend | React (SPA) | 18.x | TR-001 — AI intake conversation UI on SCR-007 |
+| Library | TypeScript | 5.5.x | NFR-012 — type-safe component props; enforces IntakeSessionState shape at build time |
 
 ---
 
@@ -118,10 +119,11 @@ frontend/
 - [ ] Reach summary step → all captured fields displayed; edit a field inline; confirm CTA visible
 
 ## Implementation Checklist
-- [ ] Build `AIIntakeChat` with message-thread UI; bot and patient message bubbles (AC-001)
-- [ ] Build `IntakeProgressBar` with `role="progressbar"`, aria attributes; advances per answer (AC-005)
-- [ ] Persist partial answers in `sessionStorage` keyed by appointmentId (edge case — resume)
-- [ ] Render `ManualFieldFallback` inline on rate-limit / schema-invalid response (edge case)
-- [ ] Build `IntakeSummaryReview` with inline field editing; no persistence until "Confirm" clicked (AC-003)
-- [ ] "Switch to manual form" link passes current captured fields to manual mode; no data loss (US_019 AC-004 enabler)
-- [ ] Add `/intake/:appointmentId` route to `App.tsx` (AC-001)
+- [x] Build `AIIntakeChat` with message-thread UI; bot and patient message bubbles (AC-001)
+- [x] Build `IntakeProgressBar` with `role="progressbar"`, aria attributes; advances per answer (AC-005)
+- [x] Persist partial answers in `sessionStorage` keyed by appointmentId (edge case — resume)
+- [x] Render `ManualFieldFallback` inline on rate-limit / schema-invalid response (edge case)
+- [x] Build `IntakeSummaryReview` with inline field editing; no persistence until "Confirm" clicked (AC-003)
+- [x] Annotate PHI fields with `🔒` lock icon and `color-surface-phi` background token; AI content with `color-ai-accent` badge (UXR-402)
+- [x] "Switch to manual form" link passes current captured fields to manual mode; no data loss (US_019 AC-004 enabler)
+- [x] Add `/intake/:appointmentId` route to `App.tsx` (AC-001)

@@ -17,6 +17,7 @@
     <PackageReference Include="StackExchange.Redis" Version="2.13.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.*" />
     <PackageReference Include="PdfPig" Version="0.1.15-alpha-20260517-7e0ac" />
+    <PackageReference Include="QuestPDF" Version="2025.*" />
     <PackageReference Include="Google_GenerativeAI" Version="3.*" />
   </ItemGroup>
 
@@ -25,5 +26,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="AI\IntakeQuestions.json" />
+    <EmbeddedResource Include="AI\ClinicalExtractionPrompt.json" />
+    <EmbeddedResource Include="AI\DeduplicationPrompt.json" />
+    <EmbeddedResource Include="AI\CodeSuggestionPrompt.json" />
+  </ItemGroup>
 
 </Project>

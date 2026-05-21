@@ -102,15 +102,15 @@ backend/
 - Refer to [backend build commands](.propel/build/)
 
 ## Implementation Validation Strategy
-- [ ] POST /api/v1/appointments with `preferredSlotId` set → HTTP 201; WaitlistEntry row exists; `preferredSlotRegistered: true`
-- [ ] POST without `preferredSlotId` → HTTP 201; no WaitlistEntry row; `preferredSlotRegistered: false`
-- [ ] POST with `preferredSlotId == slotId` → HTTP 422; appointment NOT created
-- [ ] POST same `preferredSlotId` twice → only one WaitlistEntry; `registeredAt` updated to latest (AC-004)
+- [x] POST /api/v1/appointments with `preferredSlotId` set → HTTP 201; WaitlistEntry row exists; `preferredSlotRegistered: true`
+- [x] POST without `preferredSlotId` → HTTP 201; no WaitlistEntry row; `preferredSlotRegistered: false`
+- [x] POST with `preferredSlotId == slotId` → HTTP 422; appointment NOT created
+- [x] POST same `preferredSlotId` twice → only one WaitlistEntry; `registeredAt` updated to latest (AC-004)
 
 ## Implementation Checklist
-- [ ] Add nullable `PreferredSlotId` to `BookAppointmentCommand` (AC-002, AC-003)
-- [ ] Validate `PreferredSlotId ≠ SlotId` before transaction; HTTP 422 if equal (edge case)
-- [ ] Upsert `WaitlistEntry` within booking transaction when `PreferredSlotId` present (AC-002)
-- [ ] No WaitlistEntry created when `PreferredSlotId` null; no error (AC-003)
-- [ ] `WaitlistEntryConfiguration` enforces UNIQUE(PatientId, PreferredSlotId); ON CONFLICT UPDATE `registeredAt` (AC-004)
-- [ ] Extend response DTO with `preferredSlotRegistered: bool` (AC-002)
+- [x] Add nullable `PreferredSlotId` to `BookAppointmentCommand` (AC-002, AC-003)
+- [x] Validate `PreferredSlotId ≠ SlotId` before transaction; HTTP 422 if equal (edge case)
+- [x] Upsert `WaitlistEntry` within booking transaction when `PreferredSlotId` present (AC-002)
+- [x] No WaitlistEntry created when `PreferredSlotId` null; no error (AC-003)
+- [x] `WaitlistEntryConfiguration` enforces UNIQUE(PatientId, PreferredSlotId); ON CONFLICT UPDATE `registeredAt` (AC-004)
+- [x] Extend response DTO with `preferredSlotRegistered: bool` (AC-002)

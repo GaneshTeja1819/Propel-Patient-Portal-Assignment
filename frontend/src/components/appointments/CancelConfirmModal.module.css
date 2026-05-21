@@ -1,0 +1,68 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background-color: color-mix(in srgb, var(--color-text-primary) 45%, transparent);
+}
+
+.dialog {
+  width: min(100%, 32rem);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface-default);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-6);
+}
+
+.title {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-primary);
+}
+
+.body {
+  margin: 0 0 var(--space-6);
+  color: var(--color-neutral);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.keepButton,
+.confirmButton {
+  border-radius: var(--radius-sm);
+  border: var(--border-width-default) solid transparent;
+  min-height: var(--touch-target-min);
+  padding-inline: var(--space-4);
+  font-weight: 600;
+}
+
+.keepButton {
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-default);
+}
+
+.keepButton:hover:not(:disabled) {
+  background-color: var(--color-surface-subtle);
+}
+
+.confirmButton {
+  color: var(--color-text-on-primary);
+  background-color: var(--color-error);
+}
+
+.confirmButton:hover:not(:disabled) {
+  background-color: var(--color-red-700);
+}
+
+.keepButton:disabled,
+.confirmButton:disabled {
+  opacity: 0.7;
+}

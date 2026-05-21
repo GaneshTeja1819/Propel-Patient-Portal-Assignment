@@ -9,6 +9,8 @@ public class VerifiedMedicalCode : BaseEntity
     public string Description { get; set; } = string.Empty;
     public DateTimeOffset VerifiedAt { get; set; } = DateTimeOffset.UtcNow;
     public string? Notes { get; set; }
+    public string Decision { get; set; } = string.Empty;              // AC-002/03/04: "Accepted" | "Modified" | "Rejected"
+    public string? OriginalSuggestedCode { get; set; }                // AC-003: AI-suggested code before modification; null for Accepted/Rejected
 
     // Navigation
     public MedicalCodeSuggestion Suggestion { get; set; } = null!;

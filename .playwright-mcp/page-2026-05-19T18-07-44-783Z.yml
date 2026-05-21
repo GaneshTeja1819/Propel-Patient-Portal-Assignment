@@ -1,0 +1,154 @@
+- generic [active] [ref=e1]:
+  - navigation "Main navigation" [ref=e2]:
+    - generic [ref=e3]:
+      - link "Patient Portal home" [ref=e4] [cursor=pointer]:
+        - /url: wireframe-SCR-003-patient-dashboard.html
+        - generic [ref=e5]: P
+        - generic [ref=e6]: Patient Portal
+      - list [ref=e7]:
+        - listitem [ref=e8] [cursor=pointer]: 🏠 Dashboard
+        - listitem [ref=e9] [cursor=pointer]: 📅 Book
+        - listitem [ref=e10] [cursor=pointer]: 👤 My Profile
+        - listitem [ref=e11] [cursor=pointer]: 📄 Documents
+        - listitem [ref=e12] [cursor=pointer]: 🗓 Calendar
+      - generic [ref=e13]:
+        - button "Notifications — 2 unread" [ref=e14] [cursor=pointer]: 🔔
+        - button "User menu — Sarah Johnson" [ref=e16] [cursor=pointer]:
+          - generic [ref=e17]: SJ
+          - generic [ref=e18]: Sarah J.
+          - generic [ref=e19]: ▾
+  - main [ref=e20]:
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - heading "Good morning, Sarah 👋" [level=1] [ref=e23]
+        - paragraph [ref=e24]: Wednesday, May 14, 2026 · You have 2 upcoming appointments
+      - link "+ Book appointment" [ref=e25] [cursor=pointer]:
+        - /url: wireframe-SCR-004-appointment-booking.html
+    - alert "Intake incomplete for upcoming appointment" [ref=e26]:
+      - generic [ref=e27]: 📋
+      - generic [ref=e28]:
+        - strong [ref=e29]: Intake incomplete
+        - text: — your Annual Physical on May 20 requires intake information before your visit.
+        - generic [ref=e30]:
+          - link "Complete intake (AI)" [ref=e31] [cursor=pointer]:
+            - /url: wireframe-SCR-007-ai-intake.html
+          - link "Use manual form" [ref=e32] [cursor=pointer]:
+            - /url: wireframe-SCR-008-manual-intake.html
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - heading "Upcoming appointments" [level=2] [ref=e37]
+            - link "+ Book new" [ref=e38] [cursor=pointer]:
+              - /url: wireframe-SCR-004-appointment-booking.html
+          - generic [ref=e40]:
+            - generic "Annual Physical with Dr. M. Okafor on May 20" [ref=e41]:
+              - generic [ref=e42]:
+                - generic [ref=e43]: May
+                - generic [ref=e44]: "20"
+              - generic [ref=e45]:
+                - generic [ref=e46]: Annual Physical
+                - generic [ref=e47]:
+                  - generic [ref=e48]: ⏰ 10:00 AM · 30 min
+                  - generic [ref=e49]: 👩‍⚕️ Dr. M. Okafor
+                  - generic [ref=e51]: ✓ BlueCross BlueShield
+                - alert [ref=e52]:
+                  - text: ⚠ Intake required before this appointment.
+                  - link "Complete now →" [ref=e53] [cursor=pointer]:
+                    - /url: wireframe-SCR-007-ai-intake.html
+              - generic [ref=e54]:
+                - generic [ref=e55]: Booked
+                - link "Manage" [ref=e56] [cursor=pointer]:
+                  - /url: wireframe-SCR-005-appointment-detail.html
+            - generic "Follow-up with Dr. M. Okafor on June 10" [ref=e57]:
+              - generic [ref=e58]:
+                - generic [ref=e59]: Jun
+                - generic [ref=e60]: "10"
+              - generic [ref=e61]:
+                - generic [ref=e62]: Follow-up Consultation
+                - generic [ref=e63]:
+                  - generic [ref=e64]: ⏰ 2:00 PM · 30 min
+                  - generic [ref=e65]: 👩‍⚕️ Dr. M. Okafor
+                  - generic [ref=e67]: ✓ BlueCross BlueShield
+                - generic [ref=e69]: ✓ Intake complete
+              - generic [ref=e70]:
+                - generic [ref=e71]: Booked
+                - link "Manage" [ref=e72] [cursor=pointer]:
+                  - /url: wireframe-SCR-005-appointment-detail.html
+        - generic [ref=e73]:
+          - heading "Recent visits" [level=2] [ref=e75]
+          - 'generic "Completed: Dermatology Consult on April 15" [ref=e78]':
+            - generic [ref=e79]:
+              - generic [ref=e80]: Apr
+              - generic [ref=e81]: "15"
+            - generic [ref=e82]:
+              - generic [ref=e83]: Dermatology Consult
+              - generic [ref=e84]:
+                - generic [ref=e85]: ⏰ 10:30 AM
+                - generic [ref=e86]: 👩‍⚕️ Dr. S. Patel
+            - generic [ref=e88]: Completed
+        - generic [ref=e89]:
+          - heading "Quick actions" [level=2] [ref=e90]
+          - generic [ref=e91]:
+            - link "📅 Book appointment Find available slots" [ref=e92] [cursor=pointer]:
+              - /url: wireframe-SCR-004-appointment-booking.html
+              - generic [ref=e93]: 📅
+              - generic [ref=e94]: Book appointment
+              - generic [ref=e95]: Find available slots
+            - link "📋 Complete intake AI-assisted form" [ref=e96] [cursor=pointer]:
+              - /url: wireframe-SCR-007-ai-intake.html
+              - generic [ref=e97]: 📋
+              - generic [ref=e98]: Complete intake
+              - generic [ref=e99]: AI-assisted form
+            - link "📄 Upload document PDF clinical records" [ref=e100] [cursor=pointer]:
+              - /url: wireframe-SCR-010-document-upload.html
+              - generic [ref=e101]: 📄
+              - generic [ref=e102]: Upload document
+              - generic [ref=e103]: PDF clinical records
+            - link "👤 My health profile 360° clinical view" [ref=e104] [cursor=pointer]:
+              - /url: wireframe-SCR-009-patient-profile.html
+              - generic [ref=e105]: 👤
+              - generic [ref=e106]: My health profile
+              - generic [ref=e107]: 360° clinical view
+      - generic "Dashboard sidebar" [ref=e108]:
+        - generic [ref=e109]:
+          - generic [ref=e110]:
+            - heading "Notifications" [level=2] [ref=e111]
+            - generic [ref=e112]: 2 new
+          - list "Notifications" [ref=e113]:
+            - 'listitem "Unread: Reminder for tomorrow" [ref=e114]':
+              - generic [ref=e116]:
+                - generic [ref=e117]:
+                  - text: "Reminder: Your appointment with Dr. M. Okafor is"
+                  - strong [ref=e118]: tomorrow at 10:00 AM
+                  - text: .
+                - generic [ref=e119]: May 19 · 8:00 AM
+            - 'listitem "Unread: Waitlist position" [ref=e120]':
+              - generic [ref=e122]:
+                - generic [ref=e123]:
+                  - text: You are
+                  - strong [ref=e124]: "#2 on the waitlist"
+                  - text: for the 11:00 AM slot on May 20.
+                - generic [ref=e125]: May 14 · 10:33 AM
+            - 'listitem "Read: Booking confirmed" [ref=e126]':
+              - generic [ref=e128]:
+                - generic [ref=e129]: "Booking confirmed: Annual Physical on May 20. Confirmation emailed."
+                - generic [ref=e130]: May 14 · 10:32 AM
+        - generic [ref=e131]:
+          - generic [ref=e132]:
+            - heading "Calendar sync" [level=2] [ref=e133]
+            - generic [ref=e134]: ● Connected
+          - generic [ref=e135]:
+            - paragraph [ref=e136]: 🔗 Google Calendar connected
+            - paragraph [ref=e137]: "Last sync: May 14, 10:32 AM"
+            - link "Manage calendar settings →" [ref=e138] [cursor=pointer]:
+              - /url: wireframe-SCR-016-calendar-oauth.html
+        - generic [ref=e139]:
+          - heading "Preferred slot waitlist" [level=2] [ref=e141]
+          - generic [ref=e143]:
+            - generic [ref=e144]: Dr. M. Okafor · 11:00 AM, May 20
+            - generic [ref=e145]:
+              - text: "Queue position:"
+              - strong [ref=e146]: "#2"
+            - generic [ref=e147]: You'll be notified by email and SMS when this slot opens.
+  - 'button "Demo: Show session timeout modal" [ref=e148] [cursor=pointer]': "Demo: Session timeout"
